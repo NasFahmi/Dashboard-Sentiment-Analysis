@@ -9,12 +9,12 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
-import { FiAlertCircle, FiAlertTriangle, FiCoffee, FiShare, } from "react-icons/fi";
+import { FiAlertCircle, FiAlertTriangle, FiCoffee, } from "react-icons/fi";
 import { IoFlame } from "react-icons/io5";
 import { TbLoader2 } from "react-icons/tb";
 import { LuFrown, LuMeh, LuSmile, LuThumbsDown, LuThumbsUp } from "react-icons/lu";
 import { LuUtensils } from "react-icons/lu";
-import { FaRegHeart, FaRegStar } from "react-icons/fa";
+import { FaRegHeart, FaRegStar, FaShare } from "react-icons/fa";
 import type { Analysis, SentimenBrand, SentimenKategori } from './interface/Analysis';
 
 
@@ -563,7 +563,7 @@ const Dashboard = () => {
                               <span className="text-sm">{item.likes.toFixed(0)}</span>
                             </div>
                             <div className="flex items-center gap-1">
-                              <FiShare className="w-4 h-4 text-purple-500" />
+                              <FaShare className="w-4 h-4 text-purple-500" />
                               <span className="text-sm">{item.shares.toFixed(0)}</span>
                             </div>
                             <Badge variant="secondary">
