@@ -1,84 +1,85 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  BarChart, Bar, PieChart, Pie, Cell, 
+import {
+  BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
-import { FiAlertCircle, FiCoffee, FiShare } from "react-icons/fi";
+import { FiAlertCircle, FiAlertTriangle, FiCoffee, FiShare, } from "react-icons/fi";
 import { IoFlame } from "react-icons/io5";
-import { TbSoup } from "react-icons/tb";
-import { LuFrown, LuMeh, LuPizza, LuSmile, LuThumbsDown, LuThumbsUp } from "react-icons/lu";
+import { TbLoader2 } from "react-icons/tb";
+import { LuFrown, LuMeh, LuSmile, LuThumbsDown, LuThumbsUp } from "react-icons/lu";
 import { LuUtensils } from "react-icons/lu";
 import { FaRegHeart, FaRegStar } from "react-icons/fa";
+import type { Analysis, SentimenBrand, SentimenKategori } from './interface/Analysis';
 
 
-// Data dari JSON
-const data = {
-  "ringkasan_keseluruhan": {
-    "Netral": { "jumlah": 13774, "persentase": 91.9 },
-    "Positif": { "jumlah": 1103, "persentase": 7.4 },
-    "Negatif": { "jumlah": 107, "persentase": 0.7 }
-  },
-  "sentimen_per_kategori": {
-    "Kuliner - Cafe & Resto": { "positif": 60, "negatif": 10, "netral": 637, "total": 707, "rasio_positif": 8.5 },
-    "Kuliner - Kopi & Minuman": { "positif": 39, "negatif": 6, "netral": 1103, "total": 1148, "rasio_positif": 3.4 },
-    "Kuliner - Makanan Asia": { "positif": 90, "negatif": 3, "netral": 744, "total": 837, "rasio_positif": 10.8 },
-    "Kuliner - Makanan Bakar": { "positif": 168, "negatif": 9, "netral": 2363, "total": 2540, "rasio_positif": 6.6 },
-    "Kuliner - Makanan Siap Saji": { "positif": 284, "negatif": 21, "netral": 3480, "total": 3785, "rasio_positif": 7.5 },
-    "Kuliner - Makanan Tradisional": { "positif": 143, "negatif": 3, "netral": 771, "total": 917, "rasio_positif": 15.6 },
-    "Kuliner - Mie & Pasta": { "positif": 60, "negatif": 22, "netral": 1468, "total": 1550, "rasio_positif": 3.9 },
-    "Kuliner - Warung Tradisional": { "positif": 259, "negatif": 33, "netral": 3208, "total": 3500, "rasio_positif": 7.4 }
-  },
-  "sentimen_per_brand": {
-    "gacoan": { "positif": 143, "negatif": 3, "netral": 771, "total": 917, "rasio_positif": 15.6, "rasio_negatif": 0.3, "rasio_netral": 84.1 },
-    "mieganbatte": { "positif": 20, "negatif": 5, "netral": 134, "total": 159, "rasio_positif": 12.6, "rasio_negatif": 3.1, "rasio_netral": 84.3 },
-    "hisana": { "positif": 90, "negatif": 3, "netral": 744, "total": 837, "rasio_positif": 10.8, "rasio_negatif": 0.4, "rasio_netral": 88.9 },
-    "pagisore": { "positif": 60, "negatif": 10, "netral": 637, "total": 707, "rasio_positif": 8.5, "rasio_negatif": 1.4, "rasio_netral": 90.1 },
-    "deles": { "positif": 284, "negatif": 21, "netral": 3480, "total": 3785, "rasio_positif": 7.5, "rasio_negatif": 0.6, "rasio_netral": 91.9 },
-    "warmindo": { "positif": 259, "negatif": 33, "netral": 3208, "total": 3500, "rasio_positif": 7.4, "rasio_negatif": 0.9, "rasio_netral": 91.7 },
-    "sambalbakar": { "positif": 168, "negatif": 9, "netral": 2363, "total": 2540, "rasio_positif": 6.6, "rasio_negatif": 0.4, "rasio_netral": 93.0 },
-    "belikopi": { "positif": 39, "negatif": 6, "netral": 1103, "total": 1148, "rasio_positif": 3.4, "rasio_negatif": 0.5, "rasio_netral": 96.1 },
-    "wizzmie": { "positif": 40, "negatif": 17, "netral": 1334, "total": 1391, "rasio_positif": 2.9, "rasio_negatif": 1.2, "rasio_netral": 95.9 }
-  },
-  "engagement_per_sentimen": {
-    "Negatif": { "avg_engagement": 509.4, "avg_likes": 248.7, "avg_shares": 49.0 },
-    "Netral": { "avg_engagement": 500.5, "avg_likes": 249.9, "avg_shares": 49.6 },
-    "Positif": { "avg_engagement": 500.1, "avg_likes": 252.0, "avg_shares": 49.4 }
-  },
-  "faktor_positif_top10": [
-    { "kata": "enak", "jumlah": 277 },
-    { "kata": "pas", "jumlah": 162 },
-    { "kata": "mantap", "jumlah": 143 },
-    { "kata": "ok", "jumlah": 141 },
-    { "kata": "keren", "jumlah": 119 },
-    { "kata": "suka", "jumlah": 103 },
-    { "kata": "baik", "jumlah": 78 },
-    { "kata": "juara", "jumlah": 65 },
-    { "kata": "favorit", "jumlah": 59 },
-    { "kata": "happy", "jumlah": 52 }
-  ],
-  "faktor_negatif_top10": [
-    { "kata": "lama", "jumlah": 54 },
-    { "kata": "mahal", "jumlah": 13 },
-    { "kata": "komplain", "jumlah": 8 },
-    { "kata": "asin", "jumlah": 8 },
-    { "kata": "buruk", "jumlah": 6 },
-    { "kata": "basi", "jumlah": 4 },
-    { "kata": "zonk", "jumlah": 4 },
-    { "kata": "lambat", "jumlah": 4 },
-    { "kata": "kasar", "jumlah": 4 },
-    { "kata": "mengecewakan", "jumlah": 4 }
-  ]
-};
+// // Data dari JSON
+// const data = {
+//   "ringkasan_keseluruhan": {
+//     "Netral": { "jumlah": 13774, "persentase": 91.9 },
+//     "Positif": { "jumlah": 1103, "persentase": 7.4 },
+//     "Negatif": { "jumlah": 107, "persentase": 0.7 }
+//   },
+//   "sentimen_per_kategori": {
+//     "Kuliner - Cafe & Resto": { "positif": 60, "negatif": 10, "netral": 637, "total": 707, "rasio_positif": 8.5 },
+//     "Kuliner - Kopi & Minuman": { "positif": 39, "negatif": 6, "netral": 1103, "total": 1148, "rasio_positif": 3.4 },
+//     "Kuliner - Makanan Asia": { "positif": 90, "negatif": 3, "netral": 744, "total": 837, "rasio_positif": 10.8 },
+//     "Kuliner - Makanan Bakar": { "positif": 168, "negatif": 9, "netral": 2363, "total": 2540, "rasio_positif": 6.6 },
+//     "Kuliner - Makanan Siap Saji": { "positif": 284, "negatif": 21, "netral": 3480, "total": 3785, "rasio_positif": 7.5 },
+//     "Kuliner - Makanan Tradisional": { "positif": 143, "negatif": 3, "netral": 771, "total": 917, "rasio_positif": 15.6 },
+//     "Kuliner - Mie & Pasta": { "positif": 60, "negatif": 22, "netral": 1468, "total": 1550, "rasio_positif": 3.9 },
+//     "Kuliner - Warung Tradisional": { "positif": 259, "negatif": 33, "netral": 3208, "total": 3500, "rasio_positif": 7.4 }
+//   },
+//   "sentimen_per_brand": {
+//     "gacoan": { "positif": 143, "negatif": 3, "netral": 771, "total": 917, "rasio_positif": 15.6, "rasio_negatif": 0.3, "rasio_netral": 84.1 },
+//     "mieganbatte": { "positif": 20, "negatif": 5, "netral": 134, "total": 159, "rasio_positif": 12.6, "rasio_negatif": 3.1, "rasio_netral": 84.3 },
+//     "hisana": { "positif": 90, "negatif": 3, "netral": 744, "total": 837, "rasio_positif": 10.8, "rasio_negatif": 0.4, "rasio_netral": 88.9 },
+//     "pagisore": { "positif": 60, "negatif": 10, "netral": 637, "total": 707, "rasio_positif": 8.5, "rasio_negatif": 1.4, "rasio_netral": 90.1 },
+//     "deles": { "positif": 284, "negatif": 21, "netral": 3480, "total": 3785, "rasio_positif": 7.5, "rasio_negatif": 0.6, "rasio_netral": 91.9 },
+//     "warmindo": { "positif": 259, "negatif": 33, "netral": 3208, "total": 3500, "rasio_positif": 7.4, "rasio_negatif": 0.9, "rasio_netral": 91.7 },
+//     "sambalbakar": { "positif": 168, "negatif": 9, "netral": 2363, "total": 2540, "rasio_positif": 6.6, "rasio_negatif": 0.4, "rasio_netral": 93.0 },
+//     "belikopi": { "positif": 39, "negatif": 6, "netral": 1103, "total": 1148, "rasio_positif": 3.4, "rasio_negatif": 0.5, "rasio_netral": 96.1 },
+//     "wizzmie": { "positif": 40, "negatif": 17, "netral": 1334, "total": 1391, "rasio_positif": 2.9, "rasio_negatif": 1.2, "rasio_netral": 95.9 }
+//   },
+//   "engagement_per_sentimen": {
+//     "Negatif": { "avg_engagement": 509.4, "avg_likes": 248.7, "avg_shares": 49.0 },
+//     "Netral": { "avg_engagement": 500.5, "avg_likes": 249.9, "avg_shares": 49.6 },
+//     "Positif": { "avg_engagement": 500.1, "avg_likes": 252.0, "avg_shares": 49.4 }
+//   },
+//   "faktor_positif_top10": [
+//     { "kata": "enak", "jumlah": 277 },
+//     { "kata": "pas", "jumlah": 162 },
+//     { "kata": "mantap", "jumlah": 143 },
+//     { "kata": "ok", "jumlah": 141 },
+//     { "kata": "keren", "jumlah": 119 },
+//     { "kata": "suka", "jumlah": 103 },
+//     { "kata": "baik", "jumlah": 78 },
+//     { "kata": "juara", "jumlah": 65 },
+//     { "kata": "favorit", "jumlah": 59 },
+//     { "kata": "happy", "jumlah": 52 }
+//   ],
+//   "faktor_negatif_top10": [
+//     { "kata": "lama", "jumlah": 54 },
+//     { "kata": "mahal", "jumlah": 13 },
+//     { "kata": "komplain", "jumlah": 8 },
+//     { "kata": "asin", "jumlah": 8 },
+//     { "kata": "buruk", "jumlah": 6 },
+//     { "kata": "basi", "jumlah": 4 },
+//     { "kata": "zonk", "jumlah": 4 },
+//     { "kata": "lambat", "jumlah": 4 },
+//     { "kata": "kasar", "jumlah": 4 },
+//     { "kata": "mengecewakan", "jumlah": 4 }
+//   ]
+// };
 
 const COLORS = {
   positif: '#10b981',
-  netral: '#6b7280',
+  netral: '#9ca3af',
   negatif: '#ef4444',
   primary: '#3b82f6',
   secondary: '#8b5cf6',
@@ -86,64 +87,190 @@ const COLORS = {
 };
 
 const Dashboard = () => {
+  const [data, setData] = useState<Analysis | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // const [selectedCategory, setSelectedCategory] = useState('all');
-  
-  // Transform data for charts
-  const overallSentimentData = useMemo(() => [
-    { name: 'Positif', value: data.ringkasan_keseluruhan.Positif.jumlah, percentage: data.ringkasan_keseluruhan.Positif.persentase },
-    { name: 'Netral', value: data.ringkasan_keseluruhan.Netral.jumlah, percentage: data.ringkasan_keseluruhan.Netral.persentase },
-    { name: 'Negatif', value: data.ringkasan_keseluruhan.Negatif.jumlah, percentage: data.ringkasan_keseluruhan.Negatif.persentase }
-  ], []);
 
-  const categoryData = useMemo(() => 
-    Object.entries(data.sentimen_per_kategori).map(([key, value]) => ({
-      name: key.replace('Kuliner - ', ''),
-      positif: value.positif,
-      negatif: value.negatif,
-      netral: value.netral,
-      total: value.total,
-      rasio_positif: value.rasio_positif
-    })).sort((a, b) => b.rasio_positif - a.rasio_positif)
-  , []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/json/analysis.json');
 
-  const brandData = useMemo(() => 
-    Object.entries(data.sentimen_per_brand).map(([key, value]) => ({
-      name: key.charAt(0).toUpperCase() + key.slice(1),
-      positif: value.rasio_positif,
-      negatif: value.rasio_negatif,
-      netral: value.rasio_netral,
-      total: value.total
-    })).sort((a, b) => b.positif - a.positif)
-  , []);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-  const engagementData = useMemo(() => 
-    Object.entries(data.engagement_per_sentimen).map(([key, value]) => ({
-      sentiment: key,
-      engagement: value.avg_engagement,
-      likes: value.avg_likes,
-      shares: value.avg_shares
-    }))
-  , []);
+        const jsonData: Analysis = await response.json();
+        setData(jsonData);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Transform data for charts with null safety
+  const overallSentimentData = useMemo(() => {
+    if (!data) return [];
+    return [
+      {
+        name: 'Positif',
+        value: data.ringkasan_keseluruhan.Positif.jumlah,
+        percentage: data.ringkasan_keseluruhan.Positif.persentase
+      },
+      {
+        name: 'Netral',
+        value: data.ringkasan_keseluruhan.Netral.jumlah,
+        percentage: data.ringkasan_keseluruhan.Netral.persentase
+      },
+      {
+        name: 'Negatif',
+        value: data.ringkasan_keseluruhan.Negatif.jumlah,
+        percentage: data.ringkasan_keseluruhan.Negatif.persentase
+      }
+    ];
+  }, [data]);
+
+  const categoryData = useMemo(() => {
+    if (!data) return [];
+    return Object.entries(data.sentimen_per_kategori)
+      .map(([key, value]: [string, SentimenKategori]) => ({
+        name: key.replace('Kuliner - ', ''),
+        positif: value.positif,
+        negatif: value.negatif,
+        netral: value.netral,
+        total: value.total,
+        rasio_positif: value.rasio_positif
+      }))
+      .sort((a, b) => b.rasio_positif - a.rasio_positif);
+  }, [data]);
+
+  const brandData = useMemo(() => {
+    if (!data) return [];
+    return Object.entries(data.sentimen_per_brand)
+      .map(([key, value]: [string, SentimenBrand]) => ({
+        name: key.charAt(0).toUpperCase() + key.slice(1),
+        positif: value.rasio_positif,
+        negatif: value.rasio_negatif,
+        netral: value.rasio_netral,
+        total: value.total
+      }))
+      .sort((a, b) => b.positif - a.positif);
+  }, [data]);
+
+  const engagementData = useMemo(() => {
+    if (!data) return [];
+    return Object.entries(data.engagement_per_sentimen)
+      .map(([key, value]) => ({
+        sentiment: key,
+        engagement: value.avg_engagement,
+        likes: value.avg_likes,
+        shares: value.avg_shares
+      }));
+  }, [data]);
+
+  const totalMentions = useMemo(() => {
+    if (!data) return 0;
+    return data.ringkasan_keseluruhan.Positif.jumlah +
+      data.ringkasan_keseluruhan.Netral.jumlah +
+      data.ringkasan_keseluruhan.Negatif.jumlah;
+  }, [data]);
 
   const getCategoryIcon = (category: string) => {
     if (category.includes('Kopi')) return <FiCoffee className="w-4 h-4" />;
     if (category.includes('Bakar')) return <IoFlame className="w-4 h-4" />;
-    if (category.includes('Tradisional')) return <TbSoup className="w-4 h-4" />;
-    if (category.includes('Mie')) return <LuPizza className="w-4 h-4" />;
+    if (category.includes('Tradisional')) return <TbLoader2 className="w-4 h-4" />;
+    if (category.includes('Mie')) return <LuUtensils className="w-4 h-4" />;
     return <LuUtensils className="w-4 h-4" />;
   };
 
   const getSentimentIcon = (sentiment: string) => {
-    switch(sentiment.toLowerCase()) {
+    switch (sentiment.toLowerCase()) {
       case 'positif': return <LuSmile className="w-5 h-5 text-green-500" />;
       case 'negatif': return <LuFrown className="w-5 h-5 text-red-500" />;
       default: return <LuMeh className="w-5 h-5 text-gray-500" />;
     }
   };
 
-  const totalMentions = data.ringkasan_keseluruhan.Positif.jumlah + 
-                        data.ringkasan_keseluruhan.Netral.jumlah + 
-                        data.ringkasan_keseluruhan.Negatif.jumlah;
+
+
+
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <Card className="w-96">
+          <CardContent className="p-8">
+            <div className="flex flex-col items-center space-y-4">
+              <TbLoader2 className="w-12 h-12 text-blue-500 animate-spin" />
+              <h2 className="text-xl font-semibold text-slate-700">Loading Dashboard...</h2>
+              <p className="text-sm text-slate-500 text-center">Sedang memuat data analisis sentimen</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-red-200">
+          <CardContent className="p-8">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <FiAlertTriangle className="w-8 h-8 text-red-500" />
+              </div>
+              <h2 className="text-xl font-semibold text-slate-700">Error Loading Data</h2>
+              <p className="text-sm text-slate-600 text-center">{error}</p>
+              <Alert className="border-amber-200 bg-amber-50">
+                <FiAlertTriangle className="h-4 w-4 text-amber-600" />
+                <AlertDescription className="text-amber-800">
+                  <strong>Pastikan:</strong>
+                  <ul className="mt-2 space-y-1 text-sm">
+                    <li>• File JSON berada di <code className="bg-amber-100 px-1 rounded">public/json/analysis.json</code></li>
+                    <li>• Format JSON sesuai dengan struktur yang diharapkan</li>
+                    <li>• Server development sedang berjalan</li>
+                  </ul>
+                </AlertDescription>
+              </Alert>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                Reload Page
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // No data state
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <Card className="w-96">
+          <CardContent className="p-8">
+            <div className="flex flex-col items-center space-y-4">
+              <FiAlertCircle className="w-12 h-12 text-amber-500" />
+              <h2 className="text-xl font-semibold text-slate-700">No Data Available</h2>
+              <p className="text-sm text-slate-500 text-center">Data analisis tidak ditemukan</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6">
@@ -154,10 +281,6 @@ const Dashboard = () => {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Dashboard Analisis Sentimen Kuliner
             </h1>
-            <Badge variant="outline" className="px-3 py-1">
-              <span className="animate-pulse w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-              Live Data
-            </Badge>
           </div>
           <p className="text-slate-600">Monitoring sentimen brand kuliner dari media sosial</p>
         </div>
@@ -288,7 +411,7 @@ const Dashboard = () => {
             <Alert className="border-blue-200 bg-blue-50">
               <FiAlertCircle className="h-4 w-4 text-blue-600" />
               <AlertDescription className="text-blue-800">
-                <strong>Insight:</strong> Brand "Gacoan" memiliki sentimen positif tertinggi (15.6%) diikuti oleh "Mie Ganbatte" (12.6%). 
+                <strong>Insight:</strong> Brand "Gacoan" memiliki sentimen positif tertinggi (15.6%) diikuti oleh "Mie Ganbatte" (12.6%).
                 Mayoritas brand memiliki sentimen netral yang dominan, menunjukkan ruang untuk meningkatkan engagement positif.
               </AlertDescription>
             </Alert>
@@ -456,7 +579,7 @@ const Dashboard = () => {
                   <Alert className="mt-4 border-amber-200 bg-amber-50">
                     <FiAlertCircle className="h-4 w-4 text-amber-600" />
                     <AlertDescription className="text-amber-800">
-                      <strong>Finding:</strong> Konten dengan sentimen negatif memiliki engagement rate yang sedikit lebih tinggi (509.4), 
+                      <strong>Finding:</strong> Konten dengan sentimen negatif memiliki engagement rate yang sedikit lebih tinggi (509.4),
                       kemungkinan karena mendorong diskusi dan respons dari pengguna.
                     </AlertDescription>
                   </Alert>
@@ -481,7 +604,7 @@ const Dashboard = () => {
                     {data.faktor_positif_top10.map((item, index) => (
                       <div key={item.kata} className="flex items-center justify-between p-2 rounded-lg hover:bg-green-50 transition-colors">
                         <div className="flex items-center gap-3">
-                          <Badge 
+                          <Badge
                             variant={index < 3 ? "default" : "secondary"}
                             className={index === 0 ? "bg-gradient-to-r from-yellow-400 to-yellow-600" : ""}
                           >
@@ -512,7 +635,7 @@ const Dashboard = () => {
                     {data.faktor_negatif_top10.map((item, index) => (
                       <div key={item.kata} className="flex items-center justify-between p-2 rounded-lg hover:bg-red-50 transition-colors">
                         <div className="flex items-center gap-3">
-                          <Badge 
+                          <Badge
                             variant={index < 3 ? "destructive" : "secondary"}
                           >
                             {index + 1}
@@ -545,9 +668,8 @@ const Dashboard = () => {
                       return (
                         <span
                           key={item.kata}
-                          className={`inline-block px-3 py-1 rounded-full font-medium transition-all hover:scale-110 cursor-pointer ${
-                            isPositive ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-red-100 text-red-800 hover:bg-red-200'
-                          }`}
+                          className={`inline-block px-3 py-1 rounded-full font-medium transition-all hover:scale-110 cursor-pointer ${isPositive ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-red-100 text-red-800 hover:bg-red-200'
+                            }`}
                           style={{ fontSize: `${size}px` }}
                         >
                           {item.kata}
