@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
@@ -16,66 +16,10 @@ import { LuFrown, LuMeh, LuSmile, LuThumbsDown, LuThumbsUp } from "react-icons/l
 import { LuUtensils } from "react-icons/lu";
 import { FaRegHeart, FaRegStar, FaShare } from "react-icons/fa";
 import type { Analysis, SentimenBrand, SentimenKategori } from './interface/Analysis';
+import Chatbot from './components/Chatbot';
+import Insight from './components/Insight';
 
 
-// // Data dari JSON
-// const data = {
-//   "ringkasan_keseluruhan": {
-//     "Netral": { "jumlah": 13774, "persentase": 91.9 },
-//     "Positif": { "jumlah": 1103, "persentase": 7.4 },
-//     "Negatif": { "jumlah": 107, "persentase": 0.7 }
-//   },
-//   "sentimen_per_kategori": {
-//     "Kuliner - Cafe & Resto": { "positif": 60, "negatif": 10, "netral": 637, "total": 707, "rasio_positif": 8.5 },
-//     "Kuliner - Kopi & Minuman": { "positif": 39, "negatif": 6, "netral": 1103, "total": 1148, "rasio_positif": 3.4 },
-//     "Kuliner - Makanan Asia": { "positif": 90, "negatif": 3, "netral": 744, "total": 837, "rasio_positif": 10.8 },
-//     "Kuliner - Makanan Bakar": { "positif": 168, "negatif": 9, "netral": 2363, "total": 2540, "rasio_positif": 6.6 },
-//     "Kuliner - Makanan Siap Saji": { "positif": 284, "negatif": 21, "netral": 3480, "total": 3785, "rasio_positif": 7.5 },
-//     "Kuliner - Makanan Tradisional": { "positif": 143, "negatif": 3, "netral": 771, "total": 917, "rasio_positif": 15.6 },
-//     "Kuliner - Mie & Pasta": { "positif": 60, "negatif": 22, "netral": 1468, "total": 1550, "rasio_positif": 3.9 },
-//     "Kuliner - Warung Tradisional": { "positif": 259, "negatif": 33, "netral": 3208, "total": 3500, "rasio_positif": 7.4 }
-//   },
-//   "sentimen_per_brand": {
-//     "gacoan": { "positif": 143, "negatif": 3, "netral": 771, "total": 917, "rasio_positif": 15.6, "rasio_negatif": 0.3, "rasio_netral": 84.1 },
-//     "mieganbatte": { "positif": 20, "negatif": 5, "netral": 134, "total": 159, "rasio_positif": 12.6, "rasio_negatif": 3.1, "rasio_netral": 84.3 },
-//     "hisana": { "positif": 90, "negatif": 3, "netral": 744, "total": 837, "rasio_positif": 10.8, "rasio_negatif": 0.4, "rasio_netral": 88.9 },
-//     "pagisore": { "positif": 60, "negatif": 10, "netral": 637, "total": 707, "rasio_positif": 8.5, "rasio_negatif": 1.4, "rasio_netral": 90.1 },
-//     "deles": { "positif": 284, "negatif": 21, "netral": 3480, "total": 3785, "rasio_positif": 7.5, "rasio_negatif": 0.6, "rasio_netral": 91.9 },
-//     "warmindo": { "positif": 259, "negatif": 33, "netral": 3208, "total": 3500, "rasio_positif": 7.4, "rasio_negatif": 0.9, "rasio_netral": 91.7 },
-//     "sambalbakar": { "positif": 168, "negatif": 9, "netral": 2363, "total": 2540, "rasio_positif": 6.6, "rasio_negatif": 0.4, "rasio_netral": 93.0 },
-//     "belikopi": { "positif": 39, "negatif": 6, "netral": 1103, "total": 1148, "rasio_positif": 3.4, "rasio_negatif": 0.5, "rasio_netral": 96.1 },
-//     "wizzmie": { "positif": 40, "negatif": 17, "netral": 1334, "total": 1391, "rasio_positif": 2.9, "rasio_negatif": 1.2, "rasio_netral": 95.9 }
-//   },
-//   "engagement_per_sentimen": {
-//     "Negatif": { "avg_engagement": 509.4, "avg_likes": 248.7, "avg_shares": 49.0 },
-//     "Netral": { "avg_engagement": 500.5, "avg_likes": 249.9, "avg_shares": 49.6 },
-//     "Positif": { "avg_engagement": 500.1, "avg_likes": 252.0, "avg_shares": 49.4 }
-//   },
-//   "faktor_positif_top10": [
-//     { "kata": "enak", "jumlah": 277 },
-//     { "kata": "pas", "jumlah": 162 },
-//     { "kata": "mantap", "jumlah": 143 },
-//     { "kata": "ok", "jumlah": 141 },
-//     { "kata": "keren", "jumlah": 119 },
-//     { "kata": "suka", "jumlah": 103 },
-//     { "kata": "baik", "jumlah": 78 },
-//     { "kata": "juara", "jumlah": 65 },
-//     { "kata": "favorit", "jumlah": 59 },
-//     { "kata": "happy", "jumlah": 52 }
-//   ],
-//   "faktor_negatif_top10": [
-//     { "kata": "lama", "jumlah": 54 },
-//     { "kata": "mahal", "jumlah": 13 },
-//     { "kata": "komplain", "jumlah": 8 },
-//     { "kata": "asin", "jumlah": 8 },
-//     { "kata": "buruk", "jumlah": 6 },
-//     { "kata": "basi", "jumlah": 4 },
-//     { "kata": "zonk", "jumlah": 4 },
-//     { "kata": "lambat", "jumlah": 4 },
-//     { "kata": "kasar", "jumlah": 4 },
-//     { "kata": "mengecewakan", "jumlah": 4 }
-//   ]
-// };
 
 const COLORS = {
   positif: '#10b981',
@@ -408,13 +352,7 @@ const Dashboard = () => {
               </Card>
             </div>
 
-            <Alert className="border-blue-200 bg-blue-50">
-              <FiAlertCircle className="h-4 w-4 text-blue-600" />
-              <AlertDescription className="text-blue-800">
-                <strong>Insight:</strong> Brand "Gacoan" memiliki sentimen positif tertinggi (15.6%) diikuti oleh "Mie Ganbatte" (12.6%).
-                Mayoritas brand memiliki sentimen netral yang dominan, menunjukkan ruang untuk meningkatkan engagement positif.
-              </AlertDescription>
-            </Alert>
+            <Insight />   
           </TabsContent>
 
           {/* Categories Tab */}
@@ -699,6 +637,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+      <Chatbot />
     </div>
   );
 };
