@@ -13,7 +13,7 @@ import {
   FiCheckCircle,
 } from 'react-icons/fi';
 import { axiosClient } from '@/lib/axios';
-import parse, { type HTMLReactParserOptions, type Element } from 'html-react-parser';
+import parse, { type HTMLReactParserOptions, Element } from 'html-react-parser';
 import DOMPurify from 'dompurify';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRegLightbulb } from 'react-icons/fa';
@@ -116,7 +116,7 @@ const createParserOptions = (isDarkMode: boolean = false): HTMLReactParserOption
         case 'h1':
           return (
             <h1 className="text-2xl font-bold mt-4 mb-2 text-slate-900 dark:text-slate-100">
-              {children && parse(children as any, createParserOptions(isDarkMode))}
+              {children && parse(children as any , createParserOptions(isDarkMode))}
             </h1>
           );
           
@@ -243,7 +243,7 @@ export const Insight: React.FC = () => {
     queryKey: ['insights'],
     queryFn: fetchInsights,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false,
   });
 
@@ -257,22 +257,22 @@ export const Insight: React.FC = () => {
   }, [data]);
 
   // Extract key metrics from content (if available)
-  const extractKeyMetrics = (content: string) => {
-    const metrics: { label: string; value: string }[] = [];
+  // const extractKeyMetrics = (content: string) => {
+  //   const metrics: { label: string; value: string }[] = [];
     
-    // Extract percentages and numbers with bold formatting
-    const boldMatches = content.match(/\*\*([^*]+)\*\*/g);
-    if (boldMatches) {
-      boldMatches.forEach(match => {
-        const clean = match.replace(/\*\*/g, '');
-        if (clean.includes('%') || /\d+/.test(clean)) {
-          metrics.push({ label: 'Metric', value: clean });
-        }
-      });
-    }
+  //   // Extract percentages and numbers with bold formatting
+  //   const boldMatches = content.match(/\*\*([^*]+)\*\*/g);
+  //   if (boldMatches) {
+  //     boldMatches.forEach(match => {
+  //       const clean = match.replace(/\*\*/g, '');
+  //       if (clean.includes('%') || /\d+/.test(clean)) {
+  //         metrics.push({ label: 'Metric', value: clean });
+  //       }
+  //     });
+  //   }
     
-    return metrics.slice(0, 4); // Return top 4 metrics
-  };
+  //   return metrics.slice(0, 4); // Return top 4 metrics
+  // };
 
   // Loading state
   if (isLoading) {
@@ -314,7 +314,7 @@ export const Insight: React.FC = () => {
     );
   }
 
-  const metrics = extractKeyMetrics(data.insights.answer);
+  // const metrics = extractKeyMetrics(data.insights.answer);
 
   return (
     <AnimatePresence mode="wait">
