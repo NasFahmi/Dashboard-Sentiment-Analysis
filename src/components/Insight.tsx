@@ -33,7 +33,7 @@ interface CachedInsight {
 }
 // LocalStorage helper functions
 const CACHE_KEY = 'sentiment_insights_cache';
-const CACHE_DURATION = 60 * 6 * 60 * 1000; // 6 hours default
+const CACHE_DURATION = 60 * 6 * 30 * 60 * 1000; // 30 minutes default
 
 const getLocalStorageCache = (): CachedInsight | null => {
   try {
