@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const axiosClient = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "https://dashboard.nasrulfahmi.my.id",
   timeout: undefined,
   headers: {
     "Content-Type": "application/json",
