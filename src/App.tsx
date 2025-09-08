@@ -602,13 +602,11 @@ const Dashboard = () => {
                     .sort((a, b) => b.jumlah - a.jumlah)
                     .map((item) => {
                       const isPositive = data.faktor_positif_top10.some(p => p.kata === item.kata);
-                      const size = Math.max(12, Math.min(32, item.jumlah / 10));
                       return (
                         <span
                           key={item.kata}
                           className={`inline-block px-3 py-1 rounded-full font-medium transition-all hover:scale-110 cursor-pointer ${isPositive ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-red-100 text-red-800 hover:bg-red-200'
                             }`}
-                          style={{ fontSize: `${size}px` }}
                         >
                           {item.kata}
                         </span>

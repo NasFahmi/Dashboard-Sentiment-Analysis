@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  FiAlertCircle, 
+import {
+  FiAlertCircle,
   FiRefreshCw,
   FiAlertTriangle,
   FiCheckCircle,
@@ -26,21 +26,68 @@ interface InsightResponse {
   };
 }
 
+interface CachedInsight {
+  data: InsightResponse;
+  timestamp: number;
+  expiresAt: number;
+}
+// LocalStorage helper functions
+const CACHE_KEY = 'sentiment_insights_cache';
+const CACHE_DURATION = 60 * 6 * 60 * 1000; // 6 hours default
+
+const getLocalStorageCache = (): CachedInsight | null => {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (!cached) return null;
+
+    const parsedCache: CachedInsight = JSON.parse(cached);
+    const now = Date.now();
+
+    // Check if cache is expired
+    if (parsedCache.expiresAt && parsedCache.expiresAt < now) {
+      localStorage.removeItem(CACHE_KEY);
+      return null;
+    }
+
+    return parsedCache;
+  } catch (error) {
+    console.error('Error reading from localStorage:', error);
+    localStorage.removeItem(CACHE_KEY);
+    return null;
+  }
+};
+
+const setLocalStorageCache = (data: InsightResponse, duration: number = CACHE_DURATION): void => {
+  try {
+    const now = Date.now();
+    const cacheData: CachedInsight = {
+      data,
+      timestamp: now,
+      expiresAt: now + duration
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+  } catch (error) {
+    console.error('Error saving to localStorage:', error);
+    // If localStorage is full or disabled, continue without caching
+  }
+};
+
+
 // Markdown to HTML converter (reuse from chatbot component)
 const markdownToHtml = (text: string): string => {
   let html = text;
-  
+
   // Escape HTML first to prevent XSS, but preserve our markdown
   html = html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  
+
   // Convert markdown horizontal rules
   html = html.replace(/^---$/gm, '<hr>');
   html = html.replace(/^\*\*\*$/gm, '<hr>');
   html = html.replace(/^___$/gm, '<hr>');
-  
+
   // Re-enable <hr> tags that were in the original content
   html = html.replace(/&lt;hr\s*\/?&gt;/gi, '<hr>');
-  
+
   // Convert headers (h1-h6)
   html = html.replace(/^######\s+(.+)$/gm, '<h6>$1</h6>');
   html = html.replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>');
@@ -48,28 +95,28 @@ const markdownToHtml = (text: string): string => {
   html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
   html = html.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
   html = html.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
-  
+
   // Convert markdown bold (must come before italic to handle ***)
   html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  
+
   // Convert markdown italic
   html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-  
+
   // Convert markdown code (inline)
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-  
+
   // Convert markdown links
   html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-  
+
   // Convert lists
   // Bullet points
   html = html.replace(/^[\s]*[•·▪▫◦‣⁃]\s+(.+)$/gm, '<li>$1</li>');
   html = html.replace(/^[\s]*[-*+]\s+(.+)$/gm, '<li>$1</li>');
-  
+
   // Numbered lists
   html = html.replace(/^[\s]*\d+\.\s+(.+)$/gm, '<li class="numbered">$1</li>');
-  
+
   // Wrap consecutive <li> elements in <ul> or <ol>
   html = html.replace(/(<li>.*?<\/li>\s*)+/g, (match) => {
     return `<ul>${match}</ul>`;
@@ -78,10 +125,10 @@ const markdownToHtml = (text: string): string => {
     const items = match.replace(/class="numbered"/g, '');
     return `<ol>${items}</ol>`;
   });
-  
+
   // Convert line breaks
   html = html.replace(/\n/g, '<br>');
-  
+
   return html;
 };
 
@@ -89,7 +136,7 @@ const markdownToHtml = (text: string): string => {
 const sanitizeHtml = (html: string): string => {
   const config = {
     ALLOWED_TAGS: [
-      'strong', 'em', 'code', 'a', 'hr', 'br', 
+      'strong', 'em', 'code', 'a', 'hr', 'br',
       'ul', 'ol', 'li', 'p', 'div', 'span',
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
       'blockquote', 'pre'
@@ -99,10 +146,10 @@ const sanitizeHtml = (html: string): string => {
     KEEP_CONTENT: true,
     ADD_ATTR: ['target', 'rel'],
   };
-  
+
   let clean = DOMPurify.sanitize(html, config);
   clean = clean.replace(/<a\s+href=/g, '<a target="_blank" rel="noopener noreferrer" href=');
-  
+
   return clean;
 };
 
@@ -111,42 +158,42 @@ const createParserOptions = (isDarkMode: boolean = false): HTMLReactParserOption
   replace: (domNode) => {
     if (domNode.type === 'tag' && domNode instanceof Element) {
       const { name, attribs, children } = domNode;
-      
+
       switch (name) {
         case 'h1':
           return (
             <h1 className="text-2xl font-bold mt-4 mb-2 text-slate-900 dark:text-slate-100">
-              {children && parse(children as any , createParserOptions(isDarkMode))}
+              {children && parse(children as any, createParserOptions(isDarkMode))}
             </h1>
           );
-          
+
         case 'h2':
           return (
             <h2 className="text-xl font-bold mt-3 mb-2 text-slate-800 dark:text-slate-200">
               {children && parse(children as any, createParserOptions(isDarkMode))}
             </h2>
           );
-          
+
         case 'h3':
           return (
             <h3 className="text-lg font-semibold mt-2 mb-1 text-slate-700 dark:text-slate-300">
               {children && parse(children as any, createParserOptions(isDarkMode))}
             </h3>
           );
-          
+
         case 'strong':
           return <strong className="font-bold text-blue-600 dark:text-blue-400" />;
-          
+
         case 'em':
           return <em className="italic text-slate-600 dark:text-slate-400" />;
-          
+
         case 'code':
           return (
             <code className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-blue-700 dark:text-blue-300 rounded text-sm font-mono">
               {children && parse(children as any, createParserOptions(isDarkMode))}
             </code>
           );
-          
+
         case 'a':
           return (
             <a
@@ -158,41 +205,41 @@ const createParserOptions = (isDarkMode: boolean = false): HTMLReactParserOption
               {children && parse(children as any, createParserOptions(isDarkMode))}
             </a>
           );
-          
+
         case 'hr':
           return <hr className="my-4 border-slate-300 dark:border-slate-600" />;
-          
+
         case 'ul':
           return (
             <ul className="list-disc list-inside ml-4 my-2 space-y-1 text-slate-700 dark:text-slate-300">
               {children && parse(children as any, createParserOptions(isDarkMode))}
             </ul>
           );
-          
+
         case 'ol':
           return (
             <ol className="list-decimal list-inside ml-4 my-2 space-y-1 text-slate-700 dark:text-slate-300">
               {children && parse(children as any, createParserOptions(isDarkMode))}
             </ol>
           );
-          
+
         case 'li':
           return (
             <li className="my-0.5 leading-relaxed">
               {children && parse(children as any, createParserOptions(isDarkMode))}
             </li>
           );
-          
+
         case 'blockquote':
           return (
             <blockquote className="border-l-4 border-blue-400 pl-4 my-3 italic text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 py-2 rounded-r">
               {children && parse(children as any, createParserOptions(isDarkMode))}
             </blockquote>
           );
-          
+
         case 'br':
           return <br />;
-          
+
         default:
           return undefined;
       }
@@ -202,10 +249,24 @@ const createParserOptions = (isDarkMode: boolean = false): HTMLReactParserOption
 });
 
 // Fetch insights function
+// Fetch insights with caching
 const fetchInsights = async (): Promise<InsightResponse> => {
+  // Check localStorage cache first
+  const cached = getLocalStorageCache();
+  if (cached) {
+    console.log('Returning cached insights from localStorage');
+    return cached.data;
+  }
+
+  // If no cache, fetch from API
   const response = await axiosClient.get<InsightResponse>('/rag/insights');
+
+  // Save to localStorage
+  setLocalStorageCache(response.data);
+
   return response.data;
 };
+
 
 // Loading skeleton component
 const InsightSkeleton = () => (
@@ -230,15 +291,15 @@ const InsightSkeleton = () => (
 // Main Insight Component
 export const Insight: React.FC = () => {
   const [isExpanded, setIsExpanded] = React.useState(false);
-  
+
   // TanStack Query
-  const { 
-    data, 
-    isLoading, 
-    isError, 
-    error, 
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
     refetch,
-    isFetching 
+    isFetching
   } = useQuery<InsightResponse>({
     queryKey: ['insights'],
     queryFn: fetchInsights,
@@ -250,7 +311,7 @@ export const Insight: React.FC = () => {
   // Process content
   const processedContent = React.useMemo(() => {
     if (!data?.insights?.answer) return null;
-    
+
     const html = markdownToHtml(data.insights.answer);
     const sanitized = sanitizeHtml(html);
     return parse(sanitized, createParserOptions());
@@ -259,7 +320,7 @@ export const Insight: React.FC = () => {
   // Extract key metrics from content (if available)
   // const extractKeyMetrics = (content: string) => {
   //   const metrics: { label: string; value: string }[] = [];
-    
+
   //   // Extract percentages and numbers with bold formatting
   //   const boldMatches = content.match(/\*\*([^*]+)\*\*/g);
   //   if (boldMatches) {
@@ -270,7 +331,7 @@ export const Insight: React.FC = () => {
   //       }
   //     });
   //   }
-    
+
   //   return metrics.slice(0, 4); // Return top 4 metrics
   // };
 
@@ -287,10 +348,10 @@ export const Insight: React.FC = () => {
         <AlertTitle className="text-red-800">Error Loading Insights</AlertTitle>
         <AlertDescription className="text-red-700">
           {error instanceof Error ? error.message : 'Failed to load insights. Please try again.'}
-          <Button 
-            onClick={() => refetch()} 
-            variant="outline" 
-            size="sm" 
+          <Button
+            onClick={() => refetch()}
+            variant="outline"
+            size="sm"
             className="mt-2"
             disabled={isFetching}
           >
@@ -357,13 +418,12 @@ export const Insight: React.FC = () => {
               </div>
             </div>
           </CardHeader>
-          
+
           <CardContent className="pt-2">
 
             {/* Main Content */}
-            <div className={`prose prose-slate dark:prose-invert max-w-none ${
-              !isExpanded ? 'line-clamp-6' : ''
-            }`}>
+            <div className={`prose prose-slate dark:prose-invert max-w-none ${!isExpanded ? 'line-clamp-6' : ''
+              }`}>
               {processedContent}
             </div>
 
