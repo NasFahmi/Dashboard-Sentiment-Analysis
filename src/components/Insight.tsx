@@ -10,7 +10,6 @@ import {
   FiAlertCircle,
   FiRefreshCw,
   FiAlertTriangle,
-  FiCheckCircle,
 } from 'react-icons/fi';
 import parse, { type HTMLReactParserOptions, domToReact, Element } from 'html-react-parser';
 import DOMPurify from 'dompurify';
