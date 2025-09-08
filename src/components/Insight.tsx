@@ -12,8 +12,7 @@ import {
   FiAlertTriangle,
   FiCheckCircle,
 } from 'react-icons/fi';
-import { axiosClient } from '@/lib/axios';
-import parse, { type HTMLReactParserOptions, Element } from 'html-react-parser';
+import parse, { type HTMLReactParserOptions, domToReact, Element } from 'html-react-parser';
 import DOMPurify from 'dompurify';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRegLightbulb } from 'react-icons/fa';
@@ -68,10 +67,17 @@ const setLocalStorageCache = (data: InsightResponse, duration: number = CACHE_DU
     localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
   } catch (error) {
     console.error('Error saving to localStorage:', error);
-    // If localStorage is full or disabled, continue without caching
   }
 };
 
+const insightHardCode: InsightResponse = {
+  "insights": {
+    "answer": "**1. Headline Insight:**  UMKM kuliner Indonesia memiliki potensi besar untuk meningkatkan engagement dan citra positif melalui strategi konten yang lebih terarah, memanfaatkan sentimen netral yang dominan dan  fokus pada aspek rasa dan pelayanan yang paling diapresiasi pelanggan.\n\n**2. Data Pendukung:**\n\n* **91.9%** konten netral menunjukkan peluang besar untuk dimaksimalkan.\n* **7.4%** konten positif menunjukkan proporsi yang rendah, namun memiliki engagement rata-rata tinggi (495.8).\n* **\"Enak\" (277 jumlah)** dan **\"Pelayanan\" (tersirat dalam sentimen positif)** adalah faktor positif teratas, menunjukkan fokus utama pelanggan.\n* **Rata-rata engagement negatif (471.3)**  menunjukkan pentingnya pengelolaan krisis reputasi.\n\n\n**3. Analisis Mendalam:**\n\n* **Penyebab potensial rendahnya konten positif:**  UMKM mungkin kurang fokus pada pembuatan konten yang secara khusus membangkitkan emosi positif.  Strategi konten mungkin terlalu generik, kurang personal, atau kurang berfokus pada storytelling yang memikat.  Data menunjukkan bahwa meskipun engagement rata-rata untuk sentimen positif dan netral hampir sama,  jumlah konten positif masih sangat sedikit.\n\n* **Implikasi bisnis:**  Rendahnya konten positif berdampak pada brand awareness dan loyalitas pelanggan.  Peluang meningkatkan penjualan dan pertumbuhan bisnis terhambat.  Konten netral, meskipun engagement-nya tinggi, belum berdampak maksimal karena belum dikonversi menjadi sentimen positif.\n\n* **Perbandingan dengan benchmark:**  Data tidak menyediakan benchmark industri, namun  rasio positif yang rendah (7.4%) menunjukkan perlunya peningkatan signifikan dibandingkan dengan UMKM yang sukses dalam membangun citra positif secara online.\n\n\n**4. Rekomendasi Aksi:**\n\n* **Langkah 1: Optimasi Konten Berbasis Sentimen (Bulan 1-3):**  Analisis lebih dalam konten netral untuk mengidentifikasi  postingan dengan engagement tinggi dan potensi untuk diubah menjadi konten positif.  Buat konten yang lebih fokus pada storytelling, visual menarik, dan  menonjolkan rasa serta pelayanan.  Gunakan kata kunci positif teratas (\"enak\", \"mantap\", \"pas\") secara strategis.\n\n* **Langkah 2:  Kampanye \"Customer Love Story\" (Bulan 4-6):**  Mendorong pelanggan untuk berbagi pengalaman positif mereka.  Buat kontes foto/video dengan hadiah menarik.  Tampilkan testimoni pelanggan secara visual dan konsisten di media sosial.\n\n* **Langkah 3:  Respon Cepat dan Proaktif terhadap Sentimen Negatif (Berkelanjutan):**  Buat tim khusus untuk memantau dan merespon komentar negatif dengan cepat dan profesional.  Tunjukkan empati dan  berikan solusi yang memuaskan.\n\n\n**Timeline Implementasi:**  Fase 1 (3 bulan), Fase 2 (3 bulan), Fase 3 (berkelanjutan).\n\n**Metrik Sukses:**  Peningkatan persentase konten positif, peningkatan engagement (likes, shares, comments), peningkatan jumlah followers, peningkatan penjualan.\n\n\n**5. Risiko & Peluang:**\n\n* **Risiko:**  Jika tidak ada perubahan strategi konten,  UMKM akan kehilangan peluang untuk membangun brand awareness yang kuat dan meningkatkan penjualan.  Sentimen negatif yang tidak tertangani dapat merusak reputasi.\n\n* **Peluang:**  Dengan strategi konten yang tepat, UMKM dapat memanfaatkan sentimen netral yang dominan untuk meningkatkan brand awareness dan loyalitas pelanggan.  Peningkatan engagement akan menarik lebih banyak pelanggan potensial.\n\n\n**6. Saran dan Strategi:**\n\n* **Saran untuk UMKM:**  Fokus pada kualitas produk dan pelayanan.  Berinvestasi dalam fotografi dan videografi berkualitas tinggi untuk konten visual yang menarik.  Bangun komunitas online yang aktif dan responsif.  Manfaatkan data analitik untuk memahami preferensi pelanggan dan mengoptimalkan strategi konten.\n\n* **Strategi yang digunakan kedepannya:**  Menggunakan pendekatan *data-driven marketing*  dengan terus memantau sentimen, engagement, dan kata kunci yang trending.  Mengimplementasikan strategi konten yang lebih personal dan emosional.  Membangun kolaborasi dengan influencer dan media lokal.  Menerapkan sistem CRM untuk mengelola hubungan pelanggan secara efektif.\n\n**Jawaban Tambahan untuk Pola Penting:**\n\n**5. Mengapa hanya 0.6% konten yang berhasil memicu emosi positif?:**  Data menunjukkan 7.4% konten positif, bukan 0.6%.  Kemungkinan rendahnya proporsi ini karena strategi konten yang kurang efektif dalam membangkitkan emosi positif.\n\n**6. Potensi Tersembunyi:**  Ya, analisis lebih lanjut terhadap konten netral dengan engagement tinggi diperlukan untuk mengidentifikasi potensi konten positif yang tersembunyi.\n\n**7. Analisis bagaimana UMKM lokal di Indonesia saat ini memanfaatkan media sosial:** Banyak UMKM di Indonesia menggunakan media sosial secara tradisional (posting foto produk, promosi diskon).  Gap-nya adalah kurangnya analisis sentimen yang canggih untuk memahami persepsi pelanggan dan mengoptimalkan strategi konten.  Data statistik terkini sulit didapatkan secara komprehensif, namun observasi menunjukkan peningkatan penggunaan tools analitik oleh UMKM yang lebih besar. Contoh kasus nyata sulit disebutkan tanpa data spesifik, namun banyak UMKM makanan yang sukses memanfaatkan Instagram dan TikTok untuk membangun brand awareness melalui konten visual yang menarik.\n",
+    "sources": [
+      "dataset_umkm.json (Document 0)"
+    ]
+  }
+}
 
 // Markdown to HTML converter (reuse from chatbot component)
 const markdownToHtml = (text: string): string => {
@@ -163,34 +169,42 @@ const createParserOptions = (isDarkMode: boolean = false): HTMLReactParserOption
         case 'h1':
           return (
             <h1 className="text-2xl font-bold mt-4 mb-2 text-slate-900 dark:text-slate-100">
-              {children && parse(children as any, createParserOptions(isDarkMode))}
+              {domToReact(children as any, createParserOptions(isDarkMode))}
             </h1>
           );
 
         case 'h2':
           return (
             <h2 className="text-xl font-bold mt-3 mb-2 text-slate-800 dark:text-slate-200">
-              {children && parse(children as any, createParserOptions(isDarkMode))}
+              {domToReact(children as any, createParserOptions(isDarkMode))}
             </h2>
           );
 
         case 'h3':
           return (
             <h3 className="text-lg font-semibold mt-2 mb-1 text-slate-700 dark:text-slate-300">
-              {children && parse(children as any, createParserOptions(isDarkMode))}
+              {domToReact(children as any, createParserOptions(isDarkMode))}
             </h3>
           );
 
         case 'strong':
-          return <strong className="font-bold text-blue-600 dark:text-blue-400" />;
+          return (
+            <strong className="font-bold text-blue-400 dark:text-blue-400">
+              {domToReact(children as any, createParserOptions(isDarkMode))}
+            </strong>
+          );
 
         case 'em':
-          return <em className="italic text-slate-600 dark:text-slate-400" />;
+          return (
+            <em className="italic text-slate-600 dark:text-slate-400">
+              {domToReact(children as any, createParserOptions(isDarkMode))}
+            </em>
+          );
 
         case 'code':
           return (
             <code className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-blue-700 dark:text-blue-300 rounded text-sm font-mono">
-              {children && parse(children as any, createParserOptions(isDarkMode))}
+              {domToReact(children as any, createParserOptions(isDarkMode))}
             </code>
           );
 
@@ -202,7 +216,7 @@ const createParserOptions = (isDarkMode: boolean = false): HTMLReactParserOption
               rel="noopener noreferrer"
               className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline decoration-1 underline-offset-2"
             >
-              {children && parse(children as any, createParserOptions(isDarkMode))}
+              {domToReact(children as any, createParserOptions(isDarkMode))}
             </a>
           );
 
@@ -212,28 +226,28 @@ const createParserOptions = (isDarkMode: boolean = false): HTMLReactParserOption
         case 'ul':
           return (
             <ul className="list-disc list-inside ml-4 my-2 space-y-1 text-slate-700 dark:text-slate-300">
-              {children && parse(children as any, createParserOptions(isDarkMode))}
+              {domToReact(children as any, createParserOptions(isDarkMode))}
             </ul>
           );
 
         case 'ol':
           return (
             <ol className="list-decimal list-inside ml-4 my-2 space-y-1 text-slate-700 dark:text-slate-300">
-              {children && parse(children as any, createParserOptions(isDarkMode))}
+              {domToReact(children as any, createParserOptions(isDarkMode))}
             </ol>
           );
 
         case 'li':
           return (
             <li className="my-0.5 leading-relaxed">
-              {children && parse(children as any, createParserOptions(isDarkMode))}
+              {domToReact(children as any, createParserOptions(isDarkMode))}
             </li>
           );
 
         case 'blockquote':
           return (
             <blockquote className="border-l-4 border-blue-400 pl-4 my-3 italic text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 py-2 rounded-r">
-              {children && parse(children as any, createParserOptions(isDarkMode))}
+              {domToReact(children as any, createParserOptions(isDarkMode))}
             </blockquote>
           );
 
@@ -250,23 +264,23 @@ const createParserOptions = (isDarkMode: boolean = false): HTMLReactParserOption
 
 // Fetch insights function
 // Fetch insights with caching
+// Modified fetch function to use hardcoded data
 const fetchInsights = async (): Promise<InsightResponse> => {
-  // Check localStorage cache first
+  // Check localStorage cache first (optional, can be removed for pure hardcode)
   const cached = getLocalStorageCache();
   if (cached) {
     console.log('Returning cached insights from localStorage');
     return cached.data;
   }
 
-  // If no cache, fetch from API
-  const response = await axiosClient.get<InsightResponse>('/rag/insights');
+  // Return hardcoded data instead of API call
+  console.log('Returning hardcoded insights');
 
-  // Save to localStorage
-  setLocalStorageCache(response.data);
+  // Optional: Save to cache for consistency
+  setLocalStorageCache(insightHardCode);
 
-  return response.data;
+  return insightHardCode;
 };
-
 
 // Loading skeleton component
 const InsightSkeleton = () => (
@@ -313,7 +327,8 @@ export const Insight: React.FC = () => {
     if (!data?.insights?.answer) return null;
 
     const html = markdownToHtml(data.insights.answer);
-    const sanitized = sanitizeHtml(html);
+    const sanitized: string = sanitizeHtml(html);
+    // console.log(sanitized);
     return parse(sanitized, createParserOptions());
   }, [data]);
 
@@ -393,7 +408,7 @@ export const Insight: React.FC = () => {
                   <FaRegLightbulb className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl">Insights</CardTitle>
+                  <CardTitle className="text-xl">Insights - Powered by AI</CardTitle>
                   <p className="text-sm text-slate-600 mt-1">
                     Deep analysis of sentiment data
                   </p>
@@ -406,15 +421,6 @@ export const Insight: React.FC = () => {
                     Updating
                   </Badge>
                 )}
-                <Button
-                  onClick={() => refetch()}
-                  variant="ghost"
-                  size="icon"
-                  disabled={isFetching}
-                  title="Refresh insights"
-                >
-                  <FiRefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
-                </Button>
               </div>
             </div>
           </CardHeader>
@@ -435,12 +441,6 @@ export const Insight: React.FC = () => {
             >
               {isExpanded ? 'Show Less' : 'Read More'}
             </Button>
-
-            {/* Timestamp */}
-            <div className="mt-4 text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
-              <FiCheckCircle className="h-3 w-3" />
-              Generated at {new Date().toLocaleTimeString('id-ID')}
-            </div>
           </CardContent>
         </Card>
       </motion.div>
