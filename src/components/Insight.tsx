@@ -29,9 +29,10 @@ interface CachedInsight {
   timestamp: number;
   expiresAt: number;
 }
+
 // LocalStorage helper functions
 const CACHE_KEY = 'sentiment_insights_cache';
-const CACHE_DURATION = 60 * 6 * 30 * 60 * 1000; // 30 minutes default
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
 
 const getLocalStorageCache = (): CachedInsight | null => {
   try {
@@ -55,13 +56,13 @@ const getLocalStorageCache = (): CachedInsight | null => {
   }
 };
 
-const setLocalStorageCache = (data: InsightResponse, duration: number = CACHE_DURATION): void => {
+const setLocalStorageCache = (data: InsightResponse): void => {
   try {
     const now = Date.now();
     const cacheData: CachedInsight = {
       data,
       timestamp: now,
-      expiresAt: now + duration
+      expiresAt: now + CACHE_DURATION
     };
     localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
   } catch (error) {
@@ -69,21 +70,21 @@ const setLocalStorageCache = (data: InsightResponse, duration: number = CACHE_DU
   }
 };
 
-const insightHardCode: InsightResponse = {
-  "insights": {
-    "answer": "**1. Headline Insight:**  UMKM kuliner Indonesia memiliki potensi besar untuk meningkatkan engagement dan citra positif melalui strategi konten yang lebih terarah, memanfaatkan sentimen netral yang dominan dan  fokus pada aspek rasa dan pelayanan yang paling diapresiasi pelanggan.\n\n**2. Data Pendukung:**\n\n* **91.9%** konten netral menunjukkan peluang besar untuk dimaksimalkan.\n* **7.4%** konten positif menunjukkan proporsi yang rendah, namun memiliki engagement rata-rata tinggi (495.8).\n* **\"Enak\" (277 jumlah)** dan **\"Pelayanan\" (tersirat dalam sentimen positif)** adalah faktor positif teratas, menunjukkan fokus utama pelanggan.\n* **Rata-rata engagement negatif (471.3)**  menunjukkan pentingnya pengelolaan krisis reputasi.\n\n\n**3. Analisis Mendalam:**\n\n* **Penyebab potensial rendahnya konten positif:**  UMKM mungkin kurang fokus pada pembuatan konten yang secara khusus membangkitkan emosi positif.  Strategi konten mungkin terlalu generik, kurang personal, atau kurang berfokus pada storytelling yang memikat.  Data menunjukkan bahwa meskipun engagement rata-rata untuk sentimen positif dan netral hampir sama,  jumlah konten positif masih sangat sedikit.\n\n* **Implikasi bisnis:**  Rendahnya konten positif berdampak pada brand awareness dan loyalitas pelanggan.  Peluang meningkatkan penjualan dan pertumbuhan bisnis terhambat.  Konten netral, meskipun engagement-nya tinggi, belum berdampak maksimal karena belum dikonversi menjadi sentimen positif.\n\n* **Perbandingan dengan benchmark:**  Data tidak menyediakan benchmark industri, namun  rasio positif yang rendah (7.4%) menunjukkan perlunya peningkatan signifikan dibandingkan dengan UMKM yang sukses dalam membangun citra positif secara online.\n\n\n**4. Rekomendasi Aksi:**\n\n* **Langkah 1: Optimasi Konten Berbasis Sentimen (Bulan 1-3):**  Analisis lebih dalam konten netral untuk mengidentifikasi  postingan dengan engagement tinggi dan potensi untuk diubah menjadi konten positif.  Buat konten yang lebih fokus pada storytelling, visual menarik, dan  menonjolkan rasa serta pelayanan.  Gunakan kata kunci positif teratas (\"enak\", \"mantap\", \"pas\") secara strategis.\n\n* **Langkah 2:  Kampanye \"Customer Love Story\" (Bulan 4-6):**  Mendorong pelanggan untuk berbagi pengalaman positif mereka.  Buat kontes foto/video dengan hadiah menarik.  Tampilkan testimoni pelanggan secara visual dan konsisten di media sosial.\n\n* **Langkah 3:  Respon Cepat dan Proaktif terhadap Sentimen Negatif (Berkelanjutan):**  Buat tim khusus untuk memantau dan merespon komentar negatif dengan cepat dan profesional.  Tunjukkan empati dan  berikan solusi yang memuaskan.\n\n\n**Timeline Implementasi:**  Fase 1 (3 bulan), Fase 2 (3 bulan), Fase 3 (berkelanjutan).\n\n**Metrik Sukses:**  Peningkatan persentase konten positif, peningkatan engagement (likes, shares, comments), peningkatan jumlah followers, peningkatan penjualan.\n\n\n**5. Risiko & Peluang:**\n\n* **Risiko:**  Jika tidak ada perubahan strategi konten,  UMKM akan kehilangan peluang untuk membangun brand awareness yang kuat dan meningkatkan penjualan.  Sentimen negatif yang tidak tertangani dapat merusak reputasi.\n\n* **Peluang:**  Dengan strategi konten yang tepat, UMKM dapat memanfaatkan sentimen netral yang dominan untuk meningkatkan brand awareness dan loyalitas pelanggan.  Peningkatan engagement akan menarik lebih banyak pelanggan potensial.\n\n\n**6. Saran dan Strategi:**\n\n* **Saran untuk UMKM:**  Fokus pada kualitas produk dan pelayanan.  Berinvestasi dalam fotografi dan videografi berkualitas tinggi untuk konten visual yang menarik.  Bangun komunitas online yang aktif dan responsif.  Manfaatkan data analitik untuk memahami preferensi pelanggan dan mengoptimalkan strategi konten.\n\n* **Strategi yang digunakan kedepannya:**  Menggunakan pendekatan *data-driven marketing*  dengan terus memantau sentimen, engagement, dan kata kunci yang trending.  Mengimplementasikan strategi konten yang lebih personal dan emosional.  Membangun kolaborasi dengan influencer dan media lokal.  Menerapkan sistem CRM untuk mengelola hubungan pelanggan secara efektif.\n\n**Jawaban Tambahan untuk Pola Penting:**\n\n**5. Mengapa hanya 0.6% konten yang berhasil memicu emosi positif?:**  Data menunjukkan 7.4% konten positif, bukan 0.6%.  Kemungkinan rendahnya proporsi ini karena strategi konten yang kurang efektif dalam membangkitkan emosi positif.\n\n**6. Potensi Tersembunyi:**  Ya, analisis lebih lanjut terhadap konten netral dengan engagement tinggi diperlukan untuk mengidentifikasi potensi konten positif yang tersembunyi.\n\n**7. Analisis bagaimana UMKM lokal di Indonesia saat ini memanfaatkan media sosial:** Banyak UMKM di Indonesia menggunakan media sosial secara tradisional (posting foto produk, promosi diskon).  Gap-nya adalah kurangnya analisis sentimen yang canggih untuk memahami persepsi pelanggan dan mengoptimalkan strategi konten.  Data statistik terkini sulit didapatkan secara komprehensif, namun observasi menunjukkan peningkatan penggunaan tools analitik oleh UMKM yang lebih besar. Contoh kasus nyata sulit disebutkan tanpa data spesifik, namun banyak UMKM makanan yang sukses memanfaatkan Instagram dan TikTok untuk membangun brand awareness melalui konten visual yang menarik.\n",
-    "sources": [
-      "dataset_umkm.json (Document 0)"
-    ]
-  }
-}
+// const insightHardCode: InsightResponse = {
+//   "insights": {
+//     "answer": "**1. Headline Insight:**  UMKM kuliner Indonesia memiliki potensi besar untuk meningkatkan engagement dan citra positif melalui strategi konten yang lebih terarah, memanfaatkan sentimen netral yang dominan dan  fokus pada aspek rasa dan pelayanan yang paling diapresiasi pelanggan.\n\n**2. Data Pendukung:**\n\n* **91.9%** konten netral menunjukkan peluang besar untuk dimaksimalkan.\n* **7.4%** konten positif menunjukkan proporsi yang rendah, namun memiliki engagement rata-rata tinggi (495.8).\n* **\"Enak\" (277 jumlah)** dan **\"Pelayanan\" (tersirat dalam sentimen positif)** adalah faktor positif teratas, menunjukkan fokus utama pelanggan.\n* **Rata-rata engagement negatif (471.3)**  menunjukkan pentingnya pengelolaan krisis reputasi.\n\n\n**3. Analisis Mendalam:**\n\n* **Penyebab potensial rendahnya konten positif:**  UMKM mungkin kurang fokus pada pembuatan konten yang secara khusus membangkitkan emosi positif.  Strategi konten mungkin terlalu generik, kurang personal, atau kurang berfokus pada storytelling yang memikat.  Data menunjukkan bahwa meskipun engagement rata-rata untuk sentimen positif dan netral hampir sama,  jumlah konten positif masih sangat sedikit.\n\n* **Implikasi bisnis:**  Rendahnya konten positif berdampak pada brand awareness dan loyalitas pelanggan.  Peluang meningkatkan penjualan dan pertumbuhan bisnis terhambat.  Konten netral, meskipun engagement-nya tinggi, belum berdampak maksimal karena belum dikonversi menjadi sentimen positif.\n\n* **Perbandingan dengan benchmark:**  Data tidak menyediakan benchmark industri, namun  rasio positif yang rendah (7.4%) menunjukkan perlunya peningkatan signifikan dibandingkan dengan UMKM yang sukses dalam membangun citra positif secara online.\n\n\n**4. Rekomendasi Aksi:**\n\n* **Langkah 1: Optimasi Konten Berbasis Sentimen (Bulan 1-3):**  Analisis lebih dalam konten netral untuk mengidentifikasi  postingan dengan engagement tinggi dan potensi untuk diubah menjadi konten positif.  Buat konten yang lebih fokus pada storytelling, visual menarik, dan  menonjolkan rasa serta pelayanan.  Gunakan kata kunci positif teratas (\"enak\", \"mantap\", \"pas\") secara strategis.\n\n* **Langkah 2:  Kampanye \"Customer Love Story\" (Bulan 4-6):**  Mendorong pelanggan untuk berbagi pengalaman positif mereka.  Buat konten tes foto/video dengan hadiah menarik.  Tampilkan testimoni pelanggan secara visual dan konsisten di media sosial.\n\n* **Langkah 3:  Respon Cepat dan Proaktif terhadap Sentimen Negatif (Berkelanjutan):**  Buat tim khusus untuk memantau dan merespon komentar negatif dengan cepat dan profesional.  Tunjukkan empati dan  berikan solusi yang memuaskan.\n\n\n**Timeline Implementasi:**  Fase 1 (3 bulan), Fase 2 (3 bulan), Fase 3 (berkelanjutan).\n\n**Metrik Sukses:**  Peningkatan persentase konten positif, peningkatan engagement (likes, shares, comments), peningkatan jumlah followers, peningkatan penjualan.\n\n\n**5. Risiko & Peluang:**\n\n* **Risiko:**  Jika tidak ada perubahan strategi konten,  UMKM akan kehilangan peluang untuk membangun brand awareness yang kuat dan meningkatkan penjualan.  Sentimen negatif yang tidak tertangani dapat merusak reputasi.\n\n* **Peluang:**  Dengan strategi konten yang tepat, UMKM dapat memanfaatkan sentimen netral yang dominan untuk meningkatkan brand awareness dan loyalitas pelanggan.  Peningkatan engagement akan menarik lebih banyak pelanggan potensial.\n\n\n**6. Saran dan Strategi:**\n\n* **Saran untuk UMKM:**  Fokus pada kualitas produk dan pelayanan.  Berinvestasi dalam fotografi dan videografi berkualitas tinggi untuk konten visual yang menarik.  Bangun komunitas online yang aktif dan responsif.  Manfaatkan data analitik untuk memahami preferensi pelanggan dan mengoptimalkan strategi konten.\n\n* **Strategi yang digunakan kedepannya:**  Menggunakan pendekatan *data-driven marketing*  dengan terus memantau sentimen, engagement, dan kata kunci yang trending.  Mengimplementasikan strategi konten yang lebih personal dan emosional.  Membangun kolaborasi dengan influencer dan media lokal.  Menerapkan sistem CRM untuk mengelola hubungan pelanggan secara efektif.\n\n**Jawaban Tambahan untuk Pola Penting:**\n\n**5. Mengapa hanya 0.6% konten yang berhasil memicu emosi positif?:**  Data menunjukkan 7.4% konten positif, bukan 0.6%.  Kemungkinan rendahnya proporsi ini karena strategi konten yang kurang efektif dalam membangkitkan emosi positif.\n\n**6. Potensi Tersembunyi:**  Ya, analisis lebih lanjut terhadap konten netral dengan engagement tinggi diperlukan untuk mengidentifikasi potensi konten positif yang tersembunyi.\n\n**7. Analisis bagaimana UMKM lokal di Indonesia saat ini memanfaatkan media sosial:** Banyak UMKM di Indonesia menggunakan media sosial secara tradisional (posting foto produk, promosi diskon).  Gap-nya adalah kurangnya analisis sentimen yang canggih untuk memahami persepsi pelanggan dan mengoptimalkan strategi konten.  Data statistik terkini sulit didapatkan secara komprehensif, namun observasi menunjukkan peningkatan penggunaan tools analitik oleh UMKM yang lebih besar. Contoh kasus nyata sulit disebutkan tanpa data spesifik, namun banyak UMKM makanan yang sukses memanfaatkan Instagram dan TikTok untuk membangun brand awareness melalui konten visual yang menarik.\n",
+//     "sources": [
+//       "dataset_umkm.json (Document 0)"
+//     ]
+//   }
+// };
 
-// Markdown to HTML converter (reuse from chatbot component)
+// Markdown to HTML converter
 const markdownToHtml = (text: string): string => {
   let html = text;
 
   // Escape HTML first to prevent XSS, but preserve our markdown
-  html = html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  html = html.replace(/</g, '<').replace(/>/g, '>');
 
   // Convert markdown horizontal rules
   html = html.replace(/^---$/gm, '<hr>');
@@ -91,7 +92,7 @@ const markdownToHtml = (text: string): string => {
   html = html.replace(/^___$/gm, '<hr>');
 
   // Re-enable <hr> tags that were in the original content
-  html = html.replace(/&lt;hr\s*\/?&gt;/gi, '<hr>');
+  html = html.replace(/<hr\s*\/?>/gi, '<hr>');
 
   // Convert headers (h1-h6)
   html = html.replace(/^######\s+(.+)$/gm, '<h6>$1</h6>');
@@ -261,21 +262,21 @@ const createParserOptions = (isDarkMode: boolean = false): HTMLReactParserOption
   }
 });
 
-// Fetch insights function
-// Fetch insights with caching
-// Modified fetch function to use hardcoded data
-const fetchInsights = async (): Promise<InsightResponse> => {
-  // Check localStorage cache first (optional, can be removed for pure hardcode)
-  const cached = getLocalStorageCache();
-  if (cached) {
-    console.log('Returning cached insights from localStorage');
-    return cached.data;
+// Fetch insights function with caching
+const fetchInsights = async (forceRefresh: boolean = false): Promise<InsightResponse> => {
+  // Check localStorage cache first if not forcing refresh
+  if (!forceRefresh) {
+    const cached = getLocalStorageCache();
+    if (cached) {
+      console.log('Returning cached insights from localStorage');
+      return cached.data;
+    }
   }
 
-  // Return hardcoded data instead of API call
-  console.log('Returning hardcoded insights');
-
-  // Optional: Save to cache for consistency
+  // Return hardcoded data (simulating API call)
+  console.log('Returning insights data');
+  
+  // Save to cache
   setLocalStorageCache(insightHardCode);
 
   return insightHardCode;
@@ -304,6 +305,7 @@ const InsightSkeleton = () => (
 // Main Insight Component
 export const Insight: React.FC = () => {
   const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
 
   // TanStack Query
   const {
@@ -315,11 +317,28 @@ export const Insight: React.FC = () => {
     isFetching
   } = useQuery<InsightResponse>({
     queryKey: ['insights'],
-    queryFn: fetchInsights,
+    queryFn: () => fetchInsights(false),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false,
   });
+
+  // Handle manual refresh
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      // Force refresh by bypassing cache
+      const freshData = await fetchInsights(true);
+      
+      // Update query data
+      // Note: In a real app, you might want to use queryClient.setQueryData
+      refetch();
+    } catch (err) {
+      console.error('Error refreshing insights:', err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   // Process content
   const processedContent = React.useMemo(() => {
@@ -327,27 +346,8 @@ export const Insight: React.FC = () => {
 
     const html = markdownToHtml(data.insights.answer);
     const sanitized: string = sanitizeHtml(html);
-    // console.log(sanitized);
     return parse(sanitized, createParserOptions());
   }, [data]);
-
-  // Extract key metrics from content (if available)
-  // const extractKeyMetrics = (content: string) => {
-  //   const metrics: { label: string; value: string }[] = [];
-
-  //   // Extract percentages and numbers with bold formatting
-  //   const boldMatches = content.match(/\*\*([^*]+)\*\*/g);
-  //   if (boldMatches) {
-  //     boldMatches.forEach(match => {
-  //       const clean = match.replace(/\*\*/g, '');
-  //       if (clean.includes('%') || /\d+/.test(clean)) {
-  //         metrics.push({ label: 'Metric', value: clean });
-  //       }
-  //     });
-  //   }
-
-  //   return metrics.slice(0, 4); // Return top 4 metrics
-  // };
 
   // Loading state
   if (isLoading) {
@@ -367,9 +367,9 @@ export const Insight: React.FC = () => {
             variant="outline"
             size="sm"
             className="mt-2"
-            disabled={isFetching}
+            disabled={isFetching || isRefreshing}
           >
-            <FiRefreshCw className={`mr-2 h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+            <FiRefreshCw className={`mr-2 h-4 w-4 ${isFetching || isRefreshing ? 'animate-spin' : ''}`} />
             Retry
           </Button>
         </AlertDescription>
@@ -389,7 +389,10 @@ export const Insight: React.FC = () => {
     );
   }
 
-  // const metrics = extractKeyMetrics(data.insights.answer);
+  // Get cache info for display
+  const cacheInfo = getLocalStorageCache();
+  const isCached = !!cacheInfo;
+  const cacheAge = cacheInfo ? Math.floor((Date.now() - cacheInfo.timestamp) / (1000 * 60)) : 0;
 
   return (
     <AnimatePresence mode="wait">
@@ -400,7 +403,7 @@ export const Insight: React.FC = () => {
         transition={{ duration: 0.3 }}
       >
         <Card className="w-full p-5 border-blue-200 shadow-lg">
-          <CardHeader className="">
+          <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-blue-100 rounded-lg">
@@ -414,7 +417,17 @@ export const Insight: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {isFetching && (
+                <Button
+                  onClick={handleRefresh}
+                  variant="outline"
+                  size="sm"
+                  disabled={isRefreshing || isFetching}
+                  className="flex items-center gap-2"
+                >
+                  <FiRefreshCw className={`h-4 w-4 ${isRefreshing || isFetching ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
+                {(isFetching || isRefreshing) && (
                   <Badge variant="secondary" className="animate-pulse">
                     <FiRefreshCw className="mr-1 h-3 w-3 animate-spin" />
                     Updating
@@ -425,10 +438,18 @@ export const Insight: React.FC = () => {
           </CardHeader>
 
           <CardContent className="pt-2">
+            {/* Cache Info */}
+            {isCached && (
+              <div className="mb-4 text-xs text-slate-500 flex items-center gap-2">
+                <span>Cached data from {new Date(cacheInfo.timestamp).toLocaleTimeString()}</span>
+                {cacheAge > 0 && (
+                  <span>• {cacheAge} minute{cacheAge !== 1 ? 's' : ''} old</span>
+                )}
+              </div>
+            )}
 
             {/* Main Content */}
-            <div className={`prose prose-slate dark:prose-invert max-w-none ${!isExpanded ? 'line-clamp-6' : ''
-              }`}>
+            <div className={`prose prose-slate dark:prose-invert max-w-none ${!isExpanded ? 'line-clamp-6' : ''}`}>
               {processedContent}
             </div>
 

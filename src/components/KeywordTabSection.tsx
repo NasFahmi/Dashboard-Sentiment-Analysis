@@ -74,7 +74,7 @@ export const KeywordTabSection = ({ data }: { data: Analysis }) => {
           transition={{ duration: 0.5 }}
         >
           <Card className="border-green-200 hover:shadow-lg transition-all duration-300">
-            <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
+            <CardHeader className="">
               <CardTitle className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-green-100">
                   <LuThumbsUp className="w-5 h-5 text-green-600" />
@@ -91,7 +91,7 @@ export const KeywordTabSection = ({ data }: { data: Analysis }) => {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              <div className="space-y-4 max-h-96 overflow-y-auto">
+              <div className="space-y-4 max-h-96 overflow-x-hidden overflow-y-auto">
                 {data.faktor_positif_top10.map((item, index) => (
                   <motion.div
                     key={item.kata}
@@ -150,8 +150,8 @@ export const KeywordTabSection = ({ data }: { data: Analysis }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <Card className="border-red-200 hover:shadow-lg transition-all duration-300">
-            <CardHeader className="bg-gradient-to-r from-red-50 to-rose-50 border-b border-red-100">
+          <Card className="">
+            <CardHeader className="">
               <CardTitle className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-red-100">
                   <LuThumbsDown className="w-5 h-5 text-red-600" />
@@ -168,7 +168,7 @@ export const KeywordTabSection = ({ data }: { data: Analysis }) => {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              <div className="space-y-4 max-h-96 overflow-y-auto">
+              <div className="space-y-4 max-h-96 overflow-x-hidden overflow-y-auto">
                 {data.faktor_negatif_top10.map((item, index) => (
                   <motion.div
                     key={item.kata}
