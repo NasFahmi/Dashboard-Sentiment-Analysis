@@ -8,7 +8,7 @@ import { IoFlame } from "react-icons/io5";
 import { TbLoader2 } from "react-icons/tb";
 import { LuFrown, LuMeh, LuMessageSquare, LuSmile } from "react-icons/lu";
 import { LuUtensils } from "react-icons/lu";
-import { FaCrown, FaFire, FaRegHeart, } from "react-icons/fa";
+import { FaCrown, FaFire, } from "react-icons/fa";
 import type { Analysis, SentimenBrand, SentimenKategori } from './interface/Analysis';
 import Chatbot from './components/Chatbot';
 import { OverviewTabSection } from './components/OverviewTabSection';
@@ -16,6 +16,7 @@ import { CategoriTabSection } from './components/CategoriTabSection';
 import { BrandTabSection } from './components/BrandTabSection';
 import { EngagementTabSection } from './components/EngagementTabSection';
 import { KeywordTabSection } from './components/KeywordTabSection';
+import { MessageCircle } from 'lucide-react';
 
 
 
@@ -361,6 +362,7 @@ const Dashboard = () => {
 
 
         {/* Key Metrics */}
+        {/* <KeyMetrics data={data} totalMentions={totalMentions} /> */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
             <CardContent className="p-4">
@@ -370,7 +372,7 @@ const Dashboard = () => {
                   <p className="text-2xl font-bold">{totalMentions.toLocaleString()}</p>
                 </div>
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <FaRegHeart className="w-6 h-6 text-blue-600" />
+                  <MessageCircle className="w-6 h-6 text-blue-500" />
                 </div>
               </div>
             </CardContent>
@@ -384,7 +386,9 @@ const Dashboard = () => {
                   <p className="text-2xl font-bold text-green-600">{data.ringkasan_keseluruhan.Positif.persentase}%</p>
                   <p className="text-xs text-slate-500">{data.ringkasan_keseluruhan.Positif.jumlah} mentions</p>
                 </div>
-                <LuSmile className="w-12 h-12 text-green-500" />
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <LuSmile className="w-6 h-6 text-green-500" />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -397,7 +401,9 @@ const Dashboard = () => {
                   <p className="text-2xl font-bold text-gray-600">{data.ringkasan_keseluruhan.Netral.persentase}%</p>
                   <p className="text-xs text-slate-500">{data.ringkasan_keseluruhan.Netral.jumlah} mentions</p>
                 </div>
-                <LuMeh className="w-12 h-12 text-gray-500" />
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <LuMeh className="w-6 h-6 text-gray-500" />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -410,7 +416,9 @@ const Dashboard = () => {
                   <p className="text-2xl font-bold text-red-600">{data.ringkasan_keseluruhan.Negatif.persentase}%</p>
                   <p className="text-xs text-slate-500">{data.ringkasan_keseluruhan.Negatif.jumlah} mentions</p>
                 </div>
-                <LuFrown className="w-12 h-12 text-red-500" />
+                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                  <LuFrown className="w-6 h-6 text-red-500" />
+                </div>
               </div>
             </CardContent>
           </Card>
