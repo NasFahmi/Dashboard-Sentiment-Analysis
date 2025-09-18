@@ -24,6 +24,64 @@ import axios from 'axios';
 import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
 
+// Types
+interface Message {
+  id: string;
+  type: 'user' | 'bot';
+  content: string;
+  timestamp: Date;
+  sources?: string[];
+  error?: boolean;
+}
+
+interface ChatRequest {
+  question: string;
+}
+
+interface ChatResponse {
+  answer: string;
+  sources: string[];
+}
+
+// LocalStorage helper functions
+const CHAT_HISTORY_KEY = 'sentinela_chat_history';
+const MAX_HISTORY_LENGTH = 50; // Limit history to prevent localStorage overflow
+
+const getChatHistoryFromStorage = (): Message[] => {
+  try {
+    const stored = localStorage.getItem(CHAT_HISTORY_KEY);
+    if (!stored) return [];
+    
+    const parsed = JSON.parse(stored);
+    // Convert timestamp strings back to Date objects
+    return parsed.map((msg: any) => ({
+      ...msg,
+      timestamp: new Date(msg.timestamp)
+    }));
+  } catch (error) {
+    console.error('Error loading chat history from localStorage:', error);
+    return [];
+  }
+};
+
+const saveChatHistoryToStorage = (messages: Message[]): void => {
+  try {
+    // Keep only recent messages to prevent storage overflow
+    const recentMessages = messages.slice(-MAX_HISTORY_LENGTH);
+    localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(recentMessages));
+  } catch (error) {
+    console.error('Error saving chat history to localStorage:', error);
+  }
+};
+
+const clearChatHistoryFromStorage = (): void => {
+  try {
+    localStorage.removeItem(CHAT_HISTORY_KEY);
+  } catch (error) {
+    console.error('Error clearing chat history from localStorage:', error);
+  }
+};
+
 // API function
 const sendChatMessage = async (data: ChatRequest): Promise<ChatResponse> => {
   try {
@@ -92,18 +150,24 @@ const HtmlContent: React.FC<{ content: string }> = ({ content }) => {
   );
 };
 
-
 const Chatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      type: 'bot',
-      content: 'Halo! 👋 Nama saya Sentinela, saya adalah asisten analisis sentimen kuliner. Silakan tanyakan apa saja tentang data sentimen yang Anda miliki.',
-      timestamp: new Date(),
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // Initialize with stored history or default welcome message
+    const storedHistory = getChatHistoryFromStorage();
+    if (storedHistory.length > 0) {
+      return storedHistory;
     }
-  ]);
+    return [
+      {
+        id: '1',
+        type: 'bot',
+        content: 'Halo! 👋 Nama saya Sentinela, saya adalah asisten analisis sentimen kuliner. Silakan tanyakan apa saja tentang data sentimen yang Anda miliki.',
+        timestamp: new Date(),
+      }
+    ];
+  });
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
@@ -111,6 +175,11 @@ const Chatbot: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    saveChatHistoryToStorage(messages);
+  }, [messages]);
 
   // TanStack Query mutation
   const chatMutation = useMutation<ChatResponse, Error, ChatRequest>({
@@ -184,14 +253,14 @@ const Chatbot: React.FC = () => {
   };
 
   const clearChat = () => {
-    setMessages([
-      {
-        id: Date.now().toString(),
-        type: 'bot',
-        content: 'Chat telah direset. Ada yang bisa saya bantu?',
-        timestamp: new Date(),
-      }
-    ]);
+    const resetMessage: Message = {
+      id: Date.now().toString(),
+      type: 'bot',
+      content: 'Chat telah direset. Ada yang bisa saya bantu?',
+      timestamp: new Date(),
+    };
+    setMessages([resetMessage]);
+    clearChatHistoryFromStorage();
   };
 
   // Floating button when closed
@@ -346,7 +415,7 @@ const Chatbot: React.FC = () => {
             </div>
 
             {/* Suggested Questions */}
-            {messages.length === 1 && (
+            {messages.length <= 1 && (
               <div className="px-4 pb-2 flex-shrink-0">
                 <p className="text-xs text-slate-500 mb-2 flex items-center gap-1">
                   <Sparkles className="w-3 h-3" />
