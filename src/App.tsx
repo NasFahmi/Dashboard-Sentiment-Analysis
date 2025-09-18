@@ -1,34 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
-} from 'recharts';
 import { FiAlertCircle, FiAlertTriangle, FiCoffee, } from "react-icons/fi";
 import { IoFlame } from "react-icons/io5";
 import { TbLoader2 } from "react-icons/tb";
-import { LuFrown, LuMeh, LuSmile, LuThumbsDown, LuThumbsUp } from "react-icons/lu";
+import { LuFrown, LuMeh, LuMessageSquare, LuSmile } from "react-icons/lu";
 import { LuUtensils } from "react-icons/lu";
-import { FaRegHeart, FaRegStar, FaShare } from "react-icons/fa";
+import { FaCrown, FaFire, FaRegHeart, } from "react-icons/fa";
 import type { Analysis, SentimenBrand, SentimenKategori } from './interface/Analysis';
 import Chatbot from './components/Chatbot';
-import Insight from './components/Insight';
+import { OverviewTabSection } from './components/OverviewTabSection';
+import { CategoriTabSection } from './components/CategoriTabSection';
+import { BrandTabSection } from './components/BrandTabSection';
+import { EngagementTabSection } from './components/EngagementTabSection';
+import { KeywordTabSection } from './components/KeywordTabSection';
 
 
-
-const COLORS = {
-  positif: '#10b981',
-  netral: '#9ca3af',
-  negatif: '#ef4444',
-  primary: '#3b82f6',
-  secondary: '#8b5cf6',
-  accent: '#f59e0b'
-};
 
 const Dashboard = () => {
   const [data, setData] = useState<Analysis | null>(null);
@@ -135,13 +124,29 @@ const Dashboard = () => {
     return <LuUtensils className="w-4 h-4" />;
   };
 
-  const getSentimentIcon = (sentiment: string) => {
-    switch (sentiment.toLowerCase()) {
-      case 'positif': return <LuSmile className="w-5 h-5 text-green-500" />;
-      case 'negatif': return <LuFrown className="w-5 h-5 text-red-500" />;
-      default: return <LuMeh className="w-5 h-5 text-gray-500" />;
-    }
-  };
+
+  // Key insights calculations
+  const keyInsights = useMemo(() => {
+    if (!data) return null;
+
+    // Find best brand
+    const bestBrand = brandData.length > 0 ? brandData[0] : null;
+
+    // Find best category
+    const bestCategory = categoryData.length > 0 ? categoryData[0] : null;
+
+    // Find most frequent positive keyword (assuming it exists in data)
+    const topKeyword = data.faktor_positif_top10 && Object.keys(data.faktor_positif_top10).length > 0
+      ? Object.entries(data.faktor_positif_top10)[0]
+      : ['Enak', 277]; // fallback
+
+    return {
+      bestBrand,
+      bestCategory,
+      topKeyword
+    };
+  }, [data, brandData, categoryData]);
+
 
 
 
@@ -215,6 +220,7 @@ const Dashboard = () => {
       </div>
     );
   }
+  console.log('keyInsights', keyInsights)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6">
@@ -228,6 +234,131 @@ const Dashboard = () => {
           </div>
           <p className="text-slate-600">Monitoring sentimen brand kuliner dari media sosial</p>
         </div>
+
+
+        {/* Key Insights Cards */}
+        {keyInsights && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            {/* Best Brand Card */}
+            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                      <FaCrown className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-blue-900 text-sm md:text-base">Brand Terbaik</h3>
+                      <p className="text-xs text-blue-600">Sentimen positif tertinggi</p>
+                    </div>
+                  </div>
+                  <Badge className="bg-blue-500 text-white text-xs md:text-sm">
+                    #{1}
+                  </Badge>
+                </div>
+                {keyInsights.bestBrand && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-lg md:text-xl text-blue-900">
+                        {keyInsights.bestBrand.name}
+                      </span>
+                      <span className="text-2xl">🎯</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-blue-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${keyInsights.bestBrand.positif}%` }}
+                        />
+                      </div>
+                      <span className="font-semibold text-blue-700 text-sm md:text-base">
+                        {keyInsights.bestBrand.positif.toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Best Category Card */}
+            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                      <FaFire className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-green-900 text-sm md:text-base">Kategori Terpopuler</h3>
+                      <p className="text-xs text-green-600">Rasio sentimen terbaik</p>
+                    </div>
+                  </div>
+                  <Badge className="bg-green-500 text-white text-xs md:text-sm">
+                    TOP
+                  </Badge>
+                </div>
+                {keyInsights.bestCategory && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-base md:text-lg text-green-900 truncate">
+                        {keyInsights.bestCategory.name}
+                      </span>
+                      <span className="text-2xl">📈</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-green-200 rounded-full h-2">
+                        <div
+                          className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${keyInsights.bestCategory.rasio_positif}%` }}
+                        />
+                      </div>
+                      <span className="font-semibold text-green-700 text-sm md:text-base">
+                        {(keyInsights.bestCategory.rasio_positif).toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Top Keyword Card */}
+            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                      <LuMessageSquare className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-purple-900 text-sm md:text-base">Kata Kunci Utama</h3>
+                      <p className="text-xs text-purple-600">Sentimen positif dominan</p>
+                    </div>
+                  </div>
+                  <Badge className="bg-purple-500 text-white text-xs md:text-sm">
+                    HOT
+                  </Badge>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-lg md:text-xl text-purple-900">
+                      {keyInsights.topKeyword[1].kata}
+                    </span>
+                    <span className="text-2xl">💬</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-purple-700 text-sm">Disebutkan</span>
+                    <span className="font-bold text-purple-900 text-lg">
+                      {keyInsights.topKeyword[1].jumlah}x
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+
+
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -296,344 +427,32 @@ const Dashboard = () => {
           </TabsList>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Distribusi Sentimen Keseluruhan</CardTitle>
-                  <CardDescription>Persentase sentimen dari total {totalMentions.toLocaleString()} mentions</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={overallSentimentData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percentage }) => `${name} (${percentage}%)`}
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        <Cell fill={COLORS.positif} />
-                        <Cell fill={COLORS.netral} />
-                        <Cell fill={COLORS.negatif} />
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+          <OverviewTabSection
+            overallSentimentData={overallSentimentData}
+            brandData={brandData}
+            totalMentions={totalMentions}
+          />
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Top 5 Brand Terpositif</CardTitle>
-                  <CardDescription>Brand dengan rasio sentimen positif tertinggi</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {brandData.slice(0, 5).map((brand, index) => (
-                    <div key={brand.name} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Badge variant={index === 0 ? "default" : "secondary"}>
-                            #{index + 1}
-                          </Badge>
-                          <span className="font-medium">{brand.name}</span>
-                        </div>
-                        <span className="text-sm font-semibold text-green-600">
-                          {brand.positif.toFixed(1)}%
-                        </span>
-                      </div>
-                      <Progress value={brand.positif} className="h-2" />
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            </div>
-
-            <Insight />   
-          </TabsContent>
 
           {/* Categories Tab */}
-          <TabsContent value="categories" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Analisis Sentimen per Kategori Kuliner</CardTitle>
-                <CardDescription>Distribusi sentimen untuk setiap kategori makanan</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={categoryData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="positif" stackId="a" fill={COLORS.positif} name="Positif" />
-                    <Bar dataKey="netral" stackId="a" fill={COLORS.netral} name="Netral" />
-                    <Bar dataKey="negatif" stackId="a" fill={COLORS.negatif} name="Negatif" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {categoryData.map((category) => (
-                <Card key={category.name} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        {getCategoryIcon(category.name)}
-                        <h3 className="font-semibold text-sm">{category.name}</h3>
-                      </div>
-                      <Badge variant="outline" className="text-xs">
-                        {category.total}
-                      </Badge>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-xs">
-                        <span className="text-green-600">Positif</span>
-                        <span className="font-medium">{category.rasio_positif}%</span>
-                      </div>
-                      <Progress value={category.rasio_positif} className="h-1.5" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
+          <CategoriTabSection
+            categoryData={categoryData}
+            getCategoryIcon={getCategoryIcon}
+          />
 
           {/* Brands Tab */}
-          <TabsContent value="brands" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Performa Brand Analysis</CardTitle>
-                <CardDescription>Perbandingan sentimen antar brand kuliner</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={400}>
-                  <RadarChart data={brandData.slice(0, 6)}>
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="name" />
-                    <PolarRadiusAxis angle={90} domain={[0, 20]} />
-                    <Radar name="Positif %" dataKey="positif" stroke={COLORS.positif} fill={COLORS.positif} fillOpacity={0.6} />
-                    <Radar name="Negatif %" dataKey="negatif" stroke={COLORS.negatif} fill={COLORS.negatif} fillOpacity={0.6} />
-                    <Legend />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {brandData.map((brand) => (
-                <Card key={brand.name} className="hover:shadow-lg transition-all hover:scale-105">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{brand.name}</CardTitle>
-                      <Badge variant="outline">{brand.total} mentions</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="grid grid-cols-3 gap-2 text-center">
-                      <div className="space-y-1">
-                        <LuSmile className="w-5 h-5 mx-auto text-green-500" />
-                        <p className="text-xs text-slate-600">Positif</p>
-                        <p className="font-bold text-green-600">{brand.positif.toFixed(1)}%</p>
-                      </div>
-                      <div className="space-y-1">
-                        <LuMeh className="w-5 h-5 mx-auto text-gray-500" />
-                        <p className="text-xs text-slate-600">Netral</p>
-                        <p className="font-bold text-gray-600">{brand.netral.toFixed(1)}%</p>
-                      </div>
-                      <div className="space-y-1">
-                        <LuFrown className="w-5 h-5 mx-auto text-red-500" />
-                        <p className="text-xs text-slate-600">Negatif</p>
-                        <p className="font-bold text-red-600">{brand.negatif.toFixed(1)}%</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
+          <BrandTabSection
+            brandData={brandData}
+          />
 
           {/* Engagement Tab */}
-          <TabsContent value="engagement" className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Engagement Metrics by Sentiment</CardTitle>
-                  <CardDescription>Rata-rata engagement untuk setiap jenis sentimen</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={engagementData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="sentiment" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="likes" fill={COLORS.primary} name="Likes" />
-                      <Bar dataKey="shares" fill={COLORS.secondary} name="Shares" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+          <EngagementTabSection engagementData={engagementData} />
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Engagement Distribution</CardTitle>
-                  <CardDescription>Total engagement score per sentimen</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {engagementData.map((item) => (
-                      <div key={item.sentiment} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            {getSentimentIcon(item.sentiment)}
-                            <span className="font-medium">{item.sentiment}</span>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-1">
-                              <LuThumbsUp className="w-4 h-4 text-blue-500" />
-                              <span className="text-sm">{item.likes.toFixed(0)}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <FaShare className="w-4 h-4 text-purple-500" />
-                              <span className="text-sm">{item.shares.toFixed(0)}</span>
-                            </div>
-                            <Badge variant="secondary">
-                              {item.engagement.toFixed(0)} total
-                            </Badge>
-                          </div>
-                        </div>
-                        <Progress value={(item.engagement / 600) * 100} className="h-2" />
-                      </div>
-                    ))}
-                  </div>
-
-                  <Alert className="mt-4 border-amber-200 bg-amber-50">
-                    <FiAlertCircle className="h-4 w-4 text-amber-600" />
-                    <AlertDescription className="text-amber-800">
-                      <strong>Finding:</strong> Konten dengan sentimen negatif memiliki engagement rate yang sedikit lebih tinggi (509.4),
-                      kemungkinan karena mendorong diskusi dan respons dari pengguna.
-                    </AlertDescription>
-                  </Alert>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
 
           {/* Keywords Tab */}
-          <TabsContent value="keywords" className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <Card className="border-green-200">
-                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
-                  <CardTitle className="flex items-center gap-2">
-                    <LuThumbsUp className="w-5 h-5 text-green-600" />
-                    Top Keywords Positif
-                  </CardTitle>
-                  <CardDescription>Kata-kata yang paling sering muncul dalam sentimen positif</CardDescription>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <div className="space-y-3">
-                    {data.faktor_positif_top10.map((item, index) => (
-                      <div key={item.kata} className="flex items-center justify-between p-2 rounded-lg hover:bg-green-50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <Badge
-                            variant={index < 3 ? "default" : "secondary"}
-                            className={index === 0 ? "bg-gradient-to-r from-yellow-400 to-yellow-600" : ""}
-                          >
-                            {index + 1}
-                          </Badge>
-                          <span className="font-medium capitalize">{item.kata}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-slate-600">{item.jumlah} mentions</span>
-                          <Progress value={(item.jumlah / data.faktor_positif_top10[0].jumlah) * 100} className="w-20 h-2" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-red-200">
-                <CardHeader className="bg-gradient-to-r from-red-50 to-rose-50">
-                  <CardTitle className="flex items-center gap-2">
-                    <LuThumbsDown className="w-5 h-5 text-red-600" />
-                    Top Keywords Negatif
-                  </CardTitle>
-                  <CardDescription>Kata-kata yang paling sering muncul dalam sentimen negatif</CardDescription>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <div className="space-y-3">
-                    {data.faktor_negatif_top10.map((item, index) => (
-                      <div key={item.kata} className="flex items-center justify-between p-2 rounded-lg hover:bg-red-50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <Badge
-                            variant={index < 3 ? "destructive" : "secondary"}
-                          >
-                            {index + 1}
-                          </Badge>
-                          <span className="font-medium capitalize">{item.kata}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-slate-600">{item.jumlah} mentions</span>
-                          <Progress value={(item.jumlah / data.faktor_negatif_top10[0].jumlah) * 100} className="w-20 h-2" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Word Cloud Visualization</CardTitle>
-                <CardDescription>Visualisasi kata-kata berdasarkan frekuensi kemunculan</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2 justify-center p-4">
-                  {[...data.faktor_positif_top10, ...data.faktor_negatif_top10]
-                    .sort((a, b) => b.jumlah - a.jumlah)
-                    .map((item) => {
-                      const isPositive = data.faktor_positif_top10.some(p => p.kata === item.kata);
-                      return (
-                        <span
-                          key={item.kata}
-                          className={`inline-block px-3 py-1 rounded-full font-medium transition-all hover:scale-110 cursor-pointer ${isPositive ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-red-100 text-red-800 hover:bg-red-200'
-                            }`}
-                        >
-                          {item.kata}
-                        </span>
-                      );
-                    })}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <KeywordTabSection data={data} />
         </Tabs>
 
-        {/* Footer */}
-        <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <FaRegStar className="w-5 h-5 text-yellow-500" />
-                <span className="text-sm font-medium">Key Insights</span>
-              </div>
-              <div className="flex gap-4 text-sm">
-                <span>🎯 Brand terbaik: <strong>Gacoan</strong> (15.6% positif)</span>
-                <span>📈 Kategori terbaik: <strong>Makanan Tradisional</strong></span>
-                <span>💬 Kata positif utama: <strong>"Enak"</strong> (277x)</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
       <Chatbot />
     </div>
