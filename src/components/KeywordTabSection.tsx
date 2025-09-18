@@ -1,33 +1,41 @@
-import { TabsContent } from './ui/tabs'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
-import { LuThumbsDown, LuThumbsUp } from 'react-icons/lu'
-import { Badge } from './ui/badge'
-import { Progress } from './ui/progress'
-import { motion } from 'framer-motion'
-import type { Analysis } from '@/interface/Analysis'
-import { TrendingUp } from 'lucide-react'
+import { TabsContent } from "./ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { LuThumbsDown, LuThumbsUp } from "react-icons/lu";
+import { Badge } from "./ui/badge";
+import { Progress } from "./ui/progress";
+import { motion } from "framer-motion";
+import type { Analysis } from "@/interface/Analysis";
+import { TrendingUp, ALargeSmall } from "lucide-react";
 // import { WordCloudComponent } from './WordCloudComponent'
-import ReactWordcloud from 'react-wordcloud';
-import { useState, useEffect } from 'react'
+import WordCloud from "./WordCloud";
+import { useState, useEffect } from "react";
 
-export const KeywordTabSection = ({
-  data,
-}: {
-  data: Analysis;
-}) => {
+export const KeywordTabSection = ({ data }: { data: Analysis }) => {
   // Gabungkan dan urutkan semua kata berdasarkan frekuensi
-  const allWords = [...data.faktor_positif_top10, ...data.faktor_negatif_top10]
-    .sort((a, b) => b.jumlah - a.jumlah);
-  
+  const allWords = [
+    ...data.faktor_positif_top10,
+    ...data.faktor_negatif_top10,
+  ].sort((a, b) => b.jumlah - a.jumlah);
+
   // Format data untuk word cloud component dengan tipe yang benar
-  const wordCloudData = allWords.map(item => {
-    const isPositive = data.faktor_positif_top10.some(p => p.kata === item.kata);
+  const wordCloudData = allWords.map((item) => {
+    const isPositive = data.faktor_positif_top10.some(
+      (p) => p.kata === item.kata
+    );
     return {
       text: item.kata,
       value: item.jumlah,
-      sentiment: isPositive ? 'positive' as const : 'negative' as const
+      sentiment: isPositive ? ("positive" as const) : ("negative" as const),
     };
   });
+
+  console.log(wordCloudData);
 
   // State untuk debugging
   const [isClient, setIsClient] = useState(false);
@@ -37,8 +45,12 @@ export const KeywordTabSection = ({
   }, []);
 
   // Handler untuk klik pada kata di word cloud
-  const handleWordClick = (word: { text: string; value: number; sentiment?: 'positive' | 'negative' }) => {
-    console.log('Kata diklik:', word);
+  const handleWordClick = (word: {
+    text: string;
+    value: number;
+    sentiment?: "positive" | "negative";
+  }) => {
+    console.log("Kata diklik:", word);
     // Anda bisa menambahkan logika untuk menangani klik kata di sini
   };
 
@@ -81,8 +93,8 @@ export const KeywordTabSection = ({
             <CardContent className="pt-6">
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {data.faktor_positif_top10.map((item, index) => (
-                  <motion.div 
-                    key={item.kata} 
+                  <motion.div
+                    key={item.kata}
                     className="flex items-center justify-between p-3 rounded-xl hover:bg-green-50 transition-all duration-200 group"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -93,10 +105,15 @@ export const KeywordTabSection = ({
                       <Badge
                         className={`
                           w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
-                          ${index === 0 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white' : 
-                            index === 1 ? 'bg-gradient-to-r from-gray-400 to-gray-600 text-white' : 
-                            index === 2 ? 'bg-gradient-to-r from-orange-400 to-orange-600 text-white' : 
-                            'bg-green-100 text-green-800'}
+                          ${
+                            index === 0
+                              ? "bg-gradient-to-r from-yellow-400 to-yellow-600 text-white"
+                              : index === 1
+                              ? "bg-gradient-to-r from-gray-400 to-gray-600 text-white"
+                              : index === 2
+                              ? "bg-gradient-to-r from-orange-400 to-orange-600 text-white"
+                              : "bg-green-100 text-green-800"
+                          }
                         `}
                       >
                         {index + 1}
@@ -110,9 +127,13 @@ export const KeywordTabSection = ({
                         {item.jumlah} mentions
                       </span>
                       <div className="w-24">
-                        <Progress 
-                          value={(item.jumlah / (data.faktor_positif_top10[0]?.jumlah || 1)) * 100} 
-                          className="h-2 bg-green-100" 
+                        <Progress
+                          value={
+                            (item.jumlah /
+                              (data.faktor_positif_top10[0]?.jumlah || 1)) *
+                            100
+                          }
+                          className="h-2 bg-green-100"
                         />
                       </div>
                     </div>
@@ -149,8 +170,8 @@ export const KeywordTabSection = ({
             <CardContent className="pt-6">
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {data.faktor_negatif_top10.map((item, index) => (
-                  <motion.div 
-                    key={item.kata} 
+                  <motion.div
+                    key={item.kata}
                     className="flex items-center justify-between p-3 rounded-xl hover:bg-red-50 transition-all duration-200 group"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -161,10 +182,15 @@ export const KeywordTabSection = ({
                       <Badge
                         className={`
                           w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
-                          ${index === 0 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white' : 
-                            index === 1 ? 'bg-gradient-to-r from-gray-400 to-gray-600 text-white' : 
-                            index === 2 ? 'bg-gradient-to-r from-orange-400 to-orange-600 text-white' : 
-                            'bg-red-100 text-red-800'}
+                          ${
+                            index === 0
+                              ? "bg-gradient-to-r from-yellow-400 to-yellow-600 text-white"
+                              : index === 1
+                              ? "bg-gradient-to-r from-gray-400 to-gray-600 text-white"
+                              : index === 2
+                              ? "bg-gradient-to-r from-orange-400 to-orange-600 text-white"
+                              : "bg-red-100 text-red-800"
+                          }
                         `}
                       >
                         {index + 1}
@@ -178,9 +204,13 @@ export const KeywordTabSection = ({
                         {item.jumlah} mentions
                       </span>
                       <div className="w-24">
-                        <Progress 
-                          value={(item.jumlah / (data.faktor_negatif_top10[0]?.jumlah || 1)) * 100} 
-                          className="h-2 bg-red-100" 
+                        <Progress
+                          value={
+                            (item.jumlah /
+                              (data.faktor_negatif_top10[0]?.jumlah || 1)) *
+                            100
+                          }
+                          className="h-2 bg-red-100"
                         />
                       </div>
                     </div>
@@ -207,7 +237,10 @@ export const KeywordTabSection = ({
               <div>
                 <div className="flex items-center gap-2">
                   Word Cloud Visualization
-                  <Badge variant="outline" className="border-blue-200 text-blue-600">
+                  <Badge
+                    variant="outline"
+                    className="border-blue-200 text-blue-600"
+                  >
                     {allWords.length} Keywords
                   </Badge>
                 </div>
@@ -220,14 +253,15 @@ export const KeywordTabSection = ({
           <CardContent>
             <div className="flex justify-center items-center min-h-[400px] bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-4">
               {wordCloudData.length > 0 ? (
-                <h1>ada data</h1>
+                // <h1>ada data</h1>
+                <WordCloud words={wordCloudData} />
               ) : (
                 <div className="text-center text-slate-500">
                   <p>No data available for word cloud visualization</p>
                 </div>
               )}
             </div>
-            
+
             {/* Legend */}
             <div className="flex flex-wrap items-center justify-center gap-6 mt-6 pt-4 border-t border-slate-100">
               <div className="flex items-center gap-2">
@@ -239,13 +273,17 @@ export const KeywordTabSection = ({
                 <span className="text-sm text-slate-600">Kata Negatif</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="text-xs">A → Z</div>
-                <span className="text-sm text-slate-600">Ukuran berdasarkan frekuensi</span>
+                <div className="text-xs">
+                  <ALargeSmall className="w-5 h-5" />
+                </div>
+                <span className="text-sm text-slate-600">
+                  Ukuran berdasarkan frekuensi
+                </span>
               </div>
             </div>
           </CardContent>
         </Card>
       </motion.div>
     </TabsContent>
-  )
-}
+  );
+};
