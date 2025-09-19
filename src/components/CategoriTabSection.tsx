@@ -1,4 +1,3 @@
-import React from 'react'
 import { TabsContent } from './ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Progress } from './ui/progress'
@@ -6,7 +5,8 @@ import { Badge } from './ui/badge'
 import { ResponsiveContainer, BarChart, Bar, Tooltip, CartesianGrid, XAxis, YAxis, Legend } from 'recharts'
 import { COLORS } from '@/lib/constant'
 import { motion } from 'framer-motion'
-import { TrendingUp, Award, AlertCircle } from 'lucide-react'
+import { Award, AlertCircle } from 'lucide-react'
+import type { JSX } from 'react'
 
 // Custom Tooltip Component
 const CustomTooltip = ({ active, payload, label }: any) => {

@@ -30,7 +30,6 @@ interface Message {
   type: 'user' | 'bot';
   content: string;
   timestamp: Date;
-  sources?: string[];
   error?: boolean;
 }
 
@@ -39,13 +38,14 @@ interface ChatRequest {
 }
 
 interface ChatResponse {
-  answer: string;
-  sources: string[];
+  message: string;
+  data: string;
 }
 
-// LocalStorage helper functions
+// Enhanced LocalStorage helper functions
 const CHAT_HISTORY_KEY = 'sentinela_chat_history';
-const MAX_HISTORY_LENGTH = 50; // Limit history to prevent localStorage overflow
+const CHAT_STATE_KEY = 'sentinela_chat_state';
+const MAX_HISTORY_LENGTH = 50;
 
 const getChatHistoryFromStorage = (): Message[] => {
   try {
@@ -53,7 +53,6 @@ const getChatHistoryFromStorage = (): Message[] => {
     if (!stored) return [];
     
     const parsed = JSON.parse(stored);
-    // Convert timestamp strings back to Date objects
     return parsed.map((msg: any) => ({
       ...msg,
       timestamp: new Date(msg.timestamp)
@@ -66,7 +65,6 @@ const getChatHistoryFromStorage = (): Message[] => {
 
 const saveChatHistoryToStorage = (messages: Message[]): void => {
   try {
-    // Keep only recent messages to prevent storage overflow
     const recentMessages = messages.slice(-MAX_HISTORY_LENGTH);
     localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(recentMessages));
   } catch (error) {
@@ -77,8 +75,29 @@ const saveChatHistoryToStorage = (messages: Message[]): void => {
 const clearChatHistoryFromStorage = (): void => {
   try {
     localStorage.removeItem(CHAT_HISTORY_KEY);
+    localStorage.removeItem(CHAT_STATE_KEY);
   } catch (error) {
     console.error('Error clearing chat history from localStorage:', error);
+  }
+};
+
+// New: Save/Load chat state (isOpen, isMinimized)
+const getChatStateFromStorage = () => {
+  try {
+    const stored = localStorage.getItem(CHAT_STATE_KEY);
+    if (!stored) return { isOpen: false, isMinimized: false };
+    return JSON.parse(stored);
+  } catch (error) {
+    console.error('Error loading chat state from localStorage:', error);
+    return { isOpen: false, isMinimized: false };
+  }
+};
+
+const saveChatStateToStorage = (isOpen: boolean, isMinimized: boolean): void => {
+  try {
+    localStorage.setItem(CHAT_STATE_KEY, JSON.stringify({ isOpen, isMinimized }));
+  } catch (error) {
+    console.error('Error saving chat state to localStorage:', error);
   }
 };
 
@@ -104,43 +123,51 @@ const suggestedQuestions = [
   "Kategori kuliner mana yang paling populer?"
 ];
 
-// Component untuk merender HTML content dengan sanitasi
 // Fungsi untuk mengkonversi Markdown ke HTML
-const convertMarkdownToHtml = (text: string): string => {
-  // Konversi **bold** ke <strong>
-  let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  
-  // Konversi *italic* ke <em>
-  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-  
-  // Konversi bullet points dengan * ke <ul><li>
-  html = html.replace(/^(\s*)\*\s+(.*?)(?=\n|$)/gm, '$1<li>$2</li>');
-  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-  
-  // Konversi line breaks
-  html = html.replace(/\n/g, '<br />');
-  
-  return html;
+const convertMarkdownToHtml = (text: string | null | undefined): string => {
+  // Validasi input dan berikan fallback
+  if (!text || typeof text !== 'string') {
+    console.warn('convertMarkdownToHtml received invalid input:', text);
+    return '';
+  }
+
+  try {
+    let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    html = html.replace(/^(\s*)\*\s+(.*?)(?=\n|$)/gm, '$1<li>$2</li>');
+    html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+    html = html.replace(/\n/g, '<br />');
+    return html;
+  } catch (error) {
+    console.error('Error in convertMarkdownToHtml:', error);
+    return text || '';
+  }
 };
 
 // Component untuk merender HTML content dengan sanitasi
-const HtmlContent: React.FC<{ content: string }> = ({ content }) => {
-  const sanitizeAndParse = (html: string) => {
-    // Konversi Markdown ke HTML terlebih dahulu
-    const convertedHtml = convertMarkdownToHtml(html);
-    
-    // Sanitize HTML untuk keamanan
-    const sanitized = DOMPurify.sanitize(convertedHtml, {
-      ALLOWED_TAGS: [
-        'strong', 'em', 'u', 'b', 'i', 
-        'hr', 'br', 'p', 'div', 'span',
-        'ul', 'ol', 'li'
-      ],
-      ALLOWED_ATTR: ['class', 'style']
-    });
-    
-    // Parse HTML menjadi React elements
-    return parse(sanitized);
+const HtmlContent: React.FC<{ content: string | null | undefined }> = ({ content }) => {
+  const sanitizeAndParse = (html: string | null | undefined) => {
+    // Validasi input
+    if (!html || typeof html !== 'string') {
+      console.warn('HtmlContent received invalid content:', html);
+      return <span>Error: Invalid content</span>;
+    }
+
+    try {
+      const convertedHtml = convertMarkdownToHtml(html);
+      const sanitized = DOMPurify.sanitize(convertedHtml, {
+        ALLOWED_TAGS: [
+          'strong', 'em', 'u', 'b', 'i', 
+          'hr', 'br', 'p', 'div', 'span',
+          'ul', 'ol', 'li'
+        ],
+        ALLOWED_ATTR: ['class', 'style']
+      });
+      return parse(sanitized);
+    } catch (error) {
+      console.error('Error in sanitizeAndParse:', error);
+      return <span>Error rendering content</span>;
+    }
   };
 
   return (
@@ -151,10 +178,12 @@ const HtmlContent: React.FC<{ content: string }> = ({ content }) => {
 };
 
 const Chatbot: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
+  // Enhanced: Load chat state from localStorage
+  const [chatState, setChatState] = useState(() => getChatStateFromStorage());
+  const [isOpen, setIsOpen] = useState(chatState.isOpen);
+  const [isMinimized, setIsMinimized] = useState(chatState.isMinimized);
+  
   const [messages, setMessages] = useState<Message[]>(() => {
-    // Initialize with stored history or default welcome message
     const storedHistory = getChatHistoryFromStorage();
     if (storedHistory.length > 0) {
       return storedHistory;
@@ -168,10 +197,10 @@ const Chatbot: React.FC = () => {
       }
     ];
   });
+  
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
-  // Use standard div ref for scroll container
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -181,11 +210,24 @@ const Chatbot: React.FC = () => {
     saveChatHistoryToStorage(messages);
   }, [messages]);
 
+  // Enhanced: Save chat state whenever it changes
+  useEffect(() => {
+    saveChatStateToStorage(isOpen, isMinimized);
+  }, [isOpen, isMinimized]);
+
+  // Enhanced: Debounced save for better performance
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      saveChatHistoryToStorage(messages);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [messages]);
+
   // TanStack Query mutation
   const chatMutation = useMutation<ChatResponse, Error, ChatRequest>({
     mutationFn: sendChatMessage,
     onMutate: async (variables) => {
-      // Add user message
       const userMessage: Message = {
         id: Date.now().toString(),
         type: 'user',
@@ -197,19 +239,16 @@ const Chatbot: React.FC = () => {
       setInputValue('');
     },
     onSuccess: (data) => {
-      // Add bot response
       const botMessage: Message = {
         id: Date.now().toString(),
         type: 'bot',
-        content: data.answer,
+        content: data.data,
         timestamp: new Date(),
-        sources: data.sources,
       };
       setMessages(prev => [...prev, botMessage]);
       setIsTyping(false);
     },
     onError: () => {
-      // Add error message
       const errorMessage: Message = {
         id: Date.now().toString(),
         type: 'bot',
@@ -222,7 +261,6 @@ const Chatbot: React.FC = () => {
     },
   });
 
-  // Auto scroll to bottom when new messages arrive
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -231,7 +269,6 @@ const Chatbot: React.FC = () => {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  // Focus input when chat opens
   useEffect(() => {
     if (isOpen && !isMinimized) {
       inputRef.current?.focus();
@@ -252,6 +289,7 @@ const Chatbot: React.FC = () => {
     }
   };
 
+  // Enhanced: Reset with confirmation and better UX
   const clearChat = () => {
     const resetMessage: Message = {
       id: Date.now().toString(),
@@ -261,6 +299,16 @@ const Chatbot: React.FC = () => {
     };
     setMessages([resetMessage]);
     clearChatHistoryFromStorage();
+    
+  };
+
+  // Enhanced: Open handler
+  const handleOpen = () => {
+    setIsOpen(true);
+    // Auto-focus input after animation
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 300);
   };
 
   // Floating button when closed
@@ -271,7 +319,7 @@ const Chatbot: React.FC = () => {
         animate={{ scale: 1 }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpen}
         className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-shadow z-50"
       >
         <MessageSquare className="w-6 h-6" />
@@ -333,13 +381,13 @@ const Chatbot: React.FC = () => {
 
         {!isMinimized && (
           <>
-            {/* Messages Area with custom scroll */}
+            {/* Messages Area */}
             <div 
               ref={scrollContainerRef}
               className="flex-1 overflow-y-auto overflow-x-hidden p-4"
               style={{ 
                 scrollBehavior: 'smooth',
-                minHeight: 0 // Important for flexbox
+                minHeight: 0
               }}
             >
               <div className="space-y-4">
@@ -371,11 +419,12 @@ const Chatbot: React.FC = () => {
                           ? 'bg-red-50 border border-red-200 text-red-800 rounded-2xl rounded-tl-sm'
                           : 'bg-slate-100 text-slate-800 rounded-2xl rounded-tl-sm'
                       } px-4 py-2`}>
-                        {/* Gunakan HtmlContent component untuk merender HTML */}
-                        {message.type === 'bot' && !message.error ? (
+                        {message.type === 'bot' && !message.error && message.content ? (
                           <HtmlContent content={message.content} />
                         ) : (
-                          <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                          <p className="text-sm whitespace-pre-wrap break-words">
+                            {message.content || 'Tidak ada pesan'}
+                          </p>
                         )}
                       </div>
                       <p className="text-xs text-slate-500 mt-1">
@@ -409,7 +458,6 @@ const Chatbot: React.FC = () => {
                   </motion.div>
                 )}
                 
-                {/* Invisible element to scroll to */}
                 <div ref={messagesEndRef} />
               </div>
             </div>
@@ -480,7 +528,7 @@ const Chatbot: React.FC = () => {
                 </Button>
               </form>
 
-              {/* Status Bar */}
+              {/* Enhanced Status Bar */}
               <div className="flex items-center justify-between mt-2">
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">

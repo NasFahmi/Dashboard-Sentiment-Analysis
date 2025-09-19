@@ -148,6 +148,8 @@ const Dashboard = () => {
     };
   }, [data, brandData, categoryData]);
 
+  console.log('keyInsights',keyInsights)
+
 
 
 
