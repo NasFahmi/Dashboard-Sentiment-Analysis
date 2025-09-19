@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { scaleLinear } from "d3-scale";
+import { interpolateRgb } from "d3";
 import { min, max } from "d3-array";
 import * as d3 from "d3-selection";
 import cloud from "d3-cloud";
@@ -28,7 +29,7 @@ const WordCloud: React.FC<WordCloudProps> = ({
   words = [],
   width = 600,
   height = 400,
-  font = "sans-serif",
+  font = "Plus Jakarta Sans",
 }) => {
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -87,6 +88,7 @@ const WordCloud: React.FC<WordCloudProps> = ({
         .enter()
         .append("text")
         .style("font-size", (d) => `${d.size}px`)
+        .style("font-weight", (d) => (d.value === maxValue ? "800" : "500"))
         .style("font-family", font)
         .style("fill", (d) =>
           d.sentiment === "positive"
