@@ -419,7 +419,6 @@ export const Insight: React.FC = () => {
   // Get cache info for display
   const cacheInfo = getLocalStorageCache();
   const isCached = !!cacheInfo;
-  const cacheAge = cacheInfo ? Math.floor((Date.now() - cacheInfo.timestamp) / (1000 * 60)) : 0;
 
   return (
     <AnimatePresence mode="wait">

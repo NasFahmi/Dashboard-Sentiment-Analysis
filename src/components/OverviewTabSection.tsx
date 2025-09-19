@@ -12,8 +12,6 @@ import {
   Award,
   Target,
   Activity,
-  ChevronRight,
-  Eye,
   Sparkles,
   BarChart3,
   PieChartIcon
@@ -90,14 +88,14 @@ export const OverviewTabSection = ({
 
   // Calculate sentiment statistics
   const sentimentStats = React.useMemo(() => {
-    const positive = overallSentimentData.find(d => d.name === 'Positif');
-    const neutral = overallSentimentData.find(d => d.name === 'Netral');
-    const negative = overallSentimentData.find(d => d.name === 'Negatif');
+    const positive = overallSentimentData.find(d => d.name === 'Positif') || { percentage: 0, value: 0 };
+    const neutral = overallSentimentData.find(d => d.name === 'Netral') || { percentage: 0, value: 0 };
+    const negative = overallSentimentData.find(d => d.name === 'Negatif') || { percentage: 0, value: 0 };
 
     return {
-      dominantSentiment: neutral?.percentage > 50 ? 'Netral' : positive?.percentage > negative?.percentage ? 'Positif' : 'Negatif',
-      positiveRatio: positive ? (positive.value / totalMentions * 100).toFixed(1) : '0',
-      engagementScore: Math.round((positive?.value || 0) * 3 + (neutral?.value || 0) * 1 - (negative?.value || 0) * 2)
+      dominantSentiment: neutral.percentage > 50 ? 'Netral' : positive.percentage > negative.percentage ? 'Positif' : 'Negatif',
+      positiveRatio: totalMentions > 0 ? ((positive.value || 0) / totalMentions * 100).toFixed(1) : '0',
+      engagementScore: Math.round((positive.value || 0) * 3 + (neutral.value || 0) * 1 - (negative.value || 0) * 2)
     };
   }, [overallSentimentData, totalMentions]);
 

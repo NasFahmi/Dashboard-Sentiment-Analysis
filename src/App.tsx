@@ -130,6 +130,7 @@ const Dashboard = () => {
   };
 
   // Key insights calculations
+  // Di bagian keyInsights calculation, perbaiki topKeyword
   const keyInsights = useMemo(() => {
     if (!data) return null;
 
@@ -139,12 +140,10 @@ const Dashboard = () => {
     // Find best category
     const bestCategory = categoryData.length > 0 ? categoryData[0] : null;
 
-    // Find most frequent positive keyword (assuming it exists in data)
-    const topKeyword =
-      data.faktor_positif_top10 &&
-      Object.keys(data.faktor_positif_top10).length > 0
-        ? Object.entries(data.faktor_positif_top10)[0]
-        : ["Enak", 277]; // fallback
+    // Fix topKeyword - ambil keyword pertama dari array
+    const topKeyword = data.faktor_positif_top10 && data.faktor_positif_top10.length > 0
+      ? data.faktor_positif_top10[0] // Ambil objek Keyword pertama
+      : { kata: "Enak", jumlah: 277 }; // fallback sebagai objek Keyword
 
     return {
       bestBrand,
@@ -152,7 +151,6 @@ const Dashboard = () => {
       topKeyword,
     };
   }, [data, brandData, categoryData]);
-
   // Loading state
   if (loading) {
     return (
@@ -374,14 +372,14 @@ const Dashboard = () => {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-lg md:text-xl text-purple-900">
-                      {keyInsights.topKeyword[1].kata ?? "-"}
+                      {keyInsights.topKeyword.kata}
                     </span>
                     <span className="text-2xl">💬</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-purple-700 text-sm">Disebutkan</span>
                     <span className="font-bold text-purple-900 text-lg">
-                      {keyInsights.topKeyword[1].jumlah}x
+                      {keyInsights.topKeyword.jumlah}x
                     </span>
                   </div>
                 </div>

@@ -179,7 +179,7 @@ const HtmlContent: React.FC<{ content: string | null | undefined }> = ({ content
 
 const Chatbot: React.FC = () => {
   // Enhanced: Load chat state from localStorage
-  const [chatState, setChatState] = useState(() => getChatStateFromStorage());
+  const [chatState] = useState(() => getChatStateFromStorage());
   const [isOpen, setIsOpen] = useState(chatState.isOpen);
   const [isMinimized, setIsMinimized] = useState(chatState.isMinimized);
   

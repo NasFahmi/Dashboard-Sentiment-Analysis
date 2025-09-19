@@ -44,15 +44,7 @@ export const KeywordTabSection = ({ data }: { data: Analysis }) => {
     setIsClient(true);
   }, []);
 
-  // Handler untuk klik pada kata di word cloud
-  const handleWordClick = (word: {
-    text: string;
-    value: number;
-    sentiment?: "positive" | "negative";
-  }) => {
-    console.log("Kata diklik:", word);
-    // Anda bisa menambahkan logika untuk menangani klik kata di sini
-  };
+ 
 
   if (!isClient) {
     return (
