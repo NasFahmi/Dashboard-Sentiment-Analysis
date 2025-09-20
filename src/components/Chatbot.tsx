@@ -118,7 +118,6 @@ const sendChatMessage = async (data: ChatRequest): Promise<ChatResponse> => {
 const suggestedQuestions = [
   "Berapa jumlah data mention?",
   "Brand mana yang memiliki sentimen positif tertinggi?",
-  "Apa kata kunci negatif yang paling sering muncul?",
   "Bagaimana performa engagement per sentimen?",
   "Kategori kuliner mana yang paling populer?"
 ];
@@ -496,14 +495,9 @@ const Chatbot: React.FC = () => {
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder="Ketik pertanyaan Anda..."
                     disabled={chatMutation.isPending}
-                    className="pr-10"
                     maxLength={500}
                   />
-                  {inputValue && (
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
-                      {inputValue.length}/500
-                    </span>
-                  )}
+                  
                 </div>
                 <Button
                   type="submit"
