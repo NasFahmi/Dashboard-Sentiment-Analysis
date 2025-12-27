@@ -1,0 +1,4 @@
+[new]
+templates = [
+  { name = "fitur", path = "./commands/fitur.mjs" }
+]

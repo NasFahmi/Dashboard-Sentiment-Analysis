@@ -2,6 +2,28 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
+## Feature Generation
+
+This project includes a feature generation script to quickly scaffold new features with the proper structure.
+
+To create a new feature:
+```bash
+bun run new:feature <feature-name>
+```
+
+To create a new feature with a Zustand store:
+```bash
+bun run new:feature <feature-name> --store
+```
+
+This will create the following structure in `src/features/<FeatureName>/`:
+- `components/` - React components for the feature
+- `hooks/` - Custom hooks for the feature
+- `pages/` - Contains the main page component `<FeatureName>Page.tsx`
+- `repository/` - Contains the repository file `<FeatureName>Repository.ts`
+- `types/` - TypeScript type definitions for the feature
+- `store/` - (Optional) Zustand store files when using the `--store` option
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh

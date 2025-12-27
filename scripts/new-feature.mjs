@@ -1,0 +1,79 @@
+#!/usr/bin/env node
+
+import fs from 'fs';
+import path from 'path';
+
+// Get the feature name from command line arguments
+const args = process.argv.slice(2);
+const featureName = args[0];
+const hasStore = args.includes('--store') || args.includes('-s');
+
+if (!featureName) {
+  console.error('Please provide a feature name: bun run new-feature <feature-name>');
+  process.exit(1);
+}
+
+// Capitalize the first letter of the feature name
+const capitalizedFeatureName = featureName.charAt(0).toUpperCase() + featureName.slice(1);
+
+// Define the features directory path
+const featuresDir = path.join(process.cwd(), 'src', 'features');
+const featureDir = path.join(featuresDir, capitalizedFeatureName);
+
+// Create the main feature directory if it doesn't exist
+if (!fs.existsSync(featuresDir)) {
+  fs.mkdirSync(featuresDir, { recursive: true });
+}
+
+if (fs.existsSync(featureDir)) {
+  console.error(`Feature ${capitalizedFeatureName} already exists!`);
+  process.exit(1);
+}
+
+fs.mkdirSync(featureDir, { recursive: true });
+
+// Create subdirectories
+const subdirs = ['components', 'hooks', 'pages', 'repository', 'types'];
+if (hasStore) {
+  subdirs.push('store');
+}
+
+subdirs.forEach(subdir => {
+  const subdirPath = path.join(featureDir, subdir);
+  fs.mkdirSync(subdirPath, { recursive: true });
+});
+
+// Create the repository file with empty content
+const repositoryContent = `// ${capitalizedFeatureName}Repository.ts\n\n`;
+const repositoryFilePath = path.join(featureDir, 'repository', `${capitalizedFeatureName}Repository.ts`);
+fs.writeFileSync(repositoryFilePath, repositoryContent);
+
+// Create the store file if requested
+if (hasStore) {
+  const storeContent = `import { create } from 'zustand';\n\nexport interface ${capitalizedFeatureName}State {\n  // Define your state properties here\n}\n\nexport interface ${capitalizedFeatureName}Actions {\n  // Define your actions here\n}\n\nexport type ${capitalizedFeatureName}Store = ${capitalizedFeatureName}State & ${capitalizedFeatureName}Actions;\n\nexport const use${capitalizedFeatureName}Store = create<${capitalizedFeatureName}Store>((set, get) => ({\n  // Implement your actions and state here\n}));\n`;
+  const storeFilePath = path.join(featureDir, 'store', `${capitalizedFeatureName}Store.ts`);
+  fs.writeFileSync(storeFilePath, storeContent);
+}
+
+// Create the page file with default export
+const pageContent = `import React from 'react';\n\nconst ${capitalizedFeatureName}Page: React.FC = () => {\n  return (\n    <div>\n      <h1>${capitalizedFeatureName} Page</h1>\n      {/* Add your page content here */}\n    </div>\n  );\n};\n\nexport default ${capitalizedFeatureName}Page;\n`;
+const pageFilePath = path.join(featureDir, 'pages', `${capitalizedFeatureName}Page.tsx`);
+fs.writeFileSync(pageFilePath, pageContent);
+
+console.log(`✅ Feature "${capitalizedFeatureName}" has been created successfully!`);
+console.log(`📁 Location: ${featureDir}`);
+console.log(`📋 Structure created:`);
+console.log(`   ├── components/`);
+console.log(`   ├── hooks/`);
+console.log(`   ├── pages/`);
+console.log(`   │   └── ${capitalizedFeatureName}Page.tsx`);
+console.log(`   ├── repository/`);
+console.log(`   │   └── ${capitalizedFeatureName}Repository.ts`);
+console.log(`   ├── types/`);
+
+if (hasStore) {
+  console.log(`   └── store/`);
+  console.log(`       └── ${capitalizedFeatureName}Store.ts`);
+}
+
+console.log('\n📝 To use this feature, import the page component in your router.');
