@@ -1,12 +1,12 @@
-import { TabsContent } from './ui/tabs'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { TabsContent } from '@/components/ui/tabs'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { BarChart, CartesianGrid, ResponsiveContainer } from 'recharts'
 import { COLORS } from '@/lib/constant'
-import { Badge } from './ui/badge'
+import { Badge } from '@/components/ui/badge'
 import { LuFrown, LuMeh, LuSmile, LuThumbsUp } from 'react-icons/lu'
 import { FaShare } from 'react-icons/fa'
-import { Progress } from './ui/progress'
-import {  AlertDescription } from './ui/alert'
+import { Progress } from '@/components/ui/progress'
+import {  AlertDescription } from '@/components/ui/alert'
 import { FiAlertCircle } from 'react-icons/fi'
 import { Tooltip } from 'recharts'
 import { Legend } from 'recharts'
@@ -14,31 +14,9 @@ import { Bar } from 'recharts'
 import { XAxis } from 'recharts'
 import { YAxis } from 'recharts'
 import { motion } from 'framer-motion'
+import { CustomTooltip } from './CustomTooltip'
 
 // Custom Tooltip Component
-const CustomBarTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-slate-200">
-        <p className="font-semibold text-sm mb-2">{label}</p>
-        {payload.map((entry: any, index: number) => (
-          <div key={index} className="flex items-center justify-between gap-4 text-xs">
-            <span className="flex items-center gap-1">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: entry.color }}
-              />
-              {entry.name}:
-            </span>
-            <span className="font-semibold">{entry.value.toFixed(0)}</span>
-          </div>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
-
 export const EngagementTabSection = ({
   engagementData,
 }: {
@@ -96,7 +74,7 @@ export const EngagementTabSection = ({
                       style: { textAnchor: 'middle' }
                     }}
                   />
-                  <Tooltip content={<CustomBarTooltip />} />
+                  <Tooltip content={<CustomTooltip />} />
                   <Legend
                     wrapperStyle={{ paddingTop: '10px' }}
                     iconType="circle"

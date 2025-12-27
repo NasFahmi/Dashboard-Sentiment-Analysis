@@ -1,8 +1,8 @@
 import React from 'react'
-import { TabsContent } from './ui/tabs'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
-import { Progress } from './ui/progress'
-import { Badge } from './ui/badge'
+import { TabsContent } from '@/components/ui/tabs'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import { Badge } from '@/components/ui/badge'
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 import Insight from './Insight'
 import { COLORS } from '@/lib/constant'
@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils'
 
 // Custom Label for Pie Chart
 const renderCustomizedLabel = ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cx, cy, midAngle, innerRadius, outerRadius, percentage }: any) => {
   const RADIAN = Math.PI / 180;
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
@@ -42,6 +43,7 @@ const renderCustomizedLabel = ({
 };
 
 // Enhanced Custom Tooltip
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CustomTooltipPie = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0];

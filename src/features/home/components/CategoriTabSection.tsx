@@ -1,7 +1,7 @@
-import { TabsContent } from './ui/tabs'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
-import { Progress } from './ui/progress'
-import { Badge } from './ui/badge'
+import { TabsContent } from '@/components/ui/tabs'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import { Badge } from '@/components/ui/badge'
 import { ResponsiveContainer, BarChart, Bar, Tooltip, CartesianGrid, XAxis, YAxis, Legend } from 'recharts'
 import { COLORS } from '@/lib/constant'
 import { motion } from 'framer-motion'
@@ -9,11 +9,13 @@ import { Award, AlertCircle } from 'lucide-react'
 import type { JSX } from 'react'
 
 // Custom Tooltip Component
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-slate-200">
         <p className="font-semibold text-sm mb-2">{label}</p>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         {payload.map((entry: any, index: number) => (
           <div key={index} className="flex items-center justify-between gap-4 text-xs">
             <span className="flex items-center gap-1">
