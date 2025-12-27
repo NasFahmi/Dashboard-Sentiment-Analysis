@@ -53,10 +53,19 @@ subdirs.forEach(subdir => {
   fs.mkdirSync(subdirPath, { recursive: true });
 });
 
-// Create the repository file with empty content
-const repositoryContent = `// ${capitalizedFeatureName}Repository.ts\n\n`;
-const repositoryFilePath = path.join(featureDir, 'repository', `${capitalizedFeatureName}Repository.ts`);
+// Create the test directory inside repository
+const testDir = path.join(featureDir, 'repository', '__tests__');
+fs.mkdirSync(testDir, { recursive: true });
+
+// Create the repository file with .tsx extension using lowercase
+const repositoryContent = `// ${featureName}.repository.tsx\n\n`;
+const repositoryFilePath = path.join(featureDir, 'repository', `${featureName}.repository.tsx`);
 fs.writeFileSync(repositoryFilePath, repositoryContent);
+
+// Create the test file using lowercase
+const testContent = `// ${featureName}.repository.test.ts\n\n`;
+const testFilePath = path.join(featureDir, 'repository', '__tests__', `${featureName}.repository.test.ts`);
+fs.writeFileSync(testFilePath, testContent);
 
 // Create the store file if requested
 if (hasStore) {
@@ -79,7 +88,9 @@ console.log(`   ├── hooks/`);
 console.log(`   ├── pages/`);
 console.log(`   │   └── ${capitalizedFeatureName}Page.tsx`);
 console.log(`   ├── repository/`);
-console.log(`   │   └── ${capitalizedFeatureName}Repository.ts`);
+console.log(`   │   ├── __tests__/`);
+console.log(`   │   │   └── ${featureName}.repository.test.ts`);
+console.log(`   │   └── ${featureName}.repository.tsx`);
 console.log(`   ├── types/`);
 
 if (hasStore) {
