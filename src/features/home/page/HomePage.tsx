@@ -13,16 +13,16 @@ import type {
   Analysis,
   SentimenBrand,
   SentimenKategori,
-} from "./interface/Analysis";
-import Chatbot from "./components/Chatbot";
-import { OverviewTabSection } from "./components/OverviewTabSection";
-import { CategoriTabSection } from "./components/CategoriTabSection";
-import { BrandTabSection } from "./components/BrandTabSection";
-import { EngagementTabSection } from "./components/EngagementTabSection";
-import { KeywordTabSection } from "./components/KeywordTabSection";
+} from "../type/Analysis";
+import Chatbot from "../components/Chatbot";
+import { OverviewTabSection } from "../components/OverviewTabSection";
+import { CategoriTabSection } from "../components/CategoriTabSection";
+import { BrandTabSection } from "../components/BrandTabSection";
+import { EngagementTabSection } from "../components/EngagementTabSection";
+import { KeywordTabSection } from "../components/KeywordTabSection";
 import { MessageCircle } from "lucide-react";
 
-const Dashboard = () => {
+const HomePage = () => {
   const [data, setData] = useState<Analysis | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -503,4 +503,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default HomePage;

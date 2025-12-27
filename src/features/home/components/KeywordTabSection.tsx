@@ -1,16 +1,16 @@
-import { TabsContent } from "./ui/tabs";
+import { TabsContent } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
+} from "@/components/ui/card";
 import { LuThumbsDown, LuThumbsUp } from "react-icons/lu";
-import { Badge } from "./ui/badge";
-import { Progress } from "./ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
-import type { Analysis } from "@/interface/Analysis";
+import type { Analysis } from "@/features/home/type/Analysis";
 import { TrendingUp, ALargeSmall } from "lucide-react";
 // import { WordCloudComponent } from './WordCloudComponent'
 import WordCloud from "./WordCloud";
