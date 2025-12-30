@@ -1,17 +1,15 @@
-import { useSidebar } from '@/hooks/useSidebar';
-
+import { useSidebarStore } from "@/store/useSidebarStore";
 
 const MobileOverlay = () => {
-  const { close } = useSidebar();
+  const isOpen = useSidebarStore((state) => state.isOpen);
+  const close = useSidebarStore((state) => state.close);
+
+  if (!isOpen) return null;
 
   return (
     <div
-      id="sidebar-overlay"
-      className="fixed inset-0 bg-black/80 z-40 lg:hidden transition-opacity duration-200"
-      // Gunakan onClick, bukan atribut 'on'
+      className="fixed inset-0 bg-black/80 z-40 lg:hidden"
       onClick={close}
-      role="presentation"
-      aria-hidden="true"
     />
   );
 };

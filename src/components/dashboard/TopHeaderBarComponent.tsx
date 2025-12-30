@@ -1,7 +1,7 @@
-import { useSidebar } from '@/hooks/useSidebar'; // Pastikan path sesuai
+import { useSidebarStore } from '@/store/useSidebarStore';
 import {Menu, Bell, } from 'lucide-react'
 const TopHeaderBarComponent = () => {
-  const { toggle } = useSidebar(); // Ambil fungsi toggle dari hook
+  const toggle = useSidebarStore((state) => state.toggle);
 
   return (
     <div>

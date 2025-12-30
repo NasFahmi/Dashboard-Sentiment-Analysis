@@ -1,6 +1,5 @@
 // src/components/Sidebar.tsx
 import { useEffect } from 'react';
-import { useSidebar } from '@/hooks/useSidebar';
 import {
   X,
   LayoutDashboard,
@@ -13,9 +12,16 @@ import {
 } from 'lucide-react';
 import { assets } from '@/assets/assets';
 import { Link, useLocation } from 'react-router'; // ✅ pastikan dari 'react-router-dom'
+import { useSidebarStore } from '@/store/useSidebarStore';
 
 const SidebarComponent = () => {
-  const { isOpen, close } = useSidebar();
+  const isOpen = useSidebarStore((state) => state.isOpen);
+  const close = useSidebarStore((state) => state.close);
+
+  useEffect(() => {
+    document.body.classList.toggle("overflow-hidden", isOpen);
+    return () => document.body.classList.remove("overflow-hidden");
+  }, [isOpen]);
   const location = useLocation();
 
   // ✅ Prefix matching untuk nested routes
