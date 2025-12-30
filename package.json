@@ -31,7 +31,7 @@
     "dompurify": "^3.2.6",
     "framer-motion": "^12.23.12",
     "html-react-parser": "^5.2.6",
-    "lucide-react": "^0.542.0",
+    "lucide-react": "^0.562.0",
     "marked": "^16.2.1",
     "motion": "^12.23.12",
     "react": "^19.1.1",

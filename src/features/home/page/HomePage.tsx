@@ -9,11 +9,7 @@ import { TbLoader2 } from "react-icons/tb";
 import { LuFrown, LuMeh, LuMessageSquare, LuSmile } from "react-icons/lu";
 import { LuUtensils } from "react-icons/lu";
 import { FaCrown, FaFire } from "react-icons/fa";
-import type {
-  Analysis,
-  SentimenBrand,
-  SentimenKategori,
-} from "../type/Analysis";
+import type { Analysis, SentimenBrand, SentimenKategori } from "../type/Analysis";
 import Chatbot from "../components/Chatbot";
 import { OverviewTabSection } from "../components/OverviewTabSection";
 import { CategoriTabSection } from "../components/CategoriTabSection";
