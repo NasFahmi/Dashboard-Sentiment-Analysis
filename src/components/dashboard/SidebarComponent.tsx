@@ -55,9 +55,12 @@ const SidebarComponent = () => {
         } lg:translate-x-0`}
     >
       {/* Top Bar */}
-      <div className="flex items-center justify-start border-b border-border h-[90px] px-5 gap-3">
-        <img src={assets.Logo} className="w-7" alt="Logo" />
-        <h1 className="font-semibold text-xl">Sentinela</h1>
+      <div className="flex items-center justify-between border-b border-border h-[90px] px-5 gap-3">
+        <div className="flex items-center gap-2">
+          <img src={assets.Logo} className="w-7" alt="Logo" />
+          <h1 className="font-semibold text-xl">Sentinela</h1>
+
+        </div>
         <div className="flex gap-2">
           <button
             onClick={close}
