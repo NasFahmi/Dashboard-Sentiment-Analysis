@@ -10,11 +10,11 @@ import { LuThumbsDown, LuThumbsUp } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
-import type { Analysis } from "@/features/home/type/Analysis";
 import { TrendingUp, ALargeSmall } from "lucide-react";
 // import { WordCloudComponent } from './WordCloudComponent'
 import WordCloud from "./WordCloud";
 import { useState, useEffect } from "react";
+import type { Analysis } from "../type/Analysis";
 
 export const KeywordTabSection = ({ data }: { data: Analysis }) => {
   // Gabungkan dan urutkan semua kata berdasarkan frekuensi
