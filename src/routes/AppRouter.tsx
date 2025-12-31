@@ -4,7 +4,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import DashboardLayout from "@/layout/DashboardLayout";
 import NotFoundPage from "@/components/NotFound";
 // import ProtectedRoute from './ProtectedRoute';
-const HomePage = lazy(() => import("@/features/home1/page/HomePage"));
+const HomePage = lazy(() => import("@/features/Home/page/HomePage"));
 const LoginPage = lazy(() => import("@/features/Login/pages/LoginPage.tsx"));
 const DashboardPage = lazy(
   () => import("@/features/Dashboard/pages/DashboardPage.tsx")
