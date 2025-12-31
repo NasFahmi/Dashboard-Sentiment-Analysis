@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    # Uncomment the following lines if you need to access environment variables
+    # env_file:
+    #   - .env
+    # volumes:
+    #   - ./nginx.conf:/etc/nginx/nginx.conf
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      
+
+  # Uncomment the following section if you need a backend API server
+  # api:
+  #   build:
+  #     context: ./api
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=production
+  #   restart: unless-stopped
