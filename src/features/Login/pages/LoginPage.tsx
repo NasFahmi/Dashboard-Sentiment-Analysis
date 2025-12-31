@@ -1,12 +1,28 @@
 import React from "react";
 import { assets } from "@/assets/assets";
-
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, type LoginSchema } from "@/features/Login/schemas/login.schema";
 const LoginPage: React.FC = () => {
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = async (data: LoginSchema) => {
+    console.log("LOGIN DATA:", data);
+
+    // TODO: call auth repository
+  };
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
 
       {/* LEFT — Marketing Visual */}
-      <div className="relative hidden lg:flex flex-col justify-center bg-blue-500 overflow-hidden">
+      <div className="relative hidden lg:flex flex-col justify-center bg-(--color-logo-1) overflow-hidden">
 
         {/* Background gradient overlay */}
         <div className="flex items-center justify-center inset-0 bg-linear-to-br from-blue-600 via-blue-500 to-blue-400" />
@@ -59,33 +75,51 @@ const LoginPage: React.FC = () => {
             Use your account credentials
           </p>
 
-          <form className="mt-8 space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+            {/* Email */}
             <div>
               <label className="block text-sm font-medium text-slate-700">
                 Email address
               </label>
               <input
                 type="email"
-                required
+                {...register("email")}
                 placeholder="you@example.com"
-                className="mt-1 w-full border-b border-slate-300 bg-transparent px-1 py-2 text-sm text-slate-900 placeholder:text-slate-400
-                focus:border-blue-600 focus:outline-none transition"
+                className={`mt-1 w-full border-b bg-transparent px-1 py-2 text-sm outline-none transition
+                  ${errors.email
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-slate-300 focus:border-blue-600"
+                  }`}
               />
+              {errors.email && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
+
+            {/* Password */}
             <div>
               <label className="block text-sm font-medium text-slate-700">
                 Password
               </label>
               <input
                 type="password"
-                required
+                {...register("password")}
                 placeholder="••••••••"
-                className="mt-1 w-full border-b border-slate-300 bg-transparent px-1 py-2 text-sm text-slate-900 placeholder:text-slate-400
-                focus:border-blue-600 focus:outline-none transition"
+                className={`mt-1 w-full border-b bg-transparent px-1 py-2 text-sm outline-none transition
+                  ${errors.password
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-slate-300 focus:border-blue-600"
+                  }`}
               />
+              {errors.password && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
-
             <div className="flex justify-between items-center text-sm">
               <a href="#" className="text-blue-600 hover:text-blue-700">
                 Forgot password?
@@ -94,10 +128,12 @@ const LoginPage: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full bg-slate-900 text-white rounded-xl py-3 text-sm font-medium
-              hover:bg-slate-800 active:scale-[0.98] transition"
+              disabled={isSubmitting}
+              className="w-full bg-(--color-logo-1) text-white rounded-xl py-3 text-sm font-medium
+              hover:brightness-90 disabled:opacity-60 disabled:cursor-not-allowed
+              active:scale-[0.98] transition-all"
             >
-              Sign in
+              {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
           </form>
 
