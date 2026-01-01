@@ -57,10 +57,10 @@ const DashboardInsightSection = () => {
           <div className="flex items-start justify-between gap-4">
             <div>
               <CardTitle className="text-lg">
-                Distribusi Sentimen
+                Sentiment Distribution
               </CardTitle>
               <CardDescription className="text-sm">
-                Analisis dari 14.984 mentions
+                Analysis of 14,984 mentions
               </CardDescription>
             </div>
 

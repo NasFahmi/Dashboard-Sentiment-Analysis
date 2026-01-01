@@ -39,10 +39,10 @@ const DashboardPage: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm font-semibold text-slate-900">
-                  Brand Terbaik
+                  Best Brands
                 </p>
                 <p className="text-xs text-slate-500">
-                  Sentimen positif tertinggi
+                  Positive sentiment highest
                 </p>
               </div>
             </div>
@@ -78,10 +78,10 @@ const DashboardPage: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm font-semibold text-slate-900">
-                  Kategori Terpopuler
+                  Popular Categories
                 </p>
                 <p className="text-xs text-slate-500">
-                  Rasio sentimen terbaik
+                  Best sentiment ratio
                 </p>
               </div>
             </div>
@@ -114,10 +114,10 @@ const DashboardPage: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm font-semibold text-slate-900">
-                  Kata Kunci Utama
+                  Top Keywords
                 </p>
                 <p className="text-xs text-slate-500">
-                  Sentimen positif dominan
+                  Positive sentiment dominant
                 </p>
               </div>
             </div>
