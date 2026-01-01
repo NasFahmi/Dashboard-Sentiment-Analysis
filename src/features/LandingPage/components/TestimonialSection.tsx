@@ -93,7 +93,7 @@ const TestimonialSection = () => {
           {testimonials.map((item, index) => (
             <div
               key={index}
-              className="min-w-[320px] md:min-w-[420px] snap-center rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
+              className="min-w-[320px] flex flex-col justify-between md:min-w-[420px] snap-center rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
             >
               <p className="text-slate-600 leading-relaxed mb-6">
                 “{item.quote}”

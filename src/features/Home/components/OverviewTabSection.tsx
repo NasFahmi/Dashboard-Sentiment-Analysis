@@ -120,7 +120,7 @@ export const OverviewTabSection = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+          <Card className="border-blue-200 bg-linear-to-br from-blue-50 to-indigo-50">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
