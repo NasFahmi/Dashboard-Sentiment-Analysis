@@ -20,7 +20,7 @@ export const scrapesBreadcrumbs: HeaderMeta = {
     { title: "Dashboard" },
     { title: "Data Scraper" },
   ],
-  showBack: true,
+  showBack: false,
 };
 export const scraperGuideBreadcrumbs: HeaderMeta = {
   title: "Guide",

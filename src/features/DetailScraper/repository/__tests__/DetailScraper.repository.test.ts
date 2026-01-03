@@ -1,0 +1,2 @@
+// DetailScraper.repository.test.ts
+

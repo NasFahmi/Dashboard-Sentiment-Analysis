@@ -66,7 +66,7 @@ const SidebarComponent = () => {
             aria-label="Close sidebar"
             className="lg:hidden size-11 flex shrink-0 bg-white rounded-xl p-[10px] items-center justify-center ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer"
           >
-            <X className="size-6 text-secondary" />
+            <X className="size-6 text-slate-500" />
           </button>
         </div>
       </div>
@@ -75,7 +75,7 @@ const SidebarComponent = () => {
       <div className="flex flex-col p-5 pb-28 gap-6 overflow-y-auto flex-1">
         {/* Main Menu */}
         <div className="flex flex-col gap-4">
-          <h3 className="font-medium text-sm text-secondary">Main Menu</h3>
+          <h3 className="font-medium text-sm text-slate-500">Main Menu</h3>
           <div className="flex flex-col gap-1">
             <Link
               to="/dashboard"
@@ -83,9 +83,9 @@ const SidebarComponent = () => {
             >
               <div className="flex items-center w-full rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                 <LayoutDashboard
-                  className="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
+                  className="size-6 text-slate-500 group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
                 />
-                <span className="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
+                <span className="font-medium text-slate-500 group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
                   Dashboard
                 </span>
               </div>
@@ -97,9 +97,9 @@ const SidebarComponent = () => {
             >
               <div className="flex w-full items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                 <Brain
-                  className="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
+                  className="size-6 text-slate-500 group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
                 />
-                <span className="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
+                <span className="font-medium text-slate-500 group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
                   Sentiments
                 </span>
               </div>
@@ -111,9 +111,9 @@ const SidebarComponent = () => {
             >
               <div className="flex w-full items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                 <Telescope
-                  className="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
+                  className="size-6 text-slate-500 group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
                 />
-                <span className="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
+                <span className="font-medium text-slate-500 group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
                   Data Scraper
                 </span>
               </div>
@@ -125,9 +125,9 @@ const SidebarComponent = () => {
             >
               <div className="flex w-full items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                 <Lightbulb
-                  className="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
+                  className="size-6 text-slate-500 group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
                 />
-                <span className="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
+                <span className="font-medium text-slate-500 group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
                   Recommendation Content
                 </span>
               </div>
@@ -137,7 +137,7 @@ const SidebarComponent = () => {
 
         {/* Management */}
         <div className="flex flex-col gap-4">
-          <h3 className="font-medium text-sm text-secondary">Management</h3>
+          <h3 className="font-medium text-sm text-slate-500">Management</h3>
           <div className="flex flex-col gap-1">
             <Link
               to="/dashboard/settings"
@@ -145,9 +145,9 @@ const SidebarComponent = () => {
             >
               <div className="flex w-full items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                 <Settings
-                  className="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
+                  className="size-6 text-slate-500 group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
                 />
-                <span className="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
+                <span className="font-medium text-slate-500 group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
                   Settings
                 </span>
               </div>
@@ -156,9 +156,9 @@ const SidebarComponent = () => {
             <a href="#" className="group flex cursor-pointer">
               <div className="flex w-full items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                 <LogOut
-                  className="size-6  text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
+                  className="size-6  text-slate-500 group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
                 />
-                <span className="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
+                <span className="font-medium text-slate-500 group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
                   Logout
                 </span>
               </div>

@@ -9,4 +9,4 @@ export const COLORS = {
 };
 
 
-export const isFirstime = true;
+export const isFirstime = false;

@@ -6,6 +6,7 @@ import InstruksiComponent from '../components/InstruksiComponent';
 import { Link } from 'react-router';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import { scrapesBreadcrumbs } from '@/lib/breadcumb-config';
+import { DataComponents } from '../components/DataCard';
 const ScraperPage: React.FC = () => {
   usePageHeader(scrapesBreadcrumbs);
 
@@ -33,7 +34,9 @@ const ScraperPage: React.FC = () => {
 
       </div>
 
-      {isFirstime && <InstruksiComponent />}
+      {isFirstime ? <InstruksiComponent /> : <DataComponents />}
+
+
 
       {/* <InstruksiComponent /> */}
     </div>
