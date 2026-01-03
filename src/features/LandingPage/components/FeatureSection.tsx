@@ -6,6 +6,7 @@ import {
   Lightbulb,
   Database,
 } from "lucide-react";
+import { motion, type Variants,easeOut  } from "framer-motion";
 
 const features = [
   {
@@ -46,27 +47,65 @@ const features = [
   },
 ];
 
+const containerVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 24,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: easeOut, // ✅ FIX
+    },
+  },
+};
+
+
 const FeatureSection = () => {
   return (
     <section className="mt-[250px] px-6">
       <div className="mx-auto max-w-7xl">
         {/* Section Header */}
-        <div className="max-w-2xl mb-16">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.4 }}
+          variants={itemVariants}
+          className="max-w-2xl mb-16"
+        >
           <span className="text-sm font-semibold text-blue-600 uppercase tracking-wide">
             Our Features
           </span>
           <h2 className="mt-4 text-3xl font-semibold text-slate-900 leading-tight">
             The tools you need to win and understand your audience
           </h2>
-        </div>
+        </motion.div>
 
         {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <div
+              <motion.div
                 key={index}
+                variants={itemVariants}
                 className="group rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition-all duration-300
                 hover:border-blue-500 hover:shadow-md"
               >
@@ -89,10 +128,10 @@ const FeatureSection = () => {
                 <p className="text-sm text-slate-500 leading-relaxed">
                   {feature.description}
                 </p>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

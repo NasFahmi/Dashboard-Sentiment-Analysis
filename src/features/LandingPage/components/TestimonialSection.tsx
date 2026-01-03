@@ -1,6 +1,47 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Icon } from "@iconify/react";
 import { useRef } from "react";
+import { motion, type Variants } from "framer-motion";
+const headerVariants: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
+};
+
+const carouselVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
+};
+
+const brandVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { duration: 0.6 },
+  },
+};
 
 const testimonials = [
   {
@@ -57,7 +98,13 @@ const TestimonialSection = () => {
     <section className="mt-[250px] px-6">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <motion.div
+          className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.5 }}
+          variants={headerVariants}
+        >
           <div className="max-w-xl">
             <span className="text-sm font-semibold text-blue-600 uppercase tracking-wide">
               Testimonials
@@ -82,18 +129,24 @@ const TestimonialSection = () => {
               <ArrowRight className="h-5 w-5" />
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Carousel */}
-        <div
+        <motion.div
           ref={sliderRef}
           className="mt-16 flex gap-8 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4
           [-ms-overflow-style:none] [scrollbar-width:none]"
+          variants={carouselVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
         >
           {testimonials.map((item, index) => (
-            <div
+            <motion.div
               key={index}
-              className="min-w-[320px] flex flex-col justify-between md:min-w-[420px] snap-center rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
+              variants={cardVariants}
+              className="min-w-[320px] flex flex-col justify-between md:min-w-[420px]
+              snap-center rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
             >
               <p className="text-slate-600 leading-relaxed mb-6">
                 “{item.quote}”
@@ -113,12 +166,18 @@ const TestimonialSection = () => {
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Brand Logos */}
-        <div className="mt-20 flex flex-wrap items-center justify-center gap-12 opacity-70">
+        <motion.div
+          className="mt-20 flex flex-wrap items-center justify-center gap-12 opacity-70"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.4 }}
+          variants={brandVariants}
+        >
           {brandIcons.map((brand) => (
             <Icon
               key={brand.label}
@@ -126,7 +185,7 @@ const TestimonialSection = () => {
               className="h-8 w-auto grayscale hover:grayscale-0 transition"
             />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

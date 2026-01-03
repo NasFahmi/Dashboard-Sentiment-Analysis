@@ -1,6 +1,40 @@
 import { assets } from "@/assets/assets";
+import { motion, type Variants } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+const heroContainer: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const heroItem: Variants = {
+  hidden: { opacity: 0, y: 28 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
+};
+
+const heroImage: Variants = {
+  hidden: { opacity: 0, y: 40, scale: 0.96 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.9,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
+};
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -88,37 +122,59 @@ const Header = () => {
       </aside>
 
       {/* HERO */}
-      <section className="mx-auto max-w-7xl px-6 pt-16 pb-24 text-center">
-        <h1 className="mx-auto max-w-3xl text-5xl font-bold leading-tight flex flex-col items-center justify-center text-slate-900 
-                md:text-4xl lg:text-5xl">
+      {/* HERO */}
+      <motion.section
+        className="mx-auto max-w-7xl px-6 pt-16 pb-24 text-center"
+        variants={heroContainer}
+        initial="hidden"
+        animate="visible"
+      >
+        {/* Headline */}
+        <motion.h1
+          variants={heroItem}
+          className="mx-auto max-w-3xl text-5xl font-bold leading-tight flex flex-col items-center justify-center text-slate-900 
+      md:text-4xl lg:text-5xl"
+        >
           <span className="mb-4 md:whitespace-nowrap">
             Everything You Need for AI-Powered
           </span>
           <span className="text-blue-600 md:whitespace-nowrap">
             Social Media Sentiment Analysis
           </span>
-        </h1>
+        </motion.h1>
 
-        <p className="mx-auto mt-6 max-w-xl text-base text-slate-600">
+        {/* Subtitle */}
+        <motion.p
+          variants={heroItem}
+          className="mx-auto mt-6 max-w-xl text-base text-slate-600"
+        >
           Analyze conversations, track perception, and understand public opinion in real time.
-        </p>
+        </motion.p>
 
-        <div className="mt-10 flex justify-center">
+        {/* CTA */}
+        <motion.div
+          variants={heroItem}
+          className="mt-10 flex justify-center"
+        >
           <button className="flex items-center gap-2 rounded-full bg-blue-600 px-8 py-4 text-sm font-medium text-white hover:bg-blue-700 transition">
             Get Started for free
             <span className="ml-1">→</span>
           </button>
-        </div>
+        </motion.div>
 
         {/* Dashboard Preview */}
-        <div className="relative mt-20">
+        <motion.div
+          variants={heroImage}
+          className="relative mt-20"
+        >
           <img
             src={assets.DashboardLandingPage}
             alt="Dashboard preview"
             className="mx-auto rounded-2xl shadow-2xl border border-slate-200"
           />
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
+
     </header>
   );
 };

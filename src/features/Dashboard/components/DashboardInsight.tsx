@@ -184,7 +184,7 @@ const markdownToHtml = (text: string | null | undefined): string => {
 // Table conversion function
 const convertTables = (text: string): string => {
   // Match markdown tables
-  const tableRegex = /(\|.*\|[\r\n]+\|[-\s\|:]+\|[\r\n]+((?:\|.*\|[\r\n]*)+))/g;
+  const tableRegex = /(\|.*\|[\r\n]+\|[-\s|:]+\|[\r\n]+((?:\|.*\|[\r\n]*)+))/g;
 
   return text.replace(tableRegex, (match) => {
     const lines = match.trim().split(/[\r\n]+/);

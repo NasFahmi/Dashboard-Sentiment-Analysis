@@ -8,10 +8,9 @@ import {
   Brain,
   Telescope,
   Lightbulb,
-  MessageCircleQuestion,
 } from 'lucide-react';
 import { assets } from '@/assets/assets';
-import { Link, useLocation } from 'react-router'; // ✅ pastikan dari 'react-router-dom'
+import { Link, useLocation } from 'react-router'; 
 import { useSidebarStore } from '@/store/useSidebarStore';
 
 const SidebarComponent = () => {
@@ -169,21 +168,7 @@ const SidebarComponent = () => {
       </div>
 
       {/* Bottom Help Card */}
-      <div className="absolute bottom-0 left-0 w-full">
-        <div className="flex items-center justify-between border-t bg-white border-border p-5 gap-3">
-          <div className="min-w-0">
-            <p className="font-semibold text-foreground">Need help?</p>
-            <a href="#" className="cursor-pointer">
-              <span className="text-sm text-secondary hover:text-primary hover:underline transition-all duration-300">
-                Contact support
-              </span>
-            </a>
-          </div>
-          <div className="size-11 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
-            <MessageCircleQuestion className="size-6 text-primary" />
-          </div>
-        </div>
-      </div>
+      
     </aside>
   );
 };

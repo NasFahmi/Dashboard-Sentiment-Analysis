@@ -7,3 +7,6 @@ export const COLORS = {
   secondary: '#8b5cf6',
   accent: '#f59e0b'
 };
+
+
+export const isFirstime = true;
