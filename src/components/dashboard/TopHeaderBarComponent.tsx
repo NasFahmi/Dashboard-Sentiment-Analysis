@@ -1,50 +1,84 @@
-import { useSidebarStore } from '@/store/useSidebarStore';
-import {Menu, Bell, } from 'lucide-react'
+import { useHeaderStore } from "@/store/useHeaderStore";
+import { Menu, ChevronLeft } from "lucide-react";
+import { useSidebarStore } from "@/store/useSidebarStore";
+import { Link } from "react-router";
+
 const TopHeaderBarComponent = () => {
-  const toggle = useSidebarStore((state) => state.toggle);
+  const toggle = useSidebarStore((s) => s.toggle);
+  const { title, breadcrumbs, showBack } = useHeaderStore(
+    (s) => s.meta
+  );
 
   return (
-    <div>
-      {/* Top Header Bar */}
-      <div className="flex items-center justify-between w-full h-[90px] shrink-0 border-b border-border bg-white px-5 md:px-8">
+    <div className="flex items-center justify-between h-[90px] border-b border-border bg-white px-5 md:px-8">
+      {/* LEFT */}
+      <div className="flex items-center gap-3 min-w-0">
         {/* Mobile hamburger */}
         <button
-          onClick={toggle} // ✅ 
-          aria-label="Open menu"
-          className="lg:hidden size-11 flex items-center justify-center rounded-xl ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer"
+          onClick={toggle}
+          className="lg:hidden size-11 flex items-center justify-center rounded-xl ring-1 ring-border"
         >
-          <Menu className="size-6 text-foreground" />
+          <Menu className="size-6" />
         </button>
 
-        {/* Page title (shown on desktop) */}
-        <h2 className="hidden lg:block font-bold text-2xl text-foreground">
-          Dashboard
-        </h2>
-
-        {/* Right actions */}
-        <div className="flex items-center gap-3">
+        {/* Mobile back */}
+        {showBack && (
           <button
-            className="size-11 flex items-center justify-center rounded-xl ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer relative"
-            aria-label="Notifications"
+            onClick={() => window.history.back()}
+            className="lg:hidden size-9 flex items-center justify-center rounded-lg ring-1 ring-border"
           >
-            <Bell className="size-6 text-secondary" />
-            <span className="absolute -top-1 -right-1 h-5 px-1.5 rounded-full bg-error text-white text-xs font-medium flex items-center justify-center">
-              3
-            </span>
+            <ChevronLeft className="size-5" />
           </button>
+        )}
 
-          <div className="hidden md:flex items-center gap-3 pl-3 border-l border-border">
-            <div className="text-right">
-              <p className="font-semibold text-foreground text-sm">Admin User</p>
-              <p className="text-secondary text-xs">Administrator</p>
-            </div>
-            <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
-              alt="Profile"
-              className="size-11 rounded-full object-cover ring-2 ring-border"
-            />
-          </div>
+        {/* Mobile title */}
+        <span className="lg:hidden font-medium text-foreground truncate">
+          {title}
+        </span>
+
+        {/* Desktop breadcrumb */}
+        <nav className="hidden lg:flex items-center text-xs text-slate-500 gap-2">
+          {breadcrumbs.map((item, idx) => {
+            const isLast = idx === breadcrumbs.length - 1;
+
+            return (
+              <span key={item.title + idx} className="flex items-center gap-2">
+                {idx !== 0 && <span>/</span>}
+
+                {item.href && !isLast ? (
+                  <Link
+                    to={item.href}
+                    className="hover:text-(--color-logo-1) transition-colors"
+                  >
+                    {item.title}
+                  </Link>
+                ) : (
+                  <span
+                    className={
+                      isLast
+                        ? "text-slate-900 font-medium"
+                        : ""
+                    }
+                  >
+                    {item.title}
+                  </span>
+                )}
+              </span>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* RIGHT */}
+      <div className="hidden md:flex items-center gap-3">
+        <div className="text-right">
+          <p className="font-semibold text-sm">Admin User</p>
+          <p className="text-xs text-secondary">Administrator</p>
         </div>
+        <img
+          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100"
+          className="size-11 rounded-full object-cover"
+        />
       </div>
     </div>
   );

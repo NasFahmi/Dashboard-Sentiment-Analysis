@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import DashboardLayout from "@/layout/DashboardLayout";
 import NotFoundPage from "@/components/NotFound";
+
 // import ProtectedRoute from './ProtectedRoute';
 const HomePage = lazy(() => import("@/features/Home/page/HomePage"));
 const LoginPage = lazy(() => import("@/features/Login/pages/LoginPage.tsx"));
@@ -18,14 +19,17 @@ const LandingPage = lazy(
 const SentimentPage = lazy(
   () => import("@/features/Sentiment/pages/SentimentPage.tsx")
 );
-const Scrapping = lazy(
-  () => import("@/features/Scrapping/pages/ScrappingPage.tsx")
+const Scraper = lazy(
+  () => import("@/features/Scraper/pages/ScraperPage.tsx")
 );
 const RecomendationContent = lazy(
   () => import("@/features/Recomendation/pages/RecomendationPage.tsx")
 );
 const Settings = lazy(
   () => import("@/features/Settings/pages/SettingsPage.tsx")
+);
+const ScraperGuidePage = lazy(
+  () => import("@/features/ScraperGuide/pages/ScraperGuidePage.tsx")
 );
 const App = () => {
   return (
@@ -78,7 +82,8 @@ const App = () => {
         >
           <Route index element={<DashboardPage />} />
           <Route path="sentiments" element={<SentimentPage />} />
-          <Route path="scrapes" element={<Scrapping />} />
+          <Route path="scrapes" element={<Scraper />} />
+          <Route path="scrapes/guide" element={<ScraperGuidePage />} />
           <Route
             path="recommendation-content"
             element={<RecomendationContent />}

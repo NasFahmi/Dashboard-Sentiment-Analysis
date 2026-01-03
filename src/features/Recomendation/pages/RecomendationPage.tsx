@@ -1,7 +1,10 @@
 
+import { usePageHeader } from '@/hooks/usePageHeader';
+import { recomendationBreadcrumbs } from '@/lib/breadcumb-config';
 import React from 'react';
 
 const RecomendationPage: React.FC = () => {
+  usePageHeader(recomendationBreadcrumbs);
   return (
 
     <div>

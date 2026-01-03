@@ -1,7 +1,10 @@
 
+import { usePageHeader } from '@/hooks/usePageHeader';
+import { sentimentBreadcrumbs } from '@/lib/breadcumb-config';
 import React from 'react';
 
 const SentimentPage: React.FC = () => {
+  usePageHeader(sentimentBreadcrumbs);
   return (
 
     <div>

@@ -48,7 +48,7 @@ const steps = [
 
 const InstruksiComponent = () => {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 md:p-6 mt-5">
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 md:p-6 ">
       {/* Header */}
       <div className="mb-10 max-w-2xl">
         <h2 className="text-xl font-semibold text-slate-900">
