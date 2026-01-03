@@ -1,9 +1,14 @@
 import { usePageHeader } from "@/hooks/usePageHeader";
 import { scrapperDetailBreadcrumbs } from "@/lib/breadcumb-config";
-import { User } from "lucide-react";
+import { Download, User } from "lucide-react";
 import { useState } from "react";
 import { CommentViewer } from "../components/CommentViewer";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 const mockData = {
   username: "sahamtalk",
   fullName: "Saham Talk - Belajar Saham",
@@ -143,13 +148,39 @@ const DetailScraperPage: React.FC = () => {
       {/* ================= PAGE CONTENT ================= */}
       <div className="container mx-auto p-4 space-y-8">
         {/* ===== Header ===== */}
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">
-            Detail Data Scraping
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            @username · 10 post · 1.234 komentar
-          </p>
+        <div className="flex justify-between items-center">
+          <div className="">
+            <h1 className="text-2xl font-semibold text-slate-900">
+              Detail Data Scraping
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">
+              @username · 10 post · 1.234 komentar
+            </p>
+          </div>
+          {/* Actions */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="px-4 py-2 text-sm border border-(--color-logo-1) bg-white rounded-lg font-medium text-(--color-logo-1) hover:border-logo-3 duration-300   flex items-center gap-2ounded-lg  gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Export
+              </button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem onClick={() => console.log("Export CSV")}>
+                Export as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => console.log("Export JSON")}>
+                Export as JSON
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => console.log("Export Excel")}>
+                Export as Excel
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* ===== Profile Section ===== */}
