@@ -1,7 +1,7 @@
 const HashtagSection = ({ hastags }: { hastags: string[] }) => {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5">
-      <h4 className="text-sm font-semibold text-slate-900 mb-3">
+      <h4 className="text-normal font-semibold text-slate-900 mb-3">
         Recommended Hashtags
       </h4>
 

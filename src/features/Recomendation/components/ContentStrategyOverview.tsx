@@ -13,7 +13,7 @@ export const ContentStrategyOverview = ({ data }: { data: ContentStrategy }) => 
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-slate-900">
+          <h3 className="text-normal font-semibold text-slate-900">
             Content Strategy
           </h3>
           <p className="text-xs text-slate-500">

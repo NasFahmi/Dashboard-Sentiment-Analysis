@@ -11,7 +11,7 @@ const CaptionAccordionSection = ({ captions }: { captions: CaptionItem[] }) => {
     <div className="rounded-xl border border-slate-200 bg-white p-6">
       {/* Header */}
       <div className="mb-4">
-        <h3 className="text-sm font-semibold text-slate-900">
+        <h3 className="text-normal font-semibold text-slate-900">
           Recommended Captions
         </h3>
         <p className="text-xs text-slate-500">

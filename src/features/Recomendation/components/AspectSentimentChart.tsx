@@ -30,7 +30,7 @@ export const AspectSentimentChart = ({ data }: { data: AspectSentiment[] }) => {
     <div className="rounded-xl border border-slate-200 bg-white px-5 py-4 space-y-4">
       {/* Header */}
       <div>
-        <h3 className="text-sm font-semibold text-slate-900">
+        <h3 className="text-normal font-semibold text-slate-900">
           Sentiment by Aspect
         </h3>
         <p className="text-xs text-slate-500">
