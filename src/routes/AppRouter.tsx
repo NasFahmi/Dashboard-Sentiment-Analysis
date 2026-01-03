@@ -31,6 +31,9 @@ const Settings = lazy(
 const ScraperGuidePage = lazy(
   () => import("@/features/ScraperGuide/pages/ScraperGuidePage.tsx")
 );
+const DetailScraperPage = lazy(
+  () => import("@/features/DetailScraper/pages/DetailScraperPage.tsx")
+);
 const App = () => {
   return (
     <Router>
@@ -84,6 +87,7 @@ const App = () => {
           <Route path="sentiments" element={<SentimentPage />} />
           <Route path="scrapes" element={<Scraper />} />
           <Route path="scrapes/guide" element={<ScraperGuidePage />} />
+          <Route path="scrapes/:id" element={<DetailScraperPage />} />
           <Route
             path="recommendation-content"
             element={<RecomendationContent />}

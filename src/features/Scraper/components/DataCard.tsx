@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import type { DateRange } from "react-day-picker";
+import { Link } from "react-router";
 
 const mockScrapeSessions = [
   {
@@ -99,6 +100,9 @@ export const DataComponents = () => {
           )}
         </div>
       </div>
+      <p className="text-xs text-slate-600">
+        {mockScrapeSessions.length} data hasil scraping tersedia
+      </p>
 
       {/* List */}
       <div className="space-y-4">
@@ -119,9 +123,9 @@ export const DataComponents = () => {
               </p>
             </div>
 
-            <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-              Lihat Analisis
-            </button>
+            <Link to={`/dashboard/scrapes/${session.id}`} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+              Lihat Detail
+            </Link>
           </div>
         ))}
       </div>

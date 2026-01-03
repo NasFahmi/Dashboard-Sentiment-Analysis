@@ -2,7 +2,7 @@ import type { HeaderMeta } from "@/type/header-meta";
 
 export const dashboardBreadcrumbs: HeaderMeta = {
   title: "Dashboard",
-  breadcrumbs: [ { title: "Dashboard" } ],
+  breadcrumbs: [{ title: "Dashboard" }],
   showBack: false,
 };
 
@@ -28,6 +28,16 @@ export const scraperGuideBreadcrumbs: HeaderMeta = {
     { title: "Dashboard" },
     { title: "Data Scraper", href: "/dashboard/scrapes" },
     { title: "Guide" },
+  ],
+  showBack: true,
+}
+// detail scrapper 
+export const scrapperDetailBreadcrumbs: HeaderMeta = {
+  title: "Detail Data",
+  breadcrumbs: [
+    { title: "Dashboard" },
+    { title: "Data Scraper", href: "/dashboard/scrapes" },
+    { title: "Detail Data" },
   ],
   showBack: true,
 }
