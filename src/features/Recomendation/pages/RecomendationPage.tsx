@@ -48,10 +48,10 @@ const RecomendationPage: React.FC = () => {
     <div className="space-y-10">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">
+        <h1 className="text-normal sm:text-2xl font-semibold text-slate-900">
           Recommendation Content
         </h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-xs sm:text-sm text-slate-500">
           Recommended content based on sentiment analysis results.
         </p>
       </div>

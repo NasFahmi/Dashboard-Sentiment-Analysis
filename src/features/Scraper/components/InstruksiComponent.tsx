@@ -51,10 +51,10 @@ const InstruksiComponent = () => {
     <section className="rounded-2xl border border-slate-200 bg-white p-4 md:p-6 ">
       {/* Header */}
       <div className="mb-10 max-w-2xl">
-        <h2 className="text-xl font-semibold text-slate-900">
+        <h2 className="text-normal sm:text-2xl font-semibold text-slate-900">
           Cara Menggunakan Data Scraper
         </h2>
-        <p className="mt-2 text-sm text-slate-600">
+        <p className="mt-2 text-xs sm:text-sm text-slate-600">
           Ikuti langkah-langkah berikut secara berurutan untuk menjalankan proses scraping data Instagram.
         </p>
       </div>
@@ -79,8 +79,8 @@ const InstruksiComponent = () => {
 
               {/* Content */}
               <div className="flex flex-1 gap-4 rounded-xl border border-slate-200 p-5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-(--color-logo-1)">
-                  <Icon className="h-5 w-5" />
+                <div className="flex h-6 w-6 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-blue-50 text-(--color-logo-1)">
+                  <Icon className="w-3 h-3 sm:h-5 sm:w-5" />
                 </div>
 
                 <div>

@@ -150,10 +150,10 @@ const DetailScraperPage: React.FC = () => {
         {/* ===== Header ===== */}
         <div className="flex justify-between items-center">
           <div className="">
-            <h1 className="text-2xl font-semibold text-slate-900">
+            <h1 className="text-normal sm:text-2xl font-semibold text-slate-900">
               Detail Data Scraping
             </h1>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-xs  sm:text-sm text-slate-500">
               @username · 10 post · 1.234 komentar
             </p>
           </div>
@@ -185,8 +185,8 @@ const DetailScraperPage: React.FC = () => {
 
         {/* ===== Profile Section ===== */}
         <div className="flex items-start gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-            <User className="h-8 w-8 text-slate-500" />
+          <div className="flex w-10 h-10 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-slate-100">
+            <User className="w-5 h-5 sm:h-8 sm:w-8 text-slate-500" />
           </div>
 
           <div>

@@ -55,9 +55,9 @@ export const DataComponents = () => {
         />
 
         {/* Date Range Preset */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-col sm:flex-row ">
           <Select value={rangePreset} onValueChange={setRangePreset}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-full sm:w-fit">
               <SelectValue placeholder="Rentang waktu" />
             </SelectTrigger>
             <SelectContent>
@@ -74,7 +74,7 @@ export const DataComponents = () => {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="justify-start text-left font-normal"
+                  className="justify-start w-full sm:w-fit text-left font-normal"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {dateRange?.from && dateRange?.to ? (

@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-
 
 type ScrapeDataset = {
   id: string;
@@ -77,12 +75,14 @@ export const DatasetSelector = ({ datasets, onAnalyze }: DatasetSelectorProps) =
 
       {/* CTA */}
       <div className="flex justify-end">
-        <Button
+        <button
+          type="button"
+          className="bg-(--color-logo-1) px-4 py-2 rounded-lg text-white text-sm font-medium disabled:bg-slate-300 disabled:cursor-not-allowed"
           disabled={!selectedId}
           onClick={() => selectedId && onAnalyze(datasets.find(d => d.id === selectedId)!)}
         >
           Analyze Recommendation Content
-        </Button>
+        </button>
       </div>
     </div>
   );
