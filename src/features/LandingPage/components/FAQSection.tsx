@@ -175,16 +175,29 @@ const FAQSection = () => {
             </div>
 
             {/* Input */}
-            <div className="flex w-full max-w-md items-center rounded-full bg-white p-2">
+            <form
+              onSubmit={(e : React.FormEvent) => {
+                e.preventDefault();
+                const formData = new FormData(e.target as HTMLFormElement);
+                const email = formData.get('email');
+                // Proses email di sini, misalnya kirim ke API
+                console.log('Email submitted:', email);
+              }}
+              className="flex w-full max-w-md items-center rounded-full bg-white p-2"
+            >
               <input
+                name="email"
                 type="email"
                 placeholder="Your work email"
                 className="flex-1 rounded-full px-4 py-3 text-sm text-slate-900 outline-none"
               />
-              <button className="ml-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-700 transition">
+              <button
+                type="submit"
+                className="ml-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-700 transition hidden sm:inline-block"
+              >
                 Get Started
               </button>
-            </div>
+            </form>
           </div>
         </motion.div>
       </div>
