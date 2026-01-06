@@ -1,5 +1,4 @@
 import DatasetContext from '@/components/DatasetContext'
-import React from 'react'
 import CardInformation from './CardInformation';
 import MiniSnapshot from './MiniSpanshot';
 import Insight from './Insight';
