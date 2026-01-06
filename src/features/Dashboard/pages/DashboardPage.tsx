@@ -4,6 +4,7 @@ import { usePageHeader } from "@/hooks/usePageHeader";
 import { dashboardBreadcrumbs } from "@/lib/breadcumb-config";
 import { isFirstime } from "@/lib/constant";
 import React from "react";
+import DashboardResult from "../components/DashboardResult";
 
 const DashboardPage: React.FC = () => {
   usePageHeader(dashboardBreadcrumbs);
@@ -23,13 +24,8 @@ const DashboardPage: React.FC = () => {
 
       {/* Main Content */}
       {!isEmpty ? (
-        <div>
-          <h2 className="text-lg font-medium text-slate-800">
-            Dashboard Content
-          </h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Sentiment charts and insights will be displayed here.
-          </p>
+        <div className="space-y-6">
+          <DashboardResult />
         </div>
       ) : <EmtpyStateData />}
     </div>
