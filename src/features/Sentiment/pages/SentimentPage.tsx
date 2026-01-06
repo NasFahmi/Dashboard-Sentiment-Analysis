@@ -2,17 +2,34 @@
 import { usePageHeader } from '@/hooks/usePageHeader';
 import { sentimentBreadcrumbs } from '@/lib/breadcumb-config';
 import React from 'react';
+import { isFirstime } from '@/lib/constant';
+import EmtpyStateData from '@/components/EmtpyStateData';
+import SentimentResult from '../components/SentimentResult';
+
 
 const SentimentPage: React.FC = () => {
   usePageHeader(sentimentBreadcrumbs);
+  // null = belum memilih dataset
+
+  // const [activeDataset, setActiveDataset] =
+  //   useState<ScrapeDataset | null>(null);
+
+  // const onChangeDataset = (dataset: ScrapeDataset) => {
+  //   setActiveDataset(dataset);
+  // };
   return (
 
     <div>
       <h1 className="text-2xl font-bold">Sentiment Analysis</h1>
       <p className="mt-2 text-muted-foreground">
-        Sentiments Analysis page content goes here.
+        Sentiments Analysis page content goes here
       </p>
-      {/* Tambahkan card, chart, dll di sini */}
+
+      {isFirstime ? (
+        <EmtpyStateData />
+      ) : (
+        <SentimentResult />
+      )}
     </div>
   );
 };
