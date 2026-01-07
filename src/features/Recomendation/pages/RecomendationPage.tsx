@@ -1,9 +1,7 @@
 import { usePageHeader } from "@/hooks/usePageHeader";
 import { recomendationBreadcrumbs } from "@/lib/breadcumb-config";
-import { useState } from "react";
 import { isFirstime } from "@/lib/constant";
 import EmtpyStateData from "@/components/EmtpyStateData";
-import { DatasetSelector } from "../components/DatasetSelector";
 import RecomendationResult from "../components/RecomendationResult";
 
 type ScrapeDataset = {
@@ -37,9 +35,9 @@ const mockScrapeSessions: ScrapeDataset[] = [
 const RecomendationPage: React.FC = () => {
   usePageHeader(recomendationBreadcrumbs);
 
-  // null = belum memilih dataset
-  const [activeDataset, setActiveDataset] =
-    useState<ScrapeDataset | null>(null);
+  // // null = belum memilih dataset
+  // const [activeDataset, setActiveDataset] =
+  //   useState<ScrapeDataset | null>(null);
 
 
 
@@ -61,15 +59,10 @@ const RecomendationPage: React.FC = () => {
       {/* Main Content */}
       {isEmpty ? (
         <EmtpyStateData />
-      ) : !activeDataset ? (
-        <DatasetSelector
-          datasets={mockScrapeSessions}
-          onAnalyze={setActiveDataset}
-        />
       ) : (
         <RecomendationResult
-          activeDataset={activeDataset}
-          onChangeDataset={() => setActiveDataset(null)}
+          activeDataset={mockScrapeSessions[0]}
+          onChangeDataset={() => { }}
         />
       )}
     </div>

@@ -4,6 +4,7 @@ import EvidenceComment from "./EvidenceComment";
 import ExecutiveSummary from "./ExecutiveSummary";
 import RelevanNoiceAnalysis from "./RelevanNoiceAnalysis";
 import SentimentTrend from "./SentimentTrend";
+import AllComments from "./AllComments";
 type ScrapeDataset = {
   id: string;
   targetAccount: string;
@@ -155,6 +156,8 @@ const SentimentResult = () => {
           },
         }}
       />
+
+      <AllComments />
 
 
 

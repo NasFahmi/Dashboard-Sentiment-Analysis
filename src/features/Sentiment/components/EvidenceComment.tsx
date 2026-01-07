@@ -39,11 +39,10 @@ const EvidenceComment: React.FC<EvidenceCommentProps> = ({ data }) => {
       {/* Header */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-slate-900">
-          Representative Comments
+          Komentar Terpopuler
         </h2>
         <p className="mt-1 text-sm text-slate-500">
-          Contoh komentar yang merepresentasikan sentimen pada masing-masing
-          aspek.
+          Komentar dengan sentimen terbaik
         </p>
       </div>
 

@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import type { DateRange } from "react-day-picker";
-import { Link } from "react-router";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 const mockScrapeSessions = [
   {
@@ -39,7 +40,18 @@ export const DataComponents = () => {
   const [search, setSearch] = useState("");
   const [rangePreset, setRangePreset] = useState("7d");
 
- const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [activeAnalysisId, setActiveAnalysisId] = useState<string | null>(null);
+
+
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
+  const handleDownload = (format: "csv" | "excel" | "json") => {
+    console.log(`Download data dalam format: ${format}`);
+    // nanti:
+    // - panggil API
+    // - atau generate file client-side
+  };
+
 
   return (
     <div className="space-y-6">
@@ -109,11 +121,17 @@ export const DataComponents = () => {
         {mockScrapeSessions.map((session) => (
           <div
             key={session.id}
-            className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+            className={cn(
+              "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border p-4 shadow-sm",
+              activeAnalysisId === session.id
+                ? "border-blue-400 bg-blue-50/40"
+                : "border-slate-200 bg-white"
+            )}
           >
             <div className="space-y-1">
-              <p className="font-medium text-slate-900">
+              <p className="font-medium text-slate-900 flex items-center flex-wrap">
                 @{session.targetAccount}
+                {activeAnalysisId === session.id && <ActiveBadge />}
               </p>
               <p className="text-sm text-slate-500">
                 {new Date(session.scrapedAt).toLocaleString()}
@@ -123,9 +141,46 @@ export const DataComponents = () => {
               </p>
             </div>
 
-            <Link to={`/dashboard/scrapes/${session.id}`} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-              Lihat Detail
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-2">
+              {/* LEFT SIDE: CTA / STATUS */}
+              {activeAnalysisId === session.id ? (
+                <></>
+              ) : (
+                <Button
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                  onClick={() => setActiveAnalysisId(session.id)}
+                >
+                  Mulai Analisis
+                </Button>
+              )}
+
+              {/* RIGHT SIDE: DOWNLOAD (SELALU ADA) */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="rounded-lg px-4 py-2 text-sm"
+                  >
+                    Download
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end" className="w-44">
+                  <DropdownMenuItem onClick={() => handleDownload("csv")}>
+                    CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleDownload("excel")}>
+                    Excel
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleDownload("json")}>
+                    JSON
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+
+
           </div>
         ))}
       </div>
@@ -139,3 +194,9 @@ export const DataComponents = () => {
     </div>
   );
 };
+const ActiveBadge = () => (
+  <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+    <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
+    Aktif
+  </span>
+);

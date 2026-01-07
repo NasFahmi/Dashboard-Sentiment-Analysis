@@ -25,9 +25,6 @@ const Scraper = lazy(
 const RecomendationContent = lazy(
   () => import("@/features/Recomendation/pages/RecomendationPage.tsx")
 );
-const Settings = lazy(
-  () => import("@/features/Settings/pages/SettingsPage.tsx")
-);
 const ScraperGuidePage = lazy(
   () => import("@/features/ScraperGuide/pages/ScraperGuidePage.tsx")
 );
@@ -92,7 +89,6 @@ const App = () => {
             path="recommendation-content"
             element={<RecomendationContent />}
           />
-          <Route path="settings" element={<Settings />} />
         </Route>
 
         {/* Catch-all 404 */}

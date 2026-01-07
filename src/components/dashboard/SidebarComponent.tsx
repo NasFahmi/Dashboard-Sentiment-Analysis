@@ -3,14 +3,13 @@ import { useEffect } from 'react';
 import {
   X,
   LayoutDashboard,
-  Settings,
   LogOut,
   Brain,
   Telescope,
   Lightbulb,
 } from 'lucide-react';
 import { assets } from '@/assets/assets';
-import { Link, useLocation } from 'react-router'; 
+import { Link, useLocation } from 'react-router';
 import { useSidebarStore } from '@/store/useSidebarStore';
 
 const SidebarComponent = () => {
@@ -139,20 +138,6 @@ const SidebarComponent = () => {
         <div className="flex flex-col gap-4">
           <h3 className="font-medium text-sm text-slate-500">Management</h3>
           <div className="flex flex-col gap-1">
-            <Link
-              to="/dashboard/settings"
-              className={`group flex cursor-pointer ${isActive('/dashboard/settings') ? 'active' : ''}`}
-            >
-              <div className="flex w-full items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
-                <Settings
-                  className="size-6 text-slate-500 group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
-                />
-                <span className="font-medium text-slate-500 group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
-                  Settings
-                </span>
-              </div>
-            </Link>
-
             <a href="#" className="group flex cursor-pointer">
               <div className="flex w-full items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                 <LogOut
@@ -168,7 +153,7 @@ const SidebarComponent = () => {
       </div>
 
       {/* Bottom Help Card */}
-      
+
     </aside>
   );
 };
