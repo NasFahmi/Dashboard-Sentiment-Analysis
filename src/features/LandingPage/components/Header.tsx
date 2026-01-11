@@ -156,10 +156,10 @@ const Header = () => {
           variants={heroItem}
           className="mt-10 flex justify-center"
         >
-          <button className="flex items-center gap-2 rounded-full bg-blue-600 px-8 py-4 text-sm font-medium text-white hover:bg-blue-700 transition">
+          <Link to="/register" className="flex items-center gap-2 rounded-full bg-blue-600 px-8 py-4 text-sm font-medium text-white hover:bg-blue-700 transition">
             Get Started for free
             <span className="ml-1">→</span>
-          </button>
+          </Link>
         </motion.div>
 
         {/* Dashboard Preview */}
