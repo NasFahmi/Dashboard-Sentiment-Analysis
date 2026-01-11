@@ -151,6 +151,7 @@ const FAQSection = () => {
         <motion.div
           className="mt-32 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-8 py-16 text-white md:px-16"
           initial="hidden"
+          id="contact-us"
           whileInView="visible"
           viewport={{ once: true, amount: 0.4 }}
           variants={ctaVariants}
@@ -176,7 +177,7 @@ const FAQSection = () => {
 
             {/* Input */}
             <form
-              onSubmit={(e : React.FormEvent) => {
+              onSubmit={(e: React.FormEvent) => {
                 e.preventDefault();
                 const formData = new FormData(e.target as HTMLFormElement);
                 const email = formData.get('email');

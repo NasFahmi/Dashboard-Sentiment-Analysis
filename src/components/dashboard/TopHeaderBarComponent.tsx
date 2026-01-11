@@ -72,8 +72,8 @@ const TopHeaderBarComponent = () => {
       {/* RIGHT */}
       <div className="hidden md:flex items-center gap-3">
         <div className="text-right">
-          <p className="font-semibold text-sm">Admin User</p>
-          <p className="text-xs text-slate-600">Administrator</p>
+          <p className="font-semibold text-sm">Jhon Doe</p>
+          <p className="text-xs text-slate-600">User</p>
         </div>
         <img
           src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100"

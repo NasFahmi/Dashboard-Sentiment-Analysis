@@ -63,7 +63,7 @@ const steps = [
 
 const StepSection = () => {
   return (
-    <section className="mt-[250px] px-6">
+    <section id="how-it-works" className="mt-[250px] px-6">
       <div className="mx-auto max-w-7xl text-center">
         {/* Header */}
         <motion.div

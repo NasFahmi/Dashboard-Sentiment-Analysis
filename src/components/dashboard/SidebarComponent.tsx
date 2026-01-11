@@ -105,20 +105,6 @@ const SidebarComponent = () => {
             </Link>
 
             <Link
-              to="/dashboard/scrapes"
-              className={`group flex cursor-pointer ${isActive('/dashboard/scrapes') ? 'active' : ''}`}
-            >
-              <div className="flex w-full items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
-                <Telescope
-                  className="size-6 text-slate-500 group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
-                />
-                <span className="font-medium text-slate-500 group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
-                  Data Scraper
-                </span>
-              </div>
-            </Link>
-
-            <Link
               to="/dashboard/recommendation-content"
               className={`group flex cursor-pointer ${isActive('/dashboard/recommendation-content') ? 'active' : ''}`}
             >
@@ -128,6 +114,21 @@ const SidebarComponent = () => {
                 />
                 <span className="font-medium text-slate-500 group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
                   Recommendation Content
+                </span>
+              </div>
+            </Link>
+
+
+            <Link
+              to="/dashboard/scrapes"
+              className={`group flex cursor-pointer ${isActive('/dashboard/scrapes') ? 'active' : ''}`}
+            >
+              <div className="flex w-full items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
+                <Telescope
+                  className="size-6 text-slate-500 group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
+                />
+                <span className="font-medium text-slate-500 group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">
+                  Data Scraper
                 </span>
               </div>
             </Link>

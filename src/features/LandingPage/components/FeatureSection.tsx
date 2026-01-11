@@ -6,7 +6,7 @@ import {
   Lightbulb,
   Database,
 } from "lucide-react";
-import { motion, type Variants,easeOut  } from "framer-motion";
+import { motion, type Variants, easeOut } from "framer-motion";
 
 const features = [
   {
@@ -74,7 +74,7 @@ const itemVariants: Variants = {
 
 const FeatureSection = () => {
   return (
-    <section className="mt-[250px] px-6">
+    <section id="features" className="mt-[250px] px-6">
       <div className="mx-auto max-w-7xl">
         {/* Section Header */}
         <motion.div

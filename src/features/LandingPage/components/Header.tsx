@@ -2,6 +2,7 @@ import { assets } from "@/assets/assets";
 import { motion, type Variants } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router";
 const heroContainer: Variants = {
   hidden: {},
   visible: {
@@ -53,21 +54,20 @@ const Header = () => {
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-          <li className="hover:text-blue-600 cursor-pointer">About</li>
-          <li className="hover:text-blue-600 cursor-pointer">Features</li>
-          <li className="hover:text-blue-600 cursor-pointer">How it works</li>
-          <li className="hover:text-blue-600 cursor-pointer">Pricing</li>
-          <li className="text-blue-600 cursor-pointer">Contact Us</li>
+          <a href="#home" className="hover:text-blue-600 cursor-pointer">Home</a>
+          <a href="#features" className="hover:text-blue-600 cursor-pointer">Features</a>
+          <a href="#how-it-works" className="hover:text-blue-600 cursor-pointer">How it works</a>
+          <a href="#contact-us" className="hover:text-blue-600 cursor-pointer">Contact Us</a>
         </ul>
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-4">
-          <button className="text-sm font-medium text-slate-700 hover:text-blue-600">
+          <Link to="/login" className="text-sm font-medium text-slate-700 hover:text-blue-600">
             Login
-          </button>
-          <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition">
+          </Link>
+          <Link to="/register" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition">
             Sign in
-          </button>
+          </Link>
         </div>
 
         {/* Mobile Hamburger */}
@@ -104,19 +104,18 @@ const Header = () => {
 
         {/* Drawer Menu */}
         <div className="px-5 py-6 space-y-4 text-sm font-medium text-slate-700">
-          <div className="hover:text-blue-600 cursor-pointer">About</div>
-          <div className="hover:text-blue-600 cursor-pointer">Features</div>
-          <div className="hover:text-blue-600 cursor-pointer">How it works</div>
-          <div className="hover:text-blue-600 cursor-pointer">Pricing</div>
-          <div className="text-blue-600 cursor-pointer">Contact Us</div>
+          <a href="#home" className="hover:text-blue-600 cursor-pointer">Home</a>
+          <a href="#features" className="hover:text-blue-600 cursor-pointer">Features</a>
+          <a href="#how-it-works" className="hover:text-blue-600 cursor-pointer">How it works</a>
+          <a href="#contact-us" className="hover:text-blue-600 cursor-pointer">Contact Us</a>
 
           <div className="pt-6 space-y-3">
-            <button className="w-full rounded-lg border border-slate-300 py-2">
+            <Link to="/login" className="w-full rounded-lg border border-slate-300 py-2">
               Login
-            </button>
-            <button className="w-full rounded-lg bg-blue-600 py-2 text-white">
+            </Link>
+            <Link to="/register" className="w-full rounded-lg bg-blue-600 py-2 text-white">
               Sign in
-            </button>
+            </Link>
           </div>
         </div>
       </aside>
@@ -128,6 +127,7 @@ const Header = () => {
         variants={heroContainer}
         initial="hidden"
         animate="visible"
+        id="home"
       >
         {/* Headline */}
         <motion.h1
