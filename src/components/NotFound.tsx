@@ -25,7 +25,7 @@ const NotFoundPage = () => {
         <div className="flex justify-center">
           <Link
             to="/dashboard"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:opacity-90"
+            className="inline-flex items-center gap-2 rounded-lg bg-(--color-logo-1) px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:opacity-90"
           >
             <ArrowLeft className="w-4 h-4 text-white" />
             <span className="text-white">Head back to Dashboard</span>
