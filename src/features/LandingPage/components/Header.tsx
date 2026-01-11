@@ -103,17 +103,17 @@ const Header = () => {
         </div>
 
         {/* Drawer Menu */}
-        <div className="px-5 py-6 space-y-4 text-sm font-medium text-slate-700">
-          <a href="#home" className="hover:text-blue-600 cursor-pointer">Home</a>
-          <a href="#features" className="hover:text-blue-600 cursor-pointer">Features</a>
-          <a href="#how-it-works" className="hover:text-blue-600 cursor-pointer">How it works</a>
-          <a href="#contact-us" className="hover:text-blue-600 cursor-pointer">Contact Us</a>
+        <div className="px-5 flex flex-col items-start gap-5 justify-center py-6 space-y-4 text-sm font-medium text-slate-700">
+          <a onClick={() => setOpen(false)} href="#home" className="hover:text-blue-600 cursor-pointer">Home</a>
+          <a onClick={() => setOpen(false)} href="#features" className="hover:text-blue-600 cursor-pointer">Features</a>
+          <a onClick={() => setOpen(false)} href="#how-it-works" className="hover:text-blue-600 cursor-pointer">How it works</a>
+          <a onClick={() => setOpen(false)} href="#contact-us" className="hover:text-blue-600 cursor-pointer">Contact Us</a>
 
-          <div className="pt-6 space-y-3">
-            <Link to="/login" className="w-full rounded-lg border border-slate-300 py-2">
+          <div className="pt-6 flex flex-col w-full items-start gap-3">
+            <Link to="/login" className="w-full justify-center flex items-center rounded-lg border border-slate-300 py-2">
               Login
             </Link>
-            <Link to="/register" className="w-full rounded-lg bg-blue-600 py-2 text-white">
+            <Link to="/register" className="w-full justify-center flex items-center rounded-lg bg-blue-600 py-2 text-white">
               Sign in
             </Link>
           </div>
