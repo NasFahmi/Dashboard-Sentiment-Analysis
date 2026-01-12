@@ -1,2 +1,0 @@
-// Sentiment.repository.test.ts
-

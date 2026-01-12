@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import type { AxiosError } from "axios";
 import type { RegisterPayload, RegisterResponse } from "../types/register";
-import { registerRepository } from "../repository/Register.repository";
+import { registerRepository } from "../repository/register.repository";
 
 export const useRegisterMutation = (options?: {
   onSuccess?: (data: RegisterResponse) => void;

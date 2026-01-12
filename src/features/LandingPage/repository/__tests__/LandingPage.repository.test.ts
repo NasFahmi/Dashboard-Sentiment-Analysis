@@ -1,2 +1,0 @@
-// LandingPage.repository.test.ts
-
