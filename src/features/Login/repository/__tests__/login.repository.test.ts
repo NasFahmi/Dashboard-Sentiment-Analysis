@@ -1,2 +1,0 @@
-// login.repository.test.ts
-

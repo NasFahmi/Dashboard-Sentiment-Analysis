@@ -3,8 +3,30 @@ import { assets } from "@/assets/assets";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterSchema } from "@/features/Register/schemas/register.schema";
+import { useRegisterMutation } from "../hooks/useRegisterMutation";
+import { toast } from "sonner";
+import { normalizeApiError } from "@/lib/normalize-api-error";
+import { useNavigate } from "react-router";
 
 const RegisterPage: React.FC = () => {
+  const navigate = useNavigate();
+
+
+  const registerMutation = useRegisterMutation(
+    {
+      onSuccess: () => {
+        toast.success("Register berhasil");
+        navigate("/login");
+      },
+      onError: (error) => {
+        const apiError = normalizeApiError(error);
+        toast.error(apiError.error, {
+          description: apiError.message,
+        });
+      },
+    }
+  );
+
 
   const {
     register,
@@ -14,9 +36,11 @@ const RegisterPage: React.FC = () => {
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = async (data: RegisterSchema) => {
-    console.log("LOGIN DATA:", data);
-  }
+  const onSubmit = (data: RegisterSchema) => {
+    registerMutation.mutate(data);
+  };
+
+
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
 
@@ -93,28 +117,6 @@ const RegisterPage: React.FC = () => {
               )}
             </div>
 
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700">
-                Email address
-              </label>
-              <input
-                type="email"
-                {...register("email")}
-                required
-                placeholder="you@example.com"
-                className={`mt-1 w-full border-b border-slate-300 bg-transparent px-1 py-2 text-sm text-slate-900 placeholder:text-slate-400
-                focus:border-blue-600 focus:outline-none transition ${errors.email
-                    ? "border-red-500 focus:border-red-500"
-                    : "border-slate-300 focus:border-blue-600"
-                  }`}
-              />
-              {errors.email && (
-                <p className="mt-1 text-xs text-red-500">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
 
             {/* Password */}
             <div>
@@ -146,18 +148,18 @@ const RegisterPage: React.FC = () => {
               </label>
               <input
                 type="password"
-                {...register("confirmPassword")}
+                {...register("confirm_password")}
                 required
                 placeholder="••••••••"
                 className={`mt-1 w-full border-b border-slate-300 bg-transparent px-1 py-2 text-sm text-slate-900 placeholder:text-slate-400
-                focus:border-blue-600 focus:outline-none transition ${errors.confirmPassword
+                focus:border-blue-600 focus:outline-none transition ${errors.confirm_password
                     ? "border-red-500 focus:border-red-500"
                     : "border-slate-300 focus:border-blue-600"
                   }`}
               />
-              {errors.confirmPassword && (
+              {errors.confirm_password && (
                 <p className="mt-1 text-xs text-red-500">
-                  {errors.confirmPassword.message}
+                  {errors.confirm_password.message}
                 </p>
               )}
             </div>

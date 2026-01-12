@@ -1,25 +1,27 @@
 import { type ReactNode, useState, useEffect } from 'react';
 import { AuthContext } from './AuthContext';
 
-
 // 3. Provider
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('auth_token');
-    setIsAuthenticated(!!token);
+    const access_token = localStorage.getItem('access_token');
+    const refresh_token = localStorage.getItem('refresh_token');
+    setIsAuthenticated(!!access_token && !!refresh_token);
     setIsLoading(false);
   }, []);
 
-  const login = (token: string) => {
-    localStorage.setItem('auth_token', token);
+  const login = (acces_token: string, refresh_token: string) => {
+    localStorage.setItem('access_token', acces_token);
+    localStorage.setItem('refresh_token', refresh_token);
     setIsAuthenticated(true);
   };
 
   const logout = () => {
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     setIsAuthenticated(false);
   };
 

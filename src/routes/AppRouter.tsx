@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import DashboardLayout from "@/layout/DashboardLayout";
 import NotFoundPage from "@/components/NotFound";
+import ProtectedRoute from "./ProtectedRoute";
 
 // import ProtectedRoute from './ProtectedRoute';
 const HomePage = lazy(() => import("@/features/Home/page/HomePage"));
@@ -74,9 +75,9 @@ const App = () => {
           path="/dashboard"
           element={
             <Suspense fallback={<LoadingSpinner />}>
-              {/* <ProtectedRoute> */}
-              <DashboardLayout />
-              {/* </ProtectedRoute> */}
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
             </Suspense>
           }
         >

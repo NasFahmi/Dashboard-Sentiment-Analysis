@@ -1,11 +1,11 @@
-import  { createContext } from 'react';
+import { createContext } from 'react';
 
 
 // 1. Definisikan tipe
 type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (token: string) => void;
+  login: (access_token: string, refresh_token: string) => void;
   logout: () => void;
 };
 

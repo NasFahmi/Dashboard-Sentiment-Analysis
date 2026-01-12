@@ -11,10 +11,12 @@ import {
 import { assets } from '@/assets/assets';
 import { Link, useLocation } from 'react-router';
 import { useSidebarStore } from '@/store/useSidebarStore';
+import { useAuth } from "@/hooks/useAuth";
 
 const SidebarComponent = () => {
   const isOpen = useSidebarStore((state) => state.isOpen);
   const close = useSidebarStore((state) => state.close);
+  const authContext = useAuth();
 
   useEffect(() => {
     document.body.classList.toggle("overflow-hidden", isOpen);
@@ -139,7 +141,7 @@ const SidebarComponent = () => {
         <div className="flex flex-col gap-4">
           <h3 className="font-medium text-sm text-slate-500">Management</h3>
           <div className="flex flex-col gap-1">
-            <a href="#" className="group flex cursor-pointer">
+            <button onClick={authContext.logout} className="group flex cursor-pointer">
               <div className="flex w-full items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                 <LogOut
                   className="size-6  text-slate-500 group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"
@@ -148,7 +150,7 @@ const SidebarComponent = () => {
                   Logout
                 </span>
               </div>
-            </a>
+            </button>
           </div>
         </div>
       </div>

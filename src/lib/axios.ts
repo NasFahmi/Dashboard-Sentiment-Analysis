@@ -1,10 +1,9 @@
-import axios, { type AxiosRequestConfig } from "axios";
-import { toast } from "sonner";
+import axios, { AxiosError, type AxiosRequestConfig } from "axios";
+import { env } from "./env";
+import { normalizeApiError } from "./normalize-api-error";
 
 export const axiosClient = axios.create({
-  // baseURL: "http://localhost:3000",
-  // baseURL: "https://dashboard.nasrulfahmi.my.id",
-  baseURL: "https://chatbot.phpenjoyer.my.id/",
+  baseURL: `${env.apiBaseUrl}/api`,
   timeout: undefined,
   headers: {
     "Content-Type": "application/json",
@@ -47,104 +46,31 @@ axiosClient.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
-    console.error("❌ API Error:", error);
+  (error: AxiosError) => {
+    // Parse error response using Zod schema for type safety
+    const normalizedError = normalizeApiError(error);
 
-    // Handle different error scenarios
-    if (error.response) {
-      const { status, data } = error.response;
+    // Extract error details with fallback values
+    const errorDetails = normalizedError
+      ? normalizedError
+      : {
+        statusCode: error.response?.status,
+        error: error.response?.statusText || "Unknown Error",
+        message: error.message || "Terjadi kesalahan yang tidak diketahui"
+      };
 
-      switch (status) {
-        case 401:
-          // Unauthorized - Token invalid/expired
-          console.log("🔐 Unauthorized access - clearing auth data");
+    // Log error for debugging purposes
+    console.group("❌ API Error");
+    console.log("Status:", errorDetails.statusCode);
+    console.log("Error:", errorDetails.error);
+    console.log("Message:", errorDetails.message);
+    console.log("Full error object:", error);
+    console.groupEnd();
 
-          // Clear auth data
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          localStorage.removeItem("user_id");
-
-          // Show error toast
-          toast.error("Sesi Anda telah berakhir", {
-            description: "Silakan login kembali untuk melanjutkan",
-          });
-
-          // Redirect to login (after a short delay to show toast)
-          setTimeout(() => {
-            // Only redirect if not already on login page
-            if (!window.location.pathname.includes("/login")) {
-              window.location.href = "/login";
-            }
-          }, 1000);
-
-          break;
-
-        case 403:
-          // Forbidden - No permission
-          toast.error("Akses Ditolak", {
-            description:
-              "Anda tidak memiliki izin untuk mengakses resource ini",
-          });
-          break;
-
-        case 404:
-          // Not Found
-          toast.error("Resource Tidak Ditemukan", {
-            description: "Endpoint yang diminta tidak tersedia",
-          });
-          break;
-
-        case 422:
-          // Validation Error
-          {
-            const validationMessage =
-              data?.message || "Data yang dikirim tidak valid";
-
-            toast.error("Validasi Error", {
-              description: validationMessage,
-            });
-            break;
-          }
-
-        case 429:
-          // Too Many Requests
-          toast.error("Terlalu Banyak Permintaan", {
-            description: "Silakan tunggu beberapa saat sebelum mencoba lagi",
-          });
-          break;
-
-        case 500:
-          // Internal Server Error
-          toast.error("Server Error", {
-            description:
-              "Terjadi kesalahan pada server. Silakan coba lagi nanti",
-          });
-          break;
-
-        default:
-          // Generic error
-          {
-            const genericMessage =
-              data?.message || "Terjadi kesalahan yang tidak diketahui";
-
-            toast.error("Error", {
-              description: genericMessage,
-            });
-          }
-      }
-    } else if (error.request) {
-      // Network error - no response received
-      console.error("🌐 Network Error:", error.request);
-      toast.error("Masalah Koneksi", {
-        description:
-          "Tidak dapat terhubung ke server. Periksa koneksi internet Anda",
-      });
-    } else {
-      // Something else happened
-      console.error("⚠️ Unknown Error:", error.message);
-      toast.error("Error", {
-        description: "Terjadi kesalahan yang tidak terduga",
-      });
+    if (normalizedError.statusCode === 401) {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      window.dispatchEvent(new Event("auth:logout"));
     }
 
     return Promise.reject(error);

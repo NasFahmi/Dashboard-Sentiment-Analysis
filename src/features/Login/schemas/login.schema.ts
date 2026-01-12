@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z
+  username: z
     .string()
-    .email("Invalid email address"),
+    .min(3, "Username must be at least 3 characters"),
 
 
   password: z

@@ -3,7 +3,32 @@ import { assets } from "@/assets/assets";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginSchema } from "@/features/Login/schemas/login.schema";
+import { useLoginMutation } from "../hooks/useLoginMutation";
+import { toast } from "sonner";
+import { normalizeApiError } from "@/lib/normalize-api-error";
+import { useNavigate } from "react-router";
+import { useAuth } from "@/hooks/useAuth";
 const LoginPage: React.FC = () => {
+  const authContext = useAuth();
+  const navigate = useNavigate();
+  const loginMutation = useLoginMutation(
+    {
+      onSuccess: (data) => {
+        const { access_token, refresh_token } = data.data;
+        authContext.login(access_token, refresh_token);
+        navigate("/dashboard");
+        toast.success("Login berhasil", {
+          description: `Selamat Datang ${data.data.username}`,
+        });
+      },
+      onError: (error) => {
+        const apiError = normalizeApiError(error);
+        toast.error(apiError.error, {
+          description: apiError.message,
+        });
+      },
+    }
+  );
 
   const {
     register,
@@ -13,11 +38,11 @@ const LoginPage: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: LoginSchema) => {
-    console.log("LOGIN DATA:", data);
-
-    // TODO: call auth repository
+  const onSubmit = (data: LoginSchema) => {
+    loginMutation.mutate(data);
   };
+
+
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
 
@@ -79,21 +104,21 @@ const LoginPage: React.FC = () => {
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Email address
+                Username
               </label>
               <input
-                type="email"
-                {...register("email")}
-                placeholder="you@example.com"
+                type="text"
+                {...register("username")}
+                placeholder="awesome username"
                 className={`mt-1 w-full border-b bg-transparent px-1 py-2 text-sm outline-none transition
-                  ${errors.email
+                  ${errors.username
                     ? "border-red-500 focus:border-red-500"
                     : "border-slate-300 focus:border-blue-600"
                   }`}
               />
-              {errors.email && (
+              {errors.username && (
                 <p className="mt-1 text-xs text-red-500">
-                  {errors.email.message}
+                  {errors.username.message}
                 </p>
               )}
             </div>
