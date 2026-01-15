@@ -1,9 +1,9 @@
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
-import { env } from "./env";
+// import { env } from "./env";
 import { normalizeApiError } from "./normalize-api-error";
 
 export const axiosClient = axios.create({
-  baseURL: `${env.apiBaseUrl}/api`,
+  baseURL: `https://backend.sentinela.my.id/api`,
   timeout: undefined,
   headers: {
     "Content-Type": "application/json",
