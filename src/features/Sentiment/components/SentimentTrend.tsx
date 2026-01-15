@@ -177,9 +177,17 @@ const SentimentTrend: React.FC<SentimentTrendProps> = ({ data }) => {
 
             <Tooltip
               labelFormatter={formatTooltipLabel}
-              formatter={(value: number, name: string) => [
-                `${value} ulasan`,
-                name === 'positive' ? 'Positif' : name === 'negative' ? 'Negatif' : 'Netral',
+              formatter={(value, name) => [
+                value != null ? `${value} ulasan` : '—',
+                name === 'positive'
+                  ? 'Positif'
+                  : name === 'negative'
+                    ? 'Negatif'
+                    : name === 'neutral'
+                      ? 'Netral'
+                      : typeof name === 'string'
+                        ? name.charAt(0).toUpperCase() + name.slice(1)
+                        : '—',
               ]}
               contentStyle={{
                 borderRadius: "8px",

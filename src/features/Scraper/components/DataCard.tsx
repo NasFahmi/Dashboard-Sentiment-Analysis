@@ -22,14 +22,14 @@ import { cn } from "@/lib/utils";
 const mockScrapeSessions = [
   {
     id: "1",
-    targetAccount: "poliwangi_jinggo",
+    targetAccount: "mie.gacoan",
     scrapedAt: "2026-01-02T22:59:00",
     totalPosts: 10,
     totalComments: 1234,
   },
   {
     id: "2",
-    targetAccount: "bem_poliwangi",
+    targetAccount: "wizzmie",
     scrapedAt: "2026-01-01T20:15:00",
     totalPosts: 5,
     totalComments: 342,

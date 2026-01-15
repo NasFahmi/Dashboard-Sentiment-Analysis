@@ -72,8 +72,10 @@ const RelevanceAnalysis: React.FC<RelevanceNoiseProps> = ({
                 <Cell fill={COLORS.nonRelevant} />
               </Pie>
               <Tooltip
-                formatter={(value: number) => [`${value} komentar`, "Jumlah"]}
-                // TAMBAHKAN INI: memaksa tooltip berada di layer paling atas
+                formatter={(value) => [
+                  value != null ? `${value} komentar` : '—',
+                  "Jumlah"
+                ]}
                 wrapperStyle={{ zIndex: 1000 }}
                 contentStyle={{
                   borderRadius: "8px",

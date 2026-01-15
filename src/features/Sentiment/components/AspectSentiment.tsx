@@ -60,9 +60,9 @@ const AspectSentiment: React.FC<AspectSentimentProps> = ({ data }) => {
             />
 
             <Tooltip
-              formatter={(value: number, name: string) => [
-                `${value}%`,
-                name.charAt(0).toUpperCase() + name.slice(1),
+              formatter={(value, name) => [
+                value != null ? `${value}%` : '—',
+                (name as string)?.charAt(0).toUpperCase() + (name as string)?.slice(1) || '—',
               ]}
               contentStyle={{
                 borderRadius: "8px",
