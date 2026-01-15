@@ -15,7 +15,9 @@ RUN bun install
 # Copy source code
 COPY . .
 
-# Build the application
+# Build the application with environment variables
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 RUN bun run build
 
 # Stage 2: Production server stage

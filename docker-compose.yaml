@@ -5,10 +5,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=https://backend.sentinela.my.id
     ports:
       - "80:80"
     environment:
       - NODE_ENV=production
+      - VITE_API_BASE_URL=https://backend.sentinela.my.id
     # Uncomment the following lines if you need to access environment variables
     # env_file:
     #   - .env
