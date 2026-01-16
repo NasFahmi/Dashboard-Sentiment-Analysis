@@ -1,6 +1,5 @@
 import AspectSentiment from "./AspectSentiment";
 import DatasetContext from "@/components/DatasetContext";
-import EvidenceComment from "./EvidenceComment";
 import ExecutiveSummary from "./ExecutiveSummary";
 import RelevanNoiceAnalysis from "./RelevanNoiceAnalysis";
 import SentimentTrend from "./SentimentTrend";
@@ -141,21 +140,6 @@ const SentimentResult = () => {
       </div>
       {/* ================= SENTIMENT TREND ================= */}
 
-      {/* ================= EVIDENCE COMMENT ================= */}
-      <EvidenceComment
-        data={{
-          service: {
-            positive: [
-              "Edukasinya sangat membantu, terima kasih min",
-              "Postingannya konsisten dan informatif",
-            ],
-            negative: ["Admin kurang responsif belakangan"],
-          },
-          price: {
-            positive: ["Ilmunya mahal tapi sepadan"],
-          },
-        }}
-      />
 
       <AllComments />
 
