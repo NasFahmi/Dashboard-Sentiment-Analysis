@@ -1,65 +1,111 @@
-import axios, { AxiosError, type AxiosRequestConfig } from "axios";
+import axios, {
+  AxiosError,
+  AxiosHeaders,
+  type AxiosRequestConfig,
+  type InternalAxiosRequestConfig,
+} from "axios";
 import { env } from "./env";
 import { normalizeApiError } from "./normalize-api-error";
+import { isTokenExpired } from "./jwt";
+import { refreshAccessToken } from "./refresh";
 
+/**
+ * =====================================================
+ * Extend Axios request config with _retry flag
+ * =====================================================
+ */
+interface AxiosRequestConfigWithRetry
+  extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
+
+/**
+ * =====================================================
+ * Axios Instance
+ * =====================================================
+ */
 export const axiosClient = axios.create({
   baseURL: `${env.apiBaseUrl}/api`,
   timeout: undefined,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
-    // Global cache disable headers
     "Cache-Control": "no-cache, no-store, must-revalidate",
     Pragma: "no-cache",
     Expires: "0",
   },
 });
 
+/**
+ * =====================================================
+ * Helper: Logout (centralized)
+ * =====================================================
+ */
+const logout = () => {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+  window.dispatchEvent(new Event("auth:logout"));
+};
 
-
-// ===== REQUEST INTERCEPTOR =====
-// Automatically add Authorization header to every request
+/**
+ * =====================================================
+ * REQUEST INTERCEPTOR
+ * =====================================================
+ */
 axiosClient.interceptors.request.use(
-  (config) => {
-    // Get token from localStorage
-    const token = localStorage.getItem("token");
+  async (config) => {
+    let accessToken = localStorage.getItem("access_token");
 
-    if (token) {
-      // Add Authorization header
-      config.headers.Authorization = `Bearer ${token}`;
+    // ===============================
+    // AUTO REFRESH BEFORE REQUEST
+    // ===============================
+    if (accessToken && isTokenExpired(accessToken)) {
+      const newToken = await refreshAccessToken();
+
+      if (!newToken) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        window.dispatchEvent(new Event("auth:logout"));
+        return Promise.reject(
+          new Error("Session expired, please login again")
+        );
+      }
+
+      accessToken = newToken;
     }
 
-    // Optional: Log request for debugging (remove in production)
+    if (accessToken) {
+      if (!(config.headers instanceof AxiosHeaders)) {
+        config.headers = new AxiosHeaders(config.headers);
+      }
+      config.headers.set("Authorization", `Bearer ${accessToken}`);
+    }
 
     return config;
   },
-  (error) => {
-    console.error("❌ Request Error:", error);
-
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error)
 );
 
-// ===== RESPONSE INTERCEPTOR =====
-// Handle responses and errors globally
+
+/**
+ * =====================================================
+ * RESPONSE INTERCEPTOR (REFRESH TOKEN HANDLING)
+ * =====================================================
+ */
 axiosClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error: AxiosError) => {
-    // Parse error response using Zod schema for type safety
+  (response) => response,
+
+  async (error: AxiosError) => {
     const normalizedError = normalizeApiError(error);
 
-    // Extract error details with fallback values
-    const errorDetails = normalizedError
-      ? normalizedError
-      : {
+    const errorDetails =
+      normalizedError ?? {
         statusCode: error.response?.status,
         error: error.response?.statusText || "Unknown Error",
-        message: error.message || "Terjadi kesalahan yang tidak diketahui"
+        message:
+          error.message || "Terjadi kesalahan yang tidak diketahui",
       };
 
-    // Log error for debugging purposes
     console.group("❌ API Error");
     console.log("Status:", errorDetails.statusCode);
     console.log("Error:", errorDetails.error);
@@ -67,45 +113,115 @@ axiosClient.interceptors.response.use(
     console.log("Full error object:", error);
     console.groupEnd();
 
-    if (normalizedError.statusCode === 401) {
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-      window.dispatchEvent(new Event("auth:logout"));
+    /**
+     * Guard: error.config can be undefined
+     */
+    const originalRequest =
+      error.config as AxiosRequestConfigWithRetry | undefined;
+
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
+
+    /**
+     * Handle 401 Unauthorized with refresh token
+     */
+    if (
+      errorDetails.statusCode === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+
+      const refreshToken =
+        localStorage.getItem("refresh_token");
+
+      if (!refreshToken) {
+        logout();
+        return Promise.reject(error);
+      }
+
+      try {
+        const refreshAxios = axios.create({
+          baseURL: `${env.apiBaseUrl}/api`,
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        });
+
+        const refreshResponse = await refreshAxios.post(
+          "/auth/refresh",
+          { refresh_token: refreshToken },
+          {
+            headers: {
+              Authorization: `Bearer ${refreshToken}`,
+            },
+          }
+        );
+
+        const accessToken =
+          refreshResponse.data?.data?.access_token;
+
+        if (!accessToken) {
+          logout();
+          return Promise.reject(error);
+        }
+
+        // Save new access token
+        localStorage.setItem("access_token", accessToken);
+
+        // ===============================
+        // FIX AXIOS v1 HEADERS HANDLING
+        // ===============================
+        if (!(originalRequest.headers instanceof AxiosHeaders)) {
+          originalRequest.headers = new AxiosHeaders(originalRequest.headers);
+        }
+        originalRequest.headers.set("Authorization", `Bearer ${accessToken}`);
+
+        // Retry original request
+        return axiosClient(originalRequest);
+      } catch (refreshError) {
+        logout();
+        return Promise.reject(refreshError);
+      }
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
-// ===== UTILITY FUNCTIONS =====
+/**
+ * =====================================================
+ * Utility Functions
+ * =====================================================
+ */
 
-// Function to manually set token (useful for testing or dynamic token updates)
+// Set token manually
 export const setAuthToken = (token: string | null) => {
   if (token) {
-    // Set default authorization header for all future requests
-    axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    localStorage.setItem("token", token);
+    axiosClient.defaults.headers.common.Authorization =
+      `Bearer ${token}`;
+    localStorage.setItem("access_token", token);
   } else {
-    // Remove authorization header
-    delete axiosClient.defaults.headers.common["Authorization"];
-    localStorage.removeItem("token");
+    delete axiosClient.defaults.headers.common.Authorization;
+    localStorage.removeItem("access_token");
   }
 };
 
-// Function to get current token
+// Get current token
 export const getAuthToken = (): string | null => {
-  return localStorage.getItem("token");
+  return localStorage.getItem("access_token");
 };
 
-// Function to check if user is authenticated
+// Check authentication state
 export const isAuthenticated = (): boolean => {
-  const token = getAuthToken();
-
-  return !!token;
+  return !!getAuthToken();
 };
 
-// Function to make authenticated request manually (if needed)
-export const authenticatedRequest = async (config: AxiosRequestConfig<never>) => {
+// Manual authenticated request
+export const authenticatedRequest = async (
+  config: AxiosRequestConfig
+) => {
   const token = getAuthToken();
 
   if (!token) {
@@ -121,5 +237,11 @@ export const authenticatedRequest = async (config: AxiosRequestConfig<never>) =>
   });
 };
 
-// ===== EXPORT DEFAULT =====
+// Manual refresh access token (optional usage
+
+/**
+ * =====================================================
+ * EXPORT DEFAULT
+ * =====================================================
+ */
 export default axiosClient;

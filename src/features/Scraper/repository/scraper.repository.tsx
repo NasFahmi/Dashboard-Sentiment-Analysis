@@ -12,7 +12,13 @@ export const ScraperRepository = () => ({
   },
   analyzeById: async (id: string): Promise<ScraperResponse> => {
     const response = await axiosClient.post<ScraperResponse>(
-      `/scrapper/${id}`
+      `/scrapper/results/${id}`
+    );
+    return response.data;
+  },
+  deleteById: async (id: string): Promise<ScraperResponse> => {
+    const response = await axiosClient.delete<ScraperResponse>(
+      `/scrapper/results/${id}`
     );
     return response.data;
   },
