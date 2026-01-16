@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SCRAPER_QUERY_KEY } from "./useScraperQuery";
-import { ScraperRepository } from "../repository/scraper.repository.tsx1";
+import { ScraperRepository } from "../repository/scraper.repository.tsx";
 import type { Scraper } from "../types/scraper";
 
 export const useScraperMutation = () => {
