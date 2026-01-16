@@ -1,0 +1,187 @@
+{
+  "message": "Berhasil mengambil data",
+  "data": {
+    "dataset_context": {
+      "username": "umkm_kopi_senja",
+      "fullname": "Kopi Senja Banyuwangi",
+      "generated_at": "2026-01-15T10:30:00Z",
+      "total_posts": 42,
+      "total_comments": 456
+    },
+
+    "dashboard": {
+      "overall_sentiment": "positive",
+      "dominant_aspect": "service",
+      "attention_needed": null,
+
+      "snapshot_sentiment": {
+        "total": 287,
+        "positive": 104,
+        "negative": 28,
+        "neutral": 155
+      },
+
+      "top_aspects": {
+        "service": 132,
+        "food_quality": 98,
+        "price": 57
+      },
+
+      "insight_summary": "Secara umum pelanggan memberikan respons positif terhadap layanan yang cepat dan ramah, meskipun masih terdapat beberapa keluhan terkait harga yang dianggap kurang kompetitif oleh sebagian konsumen."
+    },
+
+    "sentiments": {
+      "executive_summary": {
+        "overall_sentiment": "positive",
+        "dominant_aspect": "service",
+        "data_coverage": {
+          "relevant_comments": 123,
+          "total_comments": 456
+        },
+        "main_insight": "Layanan menjadi faktor utama kepuasan pelanggan dengan sentimen dominan positif."
+      },
+
+      "aspect_sentiment_breakdown": {
+        "food_quality": {
+          "positive": 48,
+          "negative": 12,
+          "neutral": 38
+        },
+        "service": {
+          "positive": 67,
+          "negative": 8,
+          "neutral": 57
+        },
+        "price": {
+          "positive": 21,
+          "negative": 18,
+          "neutral": 18
+        }
+      },
+
+      "data_quality_analysis": {
+        "relevant_comments": 123,
+        "generic_comments": 333,
+        "total_analyzed": 456,
+        "relevance_percentage": 26.97
+      },
+
+      "sentiment_trends": {
+        "daily": [
+          {
+            "label": "2026-01-10",
+            "positive": 12,
+            "negative": 3,
+            "neutral": 9
+          },
+          {
+            "label": "2026-01-11",
+            "positive": 18,
+            "negative": 5,
+            "neutral": 14
+          }
+        ],
+        "monthly": [
+          { "label": "2025-12", "positive": 64, "negative": 18, "neutral": 45 },
+          { "label": "2026-01", "positive": 40, "negative": 10, "neutral": 35 }
+        ],
+        "yearly": [
+          { "label": "2025", "positive": 312, "negative": 98, "neutral": 204 },
+          { "label": "2026", "positive": 40, "negative": 10, "neutral": 35 }
+        ]
+      },
+
+      "popular_comments": {
+        "service": {
+          "positive": [
+            "Pelayanannya ramah dan cepat.",
+            "Staf sangat membantu dan informatif."
+          ],
+          "negative": null,
+          "neutral": null
+        },
+        "price": {
+          "positive": null,
+          "negative": ["Harganya agak mahal dibanding tempat lain."],
+          "neutral": ["Harga masih wajar untuk kualitasnya."]
+        },
+        "food_quality": null
+      },
+
+      "all_comments": [
+        {
+          "comment": "Kopi enak, tapi harganya agak mahal.",
+          "date_time": "2026-01-10T09:12:00Z",
+          "food_quality": "positive",
+          "service": "neutral",
+          "price": "negative"
+        },
+        {
+          "comment": "Pelayanan cepat dan ramah.",
+          "date_time": "2026-01-11T14:45:00Z",
+          "food_quality": "neutral",
+          "service": "positive",
+          "price": "neutral"
+        },
+        {
+          "comment": "Rasa biasa saja, tapi tempatnya nyaman.",
+          "date_time": "2026-01-12T16:20:00Z",
+          "food_quality": "neutral",
+          "service": "positive",
+          "price": "neutral"
+        }
+      ]
+    },
+
+    "recommendation_content": {
+      "sentiment_by_aspect": {
+        "food_quality": 34,
+        "service": 46,
+        "price": 20
+      },
+
+      "ai_insight_summary": "Fokuskan strategi konten pada kekuatan layanan untuk mempertahankan sentimen positif pelanggan.",
+
+      "strategy": {
+        "overall_recommendation": "Honest & Enthusiastic",
+        "focus_area": ["Service Excellence", "Customer Experience"],
+        "content_mix": {
+          "product_showcase": 40,
+          "customer_testimonial": 35,
+          "behind_the_scenes": 25
+        }
+      },
+
+      "caption_recommendations": [
+        {
+          "tone": "Friendly",
+          "caption": "Terima kasih sudah selalu mempercayai layanan kami. Kepuasan Anda adalah prioritas kami!"
+        },
+        {
+          "tone": "Promotional",
+          "caption": "Nikmati pengalaman ngopi dengan pelayanan terbaik hanya di Kopi Senja."
+        }
+      ],
+
+      "hashtags": [
+        "#KopiSenja",
+        "#NgopiSantai",
+        "#PelayananTerbaik",
+        "#UMKMBanyuwangi"
+      ],
+
+      "best_posting_time": [
+        {
+          "time_range": "07:00 – 09:00 (Weekdays)",
+          "engagement_level": "High Engagement",
+          "is_best": true
+        },
+        {
+          "time_range": "11:30 – 13:30 (All Days)",
+          "engagement_level": "Medium Engagement",
+          "is_best": false
+        }
+      ]
+    }
+  }
+}

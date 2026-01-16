@@ -121,6 +121,14 @@ const SidebarComponent = () => {
             </Link>
 
 
+
+          </div>
+        </div>
+
+        {/* Management */}
+        <div className="flex flex-col gap-4">
+          <h3 className="font-medium text-sm text-slate-500">Management</h3>
+          <div className="flex flex-col gap-1">
             <Link
               to="/dashboard/scrapes"
               className={`group flex cursor-pointer ${isActive('/dashboard/scrapes') ? 'active' : ''}`}
@@ -134,13 +142,7 @@ const SidebarComponent = () => {
                 </span>
               </div>
             </Link>
-          </div>
-        </div>
 
-        {/* Management */}
-        <div className="flex flex-col gap-4">
-          <h3 className="font-medium text-sm text-slate-500">Management</h3>
-          <div className="flex flex-col gap-1">
             <button onClick={authContext.logout} className="group flex cursor-pointer">
               <div className="flex w-full items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                 <LogOut

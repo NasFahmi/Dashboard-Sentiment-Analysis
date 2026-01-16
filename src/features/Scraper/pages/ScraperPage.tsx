@@ -1,14 +1,27 @@
 import React from 'react';
 // import InstruksiComponent from '../components/InstruksiComponent';
 import { BookOpen } from 'lucide-react';
-import { isFirstime } from "@/lib/constant";
 import InstruksiComponent from '../components/InstruksiComponent';
 import { Link } from 'react-router';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import { scrapesBreadcrumbs } from '@/lib/breadcumb-config';
 import { DataComponents } from '../components/DataCard';
+import { useScraperQuery } from '../hooks/useScraperQuery';
 const ScraperPage: React.FC = () => {
   usePageHeader(scrapesBreadcrumbs);
+
+  const { data, isLoading, isError } = useScraperQuery();
+
+  if (isLoading) {
+    return <div>Memuat data scraping...</div>;
+  }
+
+  if (isError) {
+    return <div>Gagal memuat data scraping</div>;
+  }
+
+
+
 
   return (
 
@@ -34,7 +47,7 @@ const ScraperPage: React.FC = () => {
 
       </div>
 
-      {isFirstime ? <InstruksiComponent /> : <DataComponents />}
+      {(data ?? []).length === 0 ? <InstruksiComponent /> : <DataComponents data={(data ?? [])} />}
 
 
 
