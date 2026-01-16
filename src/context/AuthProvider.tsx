@@ -14,12 +14,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = (acces_token: string, refresh_token: string) => {
+    document.cookie = `access_token=${acces_token}; path=/`;
+    document.cookie = `refresh_token=${refresh_token}; path=/`;
     localStorage.setItem('access_token', acces_token);
     localStorage.setItem('refresh_token', refresh_token);
     setIsAuthenticated(true);
   };
 
   const logout = () => {
+    document.cookie = `access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+    document.cookie = `refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     setIsAuthenticated(false);
