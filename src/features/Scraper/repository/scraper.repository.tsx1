@@ -6,7 +6,7 @@ import type { ScraperResponse } from "../types/scraper";
 export const ScraperRepository = () => ({
   get: async (): Promise<ScraperResponse> => {
     const response = await axiosClient.get<ScraperResponse>(
-      "/scrapper"
+      "/scraping/results"
     );
     return response.data;
   },

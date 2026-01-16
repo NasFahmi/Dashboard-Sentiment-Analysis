@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ScraperRepository } from "../repository/scraper.repository";
+import { ScraperRepository } from "../repository/scraper.repository.tsx1";
 import { mapToScraper, type Scraper } from "../types/scraper";
 import type { ScraperResponse } from "../types/scraper";
 
