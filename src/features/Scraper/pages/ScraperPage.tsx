@@ -4,20 +4,22 @@ import { BookOpen } from 'lucide-react';
 import InstruksiComponent from '../components/InstruksiComponent';
 import { Link } from 'react-router';
 import { usePageHeader } from '@/hooks/usePageHeader';
-import { scrapesBreadcrumbs } from '@/lib/breadcumb-config';
-import { DataComponents } from '../components/DataCard';
+import { scrapesBreadcrumbs } from '@/shared/breadcumb-config';
+// import { DataComponents } from '../components/DataComponents';
 import { useScraperQuery } from '../hooks/useScraperQuery';
+import ErrorStateData from '@/components/ErrorStateData';
+import { ScraperLoadingComponent } from '../components/ScraperLoadingComponent';
+import { DataComponents } from '../components/DataComponents';
+// import { ScraperLoadingComponent } from '../components/ScraperLoadingComponent';
 const ScraperPage: React.FC = () => {
   usePageHeader(scrapesBreadcrumbs);
 
   const { data, isLoading, isError } = useScraperQuery();
 
-  if (isLoading) {
-    return <div>Memuat data scraping...</div>;
-  }
+
 
   if (isError) {
-    return <div>Gagal memuat data scraping</div>;
+    return <ErrorStateData />;
   }
 
 
@@ -47,7 +49,13 @@ const ScraperPage: React.FC = () => {
 
       </div>
 
-      {(data ?? []).length === 0 ? <InstruksiComponent /> : <DataComponents data={(data ?? [])} />}
+      {isLoading ? (
+        <ScraperLoadingComponent />
+      ) : (data ?? []).length === 0 ? (
+        <InstruksiComponent />
+      ) : (
+        <DataComponents data={data ?? []} />
+      )}
 
 
 

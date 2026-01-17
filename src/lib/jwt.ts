@@ -12,6 +12,7 @@ export const isTokenExpired = (token: string): boolean => {
     const now = Math.floor(Date.now() / 1000);
 
     // buffer 30 detik (prevent race condition)
+    console.log(payload.exp, now + 30);
     return payload.exp < now + 30;
   } catch {
     return true;

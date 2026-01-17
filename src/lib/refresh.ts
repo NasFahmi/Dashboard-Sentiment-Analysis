@@ -6,6 +6,7 @@ export const refreshAccessToken = async (): Promise<string | null> => {
   if (!refreshToken) return null;
 
   try {
+    // Anda menggunakan axios global dan menambah header Authorization
     const res = await axios.post(
       `${env.apiBaseUrl}/api/auth/refresh`,
       { refresh_token: refreshToken },

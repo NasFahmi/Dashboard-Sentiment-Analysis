@@ -1,46 +1,43 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { SCRAPER_QUERY_KEY } from "./useScraperQuery";
-import { ScraperRepository } from "../repository/scraper.repository.tsx";
-import type { Scraper } from "../types/scraper";
+import { ScraperRepository } from "../repository/scraper.repository";
+import { scraperKeys } from "@/shared/query_keys";
+import type { ScraperResponse } from "../types/scraper";
 
-export const useScraperMutation = () => {
+export const useDeleteScraperMutation = () => {
   const repo = ScraperRepository();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => repo.analyzeById(id),
+    mutationFn: (id: string) => repo.deleteById(id),
 
     // =========================
     // OPTIMISTIC UPDATE
     // =========================
-    onMutate: async (id) => {
+    onMutate: async (id: string) => {
       await queryClient.cancelQueries({
-        queryKey: SCRAPER_QUERY_KEY,
+        queryKey: scraperKeys.list(),
       });
 
       const previousData =
-        queryClient.getQueryData<Scraper[]>(SCRAPER_QUERY_KEY);
+        queryClient.getQueryData<ScraperResponse>(scraperKeys.list());
 
-      queryClient.setQueryData<Scraper[]>(
-        SCRAPER_QUERY_KEY,
-        (old) =>
-          old?.map((item) =>
-            item.id === id
-              ? { ...item, is_analyzed: true }
-              : item
-          ) ?? []
-      );
+      if (previousData) {
+        queryClient.setQueryData<ScraperResponse>(scraperKeys.list(), {
+          ...previousData,
+          data: previousData.data.filter((item) => item.id !== id),
+        });
+      }
 
       return { previousData };
     },
 
     // =========================
-    // ROLLBACK JIKA ERROR
+    // ROLLBACK
     // =========================
     onError: (_error, _id, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(
-          SCRAPER_QUERY_KEY,
+          scraperKeys.list(),
           context.previousData
         );
       }
@@ -51,7 +48,7 @@ export const useScraperMutation = () => {
     // =========================
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: SCRAPER_QUERY_KEY,
+        queryKey: scraperKeys.list(),
       });
     },
   });

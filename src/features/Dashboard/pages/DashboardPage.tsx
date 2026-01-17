@@ -1,7 +1,7 @@
 // src/features/Dashboard/pages/DashboardPage.tsx
 import EmtpyStateData from "@/components/EmtpyStateData";
 import { usePageHeader } from "@/hooks/usePageHeader";
-import { dashboardBreadcrumbs } from "@/lib/breadcumb-config";
+import { dashboardBreadcrumbs } from "@/shared/breadcumb-config";
 import { isFirstime } from "@/lib/constant";
 import React from "react";
 import DashboardResult from "../components/DashboardResult";
@@ -9,7 +9,6 @@ import DashboardResult from "../components/DashboardResult";
 const DashboardPage: React.FC = () => {
   usePageHeader(dashboardBreadcrumbs);
   const isEmpty = isFirstime;
-
   return (
     <div className="space-y-10">
       {/* Header */}

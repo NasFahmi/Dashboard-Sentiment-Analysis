@@ -1,5 +1,5 @@
 import { usePageHeader } from "@/hooks/usePageHeader";
-import { recomendationBreadcrumbs } from "@/lib/breadcumb-config";
+import { recomendationBreadcrumbs } from "@/shared/breadcumb-config";
 import { isFirstime } from "@/lib/constant";
 import EmtpyStateData from "@/components/EmtpyStateData";
 import RecomendationResult from "../components/RecomendationResult";

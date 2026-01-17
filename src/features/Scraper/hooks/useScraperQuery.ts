@@ -1,46 +1,49 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ScraperRepository } from "../repository/scraper.repository.tsx";
+import { ScraperRepository } from "../repository/scraper.repository";
 import { mapToScraper, type Scraper } from "../types/scraper";
 import type { ScraperResponse } from "../types/scraper";
-
-export const SCRAPER_QUERY_KEY = ["scrapper"];
+import { scraperKeys } from "@/shared/query_keys";
 
 export const useScraperQuery = () => {
   const repo = ScraperRepository();
   const queryClient = useQueryClient();
 
   const query = useQuery<ScraperResponse, Error, Scraper[]>({
-    queryKey: SCRAPER_QUERY_KEY,
+    queryKey: scraperKeys.list(),
     queryFn: () => repo.get(),
-    select: (data) => mapToScraper(data.data),
+    select: (response) => mapToScraper(response.data),
+
+    staleTime: 20 * 1000, //20 detik
+    gcTime: 30 * 1000,//30  detik
   });
 
   // =========================
-  // Manual cache operations
+  // CACHE OPERATIONS
   // =========================
 
   const setCache = (data: Scraper[]) => {
-    queryClient.setQueryData(SCRAPER_QUERY_KEY, data);
+    queryClient.setQueryData(scraperKeys.list(), data);
   };
 
   const updateOne = (updated: Scraper) => {
-    queryClient.setQueryData<Scraper[]>(SCRAPER_QUERY_KEY, (old) => {
-      if (!old) return old;
-      return old.map((item) =>
-        item.id === updated.id ? updated : item
-      );
-    });
+    queryClient.setQueryData<Scraper[]>(
+      scraperKeys.list(),
+      (old = []) =>
+        old.map((item) =>
+          item.id === updated.id ? updated : item
+        )
+    );
   };
 
   const invalidate = () => {
     queryClient.invalidateQueries({
-      queryKey: SCRAPER_QUERY_KEY,
+      queryKey: scraperKeys.list(),
     });
   };
 
   const removeCache = () => {
     queryClient.removeQueries({
-      queryKey: SCRAPER_QUERY_KEY,
+      queryKey: scraperKeys.list(),
     });
   };
 

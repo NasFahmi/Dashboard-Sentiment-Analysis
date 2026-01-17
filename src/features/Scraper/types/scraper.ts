@@ -8,7 +8,7 @@ export interface Datum {
   username: string;
   fullname: string;
   bio: string;
-  postCount: number;
+  post_count: number;
   is_analyzed: boolean;
   createdAt: string; // string dari API
 }
@@ -18,9 +18,8 @@ export interface Scraper {
   username: string;
   fullname: string;
   bio: string;
-  postCount: number;
+  post_count: number;
   is_analyzed: boolean;
-  createdAt: Date; // Date object di frontend
 }
 
 export const mapToScraper = (data: Datum[]): Scraper[] => {
@@ -29,8 +28,12 @@ export const mapToScraper = (data: Datum[]): Scraper[] => {
     username: item.username,
     fullname: item.fullname,
     bio: item.bio,
-    postCount: item.postCount,
+    post_count: item.post_count,
     is_analyzed: item.is_analyzed,
-    createdAt: new Date(item.createdAt), // Konversi string ke Date
   }));
 };
+
+
+export interface ScraperDeleteResponse {
+  message: string;
+}

@@ -1,6 +1,6 @@
 
 import { usePageHeader } from '@/hooks/usePageHeader';
-import { sentimentBreadcrumbs } from '@/lib/breadcumb-config';
+import { sentimentBreadcrumbs } from '@/shared/breadcumb-config';
 import React from 'react';
 import { isFirstime } from '@/lib/constant';
 import EmtpyStateData from '@/components/EmtpyStateData';

@@ -135,52 +135,32 @@ axiosClient.interceptors.response.use(
       const refreshToken =
         localStorage.getItem("refresh_token");
 
-      if (!refreshToken) {
-        logout();
-        return Promise.reject(error);
-      }
+      console.log(`refreshToken is ${refreshToken}`);
 
       try {
-        const refreshAxios = axios.create({
-          baseURL: `${env.apiBaseUrl}/api`,
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        });
+        // Gunakan fungsi refreshAccessToken yang sudah benar
+        const newAccessToken = await refreshAccessToken();
 
-        const refreshResponse = await refreshAxios.post(
-          "/auth/refresh",
-          { refresh_token: refreshToken },
-          {
-            headers: {
-              Authorization: `Bearer ${refreshToken}`,
-            },
-          }
-        );
-
-        const accessToken =
-          refreshResponse.data?.data?.access_token;
-
-        if (!accessToken) {
+        if (!newAccessToken) {
+          // Jika refreshAccessToken mengembalikan null, artinya refresh token juga tidak valid.
+          // Fungsi refreshAccessToken sudah menangani penghapusan token internalnya.
+          // Kita cukup memicu logout di sini.
           logout();
-          return Promise.reject(error);
+          return Promise.reject(new Error("Failed to refresh token. Session expired."));
         }
 
-        // Save new access token
-        localStorage.setItem("access_token", accessToken);
-
-        // ===============================
-        // FIX AXIOS v1 HEADERS HANDLING
-        // ===============================
+        // Update header untuk request original dengan token baru
         if (!(originalRequest.headers instanceof AxiosHeaders)) {
           originalRequest.headers = new AxiosHeaders(originalRequest.headers);
         }
-        originalRequest.headers.set("Authorization", `Bearer ${accessToken}`);
+        originalRequest.headers.set("Authorization", `Bearer ${newAccessToken}`);
 
-        // Retry original request
+        // Ulangi request original dengan token baru
         return axiosClient(originalRequest);
+
       } catch (refreshError) {
+        // Jika refreshAccessToken melempar error (misalnya masalah jaringan)
+        console.error("Refresh token failed. Logging out.", refreshError);
         logout();
         return Promise.reject(refreshError);
       }

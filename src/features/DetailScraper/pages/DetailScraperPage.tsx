@@ -1,5 +1,5 @@
 import { usePageHeader } from "@/hooks/usePageHeader";
-import { scrapperDetailBreadcrumbs } from "@/lib/breadcumb-config";
+import { scrapperDetailBreadcrumbs } from "@/shared/breadcumb-config";
 import { Download, User } from "lucide-react";
 import { useState } from "react";
 import { CommentViewer } from "../components/CommentViewer";
