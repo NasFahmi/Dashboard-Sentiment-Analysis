@@ -10,6 +10,11 @@ export const useRecomandationQuery = (id: string) => {
     queryFn: () => repo.getById(id),
     select: (response) => mapToRecomendation(response),
     enabled: !!id,
+    staleTime: 5 * 60 * 1000, // 5 menit
+    gcTime: 30 * 60 * 1000,   // 30 menit
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+
   });
 
   const setCache = (data: Recomendation) => {
