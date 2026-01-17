@@ -70,7 +70,7 @@ const CaptionCard = ({
             w-full flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-semibold transition-all duration-200
             ${copied
               ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-              : "bg-slate-900 text-white hover:bg-slate-800 shadow-sm hover:shadow"
+              : "bg-blue-500 text-white hover:bg-blue-600 shadow-sm hover:shadow"
             }
           `}
         >
