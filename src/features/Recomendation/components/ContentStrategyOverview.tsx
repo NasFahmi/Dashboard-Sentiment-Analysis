@@ -1,10 +1,5 @@
 type ContentStrategy = {
-  focusAreas: string[];
-  tone: string;
-  contentMix: {
-    label: string;
-    percentage: number;
-  }[];
+  content_strategy: string;
 };
 
 export const ContentStrategyOverview = ({ data }: { data: ContentStrategy }) => {
@@ -33,59 +28,8 @@ export const ContentStrategyOverview = ({ data }: { data: ContentStrategy }) => 
           Recommended Tone
         </p>
         <p className="mt-1 text-sm font-semibold text-blue-600">
-          {data.tone}
+          {data.content_strategy}
         </p>
-      </div>
-
-      {/* Focus Areas */}
-      <div className="space-y-2">
-        <p className="text-xs font-medium text-slate-600">
-          Focus Areas
-        </p>
-        <ul className="w-fit flex flex-wrap gap-2">
-          {data.focusAreas.map((item, idx) => (
-            <li
-              key={idx}
-              className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700"
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Content Mix */}
-      <div className="space-y-3">
-        <p className="text-xs font-medium text-slate-600">
-          Content Mix
-        </p>
-
-        {data.contentMix.map((item) => {
-          const barColor =
-            item.label.toLowerCase().includes("education")
-              ? "bg-sky-500"
-              : item.label.toLowerCase().includes("promotion")
-              ? "bg-amber-500"
-              : "bg-emerald-500";
-
-          return (
-            <div key={item.label} className="space-y-1">
-              <div className="flex justify-between text-xs text-slate-600">
-                <span>{item.label}</span>
-                <span className="font-medium">
-                  {item.percentage}%
-                </span>
-              </div>
-
-              <div className="h-4 w-full rounded-full bg-slate-100 overflow-hidden">
-                <div
-                  className={`h-full rounded-full ${barColor}`}
-                  style={{ width: `${item.percentage}%` }}
-                />
-              </div>
-            </div>
-          );
-        })}
       </div>
     </div>
   );
