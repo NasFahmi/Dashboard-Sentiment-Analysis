@@ -1,5 +1,6 @@
 import { type ReactNode, useState, useEffect } from 'react';
-import { AuthContext } from './AuthContext';
+import { AuthContext } from '../context/AuthContext';
+import { useDatasetContextStore } from '@/store/useDatasetContextStore';
 
 // 3. Provider
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -26,6 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     document.cookie = `refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    useDatasetContextStore.getState().reset();
     setIsAuthenticated(false);
   };
 

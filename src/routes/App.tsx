@@ -1,4 +1,4 @@
-import { AuthProvider } from '@/context/AuthProvider';
+import { AuthProvider } from '@/provider/AuthProvider';
 import AppRouter from './AppRouter';
 
 function App() {
@@ -8,4 +8,5 @@ function App() {
     </AuthProvider>
   );
 }
+
 export default App;

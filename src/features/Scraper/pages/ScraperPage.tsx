@@ -6,17 +6,16 @@ import { Link } from 'react-router';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import { scrapesBreadcrumbs } from '@/shared/breadcumb-config';
 // import { DataComponents } from '../components/DataComponents';
-import { useScraperQuery } from '../hooks/useScraperQuery';
 import ErrorStateData from '@/components/ErrorStateData';
 import { ScraperLoadingComponent } from '../components/ScraperLoadingComponent';
 import { DataComponents } from '../components/DataComponents';
+import { useScrapers } from '@/hooks/useScraper';
 // import { ScraperLoadingComponent } from '../components/ScraperLoadingComponent';
 const ScraperPage: React.FC = () => {
   usePageHeader(scrapesBreadcrumbs);
+  // 🔴 DATA DARI PROVIDER, BUKAN QUERY
 
-  const { data, isLoading, isError } = useScraperQuery();
-
-
+  const { scrapers, isLoading, isError } = useScrapers();
 
   if (isError) {
     return <ErrorStateData />;
@@ -51,10 +50,10 @@ const ScraperPage: React.FC = () => {
 
       {isLoading ? (
         <ScraperLoadingComponent />
-      ) : (data ?? []).length === 0 ? (
+      ) : (scrapers ?? []).length === 0 ? (
         <InstruksiComponent />
       ) : (
-        <DataComponents data={data ?? []} />
+        <DataComponents data={scrapers ?? []} />
       )}
 
 

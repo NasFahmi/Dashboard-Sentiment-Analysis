@@ -10,20 +10,20 @@ const DashboardPage: React.FC = () => {
   usePageHeader(dashboardBreadcrumbs);
   const isEmpty = isFirstime;
   return (
-    <div className="space-y-10">
+    <div >
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">
+        <h1 className="text-2xl font-bold">
           Sentiment Dashboard
         </h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-xs sm:text-sm text-slate-500">
           An overview of sentiment analysis results from social media data.
         </p>
       </div>
 
       {/* Main Content */}
       {!isEmpty ? (
-        <div className="space-y-6">
+        <div className="">
           <DashboardResult />
         </div>
       ) : <EmtpyStateData />}

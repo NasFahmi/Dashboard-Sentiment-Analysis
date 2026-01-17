@@ -1,27 +1,56 @@
-import DatasetContext from '@/components/DatasetContext'
+import DatasetContext from '@/components/DatasetContext';
 import CardInformation from './CardInformation';
 import MiniSnapshot from './MiniSpanshot';
 import Insight from './Insight';
-type ScrapeDataset = {
-  id: string;
-  targetAccount: string;
-  scrapedAt: string;
-  totalPosts: number;
-  totalComments: number;
-};
 
-const dummyDatasetContext: ScrapeDataset = {
-  id: "1",
-  targetAccount: "poliwangi_jinggo",
-  scrapedAt: "2026-01-02T22:59:00",
-  totalPosts: 10,
-  totalComments: 1234,
-};
+import { useDatasetContextSync } from '@/hooks/useDatasetContextSync';
+import { useScrapers } from '@/hooks/useScraper';
+
+import EmtpyStateData from '@/components/EmtpyStateData';
+import { DashbaordSkeletonComponent } from '@/components/DashbaordSkeletonComponent';
+
 const DashboardResult = () => {
+  const { scrapers } = useScrapers();
+
+  console.log(`dashboard scrapper data : ${scrapers}`);
+  const { activeDataset, status } =
+    useDatasetContextSync(scrapers);
+
+  /* =====================================================
+   * STATE: HYDRATING / RESOLVING
+   * ===================================================== */
+  if (status === "resolving") {
+    console.log("Resolving");
+    return <DashbaordSkeletonComponent />;
+  }
+
+  /* =====================================================
+   * STATE: EMPTY (FINAL)
+   * ===================================================== */
+  if (status === "empty") {
+    console.log("Empty");
+    return <EmtpyStateData />;
+  }
+
+  /* =====================================================
+   * STATE: READY (GUARDED)
+   * ===================================================== */
+  if (status !== "ready" || !activeDataset) {
+    console.log("Not Ready");
+    // defensive fallback – seharusnya jarang terjadi
+    return <DashbaordSkeletonComponent />;
+  }
+
+  /* =====================================================
+   * NORMAL RENDER
+   * ===================================================== */
   return (
-    <div className='space-y-6'>
-      <DatasetContext activeDataset={dummyDatasetContext} />
-      {/* card */}
+    <div className="space-y-6">
+      <DatasetContext
+        scrapers={scrapers}
+        activeDataset={activeDataset}
+      />
+
       <CardInformation
         overallSentiment="positive"
         dominantAspect="Service"
@@ -52,13 +81,9 @@ const DashboardResult = () => {
         ]}
       />
 
-
       <Insight />
-
-
-
     </div>
-  )
-}
+  );
+};
 
-export default DashboardResult
+export default DashboardResult;

@@ -4,32 +4,9 @@ import { isFirstime } from "@/lib/constant";
 import EmtpyStateData from "@/components/EmtpyStateData";
 import RecomendationResult from "../components/RecomendationResult";
 
-type ScrapeDataset = {
-  id: string;
-  targetAccount: string;
-  scrapedAt: string;
-  totalPosts: number;
-  totalComments: number;
-};
 
 
 
-const mockScrapeSessions: ScrapeDataset[] = [
-  {
-    id: "1",
-    targetAccount: "poliwangi_jinggo",
-    scrapedAt: "2026-01-02T22:59:00",
-    totalPosts: 10,
-    totalComments: 1234,
-  },
-  {
-    id: "2",
-    targetAccount: "bem_poliwangi",
-    scrapedAt: "2026-01-01T20:15:00",
-    totalPosts: 5,
-    totalComments: 342,
-  },
-];
 
 
 const RecomendationPage: React.FC = () => {
@@ -45,7 +22,7 @@ const RecomendationPage: React.FC = () => {
   const isEmpty = isFirstime;
 
   return (
-    <div className="space-y-10">
+    <div >
       {/* Header */}
       <div>
         <h1 className="text-normal sm:text-2xl font-semibold text-slate-900">
@@ -60,10 +37,7 @@ const RecomendationPage: React.FC = () => {
       {isEmpty ? (
         <EmtpyStateData />
       ) : (
-        <RecomendationResult
-          activeDataset={mockScrapeSessions[0]}
-          onChangeDataset={() => { }}
-        />
+        <RecomendationResult />
       )}
     </div>
   );

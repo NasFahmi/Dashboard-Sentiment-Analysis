@@ -21,7 +21,7 @@ const SentimentPage: React.FC = () => {
 
     <div>
       <h1 className="text-2xl font-bold">Sentiment Analysis</h1>
-      <p className="mt-2 text-muted-foreground">
+      <p className="mt-2 text-xs sm:text-sm text-slate-500">
         Sentiments Analysis page content goes here
       </p>
 

@@ -25,6 +25,7 @@ import { useDownloadHandler } from "../hooks/useDownloadHandler";
 import { useDeleteHandler } from "../hooks/useDeleteHandler";
 import { useHandleAnalysis } from "../hooks/useHandleAnalysis";
 import { AlertDialogLoading } from "@/components/AlertDialogLoading";
+import { useDatasetContextStore } from "@/store/useDatasetContextStore";
 
 interface DataComponentsProps {
   data: Scraper[];
@@ -32,17 +33,29 @@ interface DataComponentsProps {
 
 export const DataComponents = ({ data }: DataComponentsProps) => {
   const [search, setSearch] = useState("");
+
+  // =========================
+  // GLOBAL DATASET CONTEXT
+  // =========================
+  const activeDatasetId = useDatasetContextStore(
+    (s) => s.activeDatasetId
+  );
+  const setActiveDatasetId = useDatasetContextStore(
+    (s) => s.setActiveDatasetId
+  );
+
+  // =========================
+  // DERIVED STATE (CLIENT SEARCH)
+  // =========================
   const filteredData = data.filter((item) =>
     item.username.toLowerCase().includes(search.toLowerCase())
   );
 
-
-  const [activeAnalysisId, setActiveAnalysisId] = useState<string | null>(null);
-
-  // mutation analisis
+  // =========================
+  // MUTATIONS & HANDLERS
+  // =========================
   const { mutate: analyze, isPending: isAnalyzing } = useHandleAnalysis();
 
-  // download & delete handlers
   const {
     downloadingId,
     downloadingFormat,
@@ -53,39 +66,37 @@ export const DataComponents = ({ data }: DataComponentsProps) => {
   const { deletingId, handleDelete, isDeleting } = useDeleteHandler();
 
   // =========================
-  // HANDLERS (BERSIH)
+  // ACTION HANDLERS
   // =========================
-
   const handleMulaiAnalisis = (id: string) => {
     analyze(id);
   };
 
-  const handleLihatAnalisis = (id: string) => {
-    setActiveAnalysisId(id);
+  const handleLihatAnalisa = (id: string) => {
+    setActiveDatasetId(id);
   };
 
   // =========================
   // RENDER
   // =========================
-
   return (
     <div className="space-y-6">
-      {/* Search */}
+      {/* SEARCH */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Cari akun Instagram atau tanggal scraping…"
+          placeholder="Cari akun Instagram"
           className="w-full sm:max-w-md rounded-lg border border-slate-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       <p className="text-xs text-slate-600">
-        {data.length} data hasil scraping tersedia
+        {filteredData.length} dari {data.length} data hasil scraping
       </p>
 
-      {/* Empty State Search */}
+      {/* EMPTY STATE */}
       {filteredData.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-10 text-center border rounded-xl border-dashed border-slate-300">
           <p className="text-sm font-medium text-slate-900">
@@ -96,10 +107,9 @@ export const DataComponents = ({ data }: DataComponentsProps) => {
           </p>
         </div>
       ) : (
-        /* List */
         <div className="space-y-4">
           {filteredData.map((session) => {
-            const isActive = activeAnalysisId === session.id;
+            const isActive = activeDatasetId === session.id;
 
             return (
               <div
@@ -117,7 +127,6 @@ export const DataComponents = ({ data }: DataComponentsProps) => {
                     @{session.username}
                     {isActive && <ActiveBadge />}
                   </p>
-
                   <p className="text-sm text-slate-600">
                     {session.post_count} post
                   </p>
@@ -125,7 +134,7 @@ export const DataComponents = ({ data }: DataComponentsProps) => {
 
                 {/* ACTIONS */}
                 <div className="flex flex-col sm:flex-row gap-2">
-                  {/* CTA UTAMA */}
+                  {/* CTA */}
                   <Button
                     variant={session.is_analyzed ? "outline" : "default"}
                     className={
@@ -138,7 +147,7 @@ export const DataComponents = ({ data }: DataComponentsProps) => {
                       if (!session.is_analyzed) {
                         handleMulaiAnalisis(session.id);
                       } else {
-                        handleLihatAnalisis(session.id);
+                        handleLihatAnalisa(session.id);
                       }
                     }}
                   >

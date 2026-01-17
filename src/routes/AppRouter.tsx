@@ -4,6 +4,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import DashboardLayout from "@/layout/DashboardLayout";
 import NotFoundPage from "@/components/NotFound";
 import ProtectedRoute from "./ProtectedRoute";
+import { ScraperProvider } from "@/provider/ScraperProvider";
 
 // import ProtectedRoute from './ProtectedRoute';
 const HomePage = lazy(() => import("@/features/Home/page/HomePage"));
@@ -76,7 +77,9 @@ const App = () => {
           element={
             <Suspense fallback={<LoadingSpinner />}>
               <ProtectedRoute>
-                <DashboardLayout />
+                <ScraperProvider>
+                  <DashboardLayout />
+                </ScraperProvider>
               </ProtectedRoute>
             </Suspense>
           }
