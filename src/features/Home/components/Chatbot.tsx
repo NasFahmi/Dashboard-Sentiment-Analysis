@@ -22,7 +22,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { axiosClient } from '@/lib/axios';
 import axios from 'axios';
 import DOMPurify from 'dompurify';
-import parse from 'html-react-parser';
+import parse, { domToReact, Element } from 'html-react-parser';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Types
 interface Message {
@@ -51,7 +59,7 @@ const getChatHistoryFromStorage = (): Message[] => {
   try {
     const stored = localStorage.getItem(CHAT_HISTORY_KEY);
     if (!stored) return [];
-    
+
     const parsed = JSON.parse(stored);
     return parsed.map((msg: any) => ({
       ...msg,
@@ -131,7 +139,25 @@ const convertMarkdownToHtml = (text: string | null | undefined): string => {
   }
 
   try {
-    let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    let html = text;
+
+    // Table conversion (Simplified Markdown Table)
+    const tableRegex = /(\|.*\|\n)((?:\|.*[-]+\|.*\n))((?:\|.*\|\n?)+)/g;
+
+    html = html.replace(tableRegex, (match, header, separator, body) => {
+      const parseRow = (row: string, isHeader: boolean = false) => {
+        const cells = row.split('|').filter(cell => cell.trim() !== '');
+        const tag = isHeader ? 'th' : 'td';
+        return `<tr>${cells.map(cell => `<${tag}>${cell.trim()}</${tag}>`).join('')}</tr>`;
+      };
+
+      const headerRow = parseRow(header, true);
+      const bodyRows = body.trim().split('\n').filter((row: string) => row.trim() !== '').map((row: string) => parseRow(row)).join('');
+
+      return `<table><thead>${headerRow}</thead><tbody>${bodyRows}</tbody></table>`;
+    });
+
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
     html = html.replace(/^(\s*)\*\s+(.*?)(?=\n|$)/gm, '$1<li>$2</li>');
     html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
@@ -156,13 +182,36 @@ const HtmlContent: React.FC<{ content: string | null | undefined }> = ({ content
       const convertedHtml = convertMarkdownToHtml(html);
       const sanitized = DOMPurify.sanitize(convertedHtml, {
         ALLOWED_TAGS: [
-          'strong', 'em', 'u', 'b', 'i', 
+          'strong', 'em', 'u', 'b', 'i',
           'hr', 'br', 'p', 'div', 'span',
-          'ul', 'ol', 'li'
+          'ul', 'ol', 'li',
+          'table', 'thead', 'tbody', 'tr', 'th', 'td'
         ],
         ALLOWED_ATTR: ['class', 'style']
       });
-      return parse(sanitized);
+      const options: HTMLReactParserOptions = {
+        replace: (domNode) => {
+          if (domNode instanceof Element && domNode.name === 'table') {
+            return <Table className="border rounded-md my-2">{domToReact(domNode.children as any, options)}</Table>;
+          }
+          if (domNode instanceof Element && domNode.name === 'thead') {
+            return <TableHeader>{domToReact(domNode.children as any, options)}</TableHeader>;
+          }
+          if (domNode instanceof Element && domNode.name === 'tbody') {
+            return <TableBody>{domToReact(domNode.children as any, options)}</TableBody>;
+          }
+          if (domNode instanceof Element && domNode.name === 'tr') {
+            return <TableRow>{domToReact(domNode.children as any, options)}</TableRow>;
+          }
+          if (domNode instanceof Element && domNode.name === 'th') {
+            return <TableHead className="font-bold">{domToReact(domNode.children as any, options)}</TableHead>;
+          }
+          if (domNode instanceof Element && domNode.name === 'td') {
+            return <TableCell>{domToReact(domNode.children as any, options)}</TableCell>;
+          }
+        }
+      };
+      return parse(sanitized, options);
     } catch (error) {
       console.error('Error in sanitizeAndParse:', error);
       return <span>Error rendering content</span>;
@@ -181,7 +230,7 @@ const Chatbot: React.FC = () => {
   const [chatState] = useState(() => getChatStateFromStorage());
   const [isOpen, setIsOpen] = useState(chatState.isOpen);
   const [isMinimized, setIsMinimized] = useState(chatState.isMinimized);
-  
+
   const [messages, setMessages] = useState<Message[]>(() => {
     const storedHistory = getChatHistoryFromStorage();
     if (storedHistory.length > 0) {
@@ -196,7 +245,7 @@ const Chatbot: React.FC = () => {
       }
     ];
   });
-  
+
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
@@ -298,7 +347,7 @@ const Chatbot: React.FC = () => {
     };
     setMessages([resetMessage]);
     clearChatHistoryFromStorage();
-    
+
   };
 
   // Enhanced: Open handler
@@ -339,9 +388,8 @@ const Chatbot: React.FC = () => {
         }}
         exit={{ opacity: 0, y: 100, scale: 0.8 }}
         transition={{ type: "spring", duration: 0.5 }}
-        className={`fixed bottom-6 right-6 w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 flex flex-col ${
-          isMinimized ? 'h-auto' : 'h-[600px]'
-        }`}
+        className={`fixed bottom-6 right-6 w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 flex flex-col ${isMinimized ? 'h-auto' : 'h-[600px]'
+          }`}
         style={{ maxHeight: '80vh' }}
       >
         {/* Header */}
@@ -381,10 +429,10 @@ const Chatbot: React.FC = () => {
         {!isMinimized && (
           <>
             {/* Messages Area */}
-            <div 
+            <div
               ref={scrollContainerRef}
               className="flex-1 overflow-y-auto overflow-x-hidden p-4"
-              style={{ 
+              style={{
                 scrollBehavior: 'smooth',
                 minHeight: 0
               }}
@@ -396,9 +444,8 @@ const Chatbot: React.FC = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className={`flex gap-3 ${
-                      message.type === 'user' ? 'flex-row-reverse' : ''
-                    }`}
+                    className={`flex gap-3 ${message.type === 'user' ? 'flex-row-reverse' : ''
+                      }`}
                   >
                     <Avatar className="w-8 h-8 flex-shrink-0">
                       <AvatarFallback className={
@@ -411,13 +458,12 @@ const Chatbot: React.FC = () => {
                     </Avatar>
 
                     <div className={`flex-1 ${message.type === 'user' ? 'text-right' : ''}`}>
-                      <div className={`inline-block max-w-[85%] ${
-                        message.type === 'user'
-                          ? 'bg-blue-500 text-white rounded-2xl rounded-tr-sm'
-                          : message.error
+                      <div className={`inline-block max-w-[85%] ${message.type === 'user'
+                        ? 'bg-blue-500 text-white rounded-2xl rounded-tr-sm'
+                        : message.error
                           ? 'bg-red-50 border border-red-200 text-red-800 rounded-2xl rounded-tl-sm'
                           : 'bg-slate-100 text-slate-800 rounded-2xl rounded-tl-sm'
-                      } px-4 py-2`}>
+                        } px-4 py-2`}>
                         {message.type === 'bot' && !message.error && message.content ? (
                           <HtmlContent content={message.content} />
                         ) : (
@@ -456,7 +502,7 @@ const Chatbot: React.FC = () => {
                     </div>
                   </motion.div>
                 )}
-                
+
                 <div ref={messagesEndRef} />
               </div>
             </div>
@@ -497,7 +543,7 @@ const Chatbot: React.FC = () => {
                     disabled={chatMutation.isPending}
                     maxLength={500}
                   />
-                  
+
                 </div>
                 <Button
                   type="submit"

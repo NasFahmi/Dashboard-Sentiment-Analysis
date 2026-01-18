@@ -46,7 +46,7 @@ const App = () => {
           }
         />
         <Route
-          path="/home"
+          path="/research-version"
           element={
             <Suspense fallback={<LoadingSpinner />}>
               <HomePage />

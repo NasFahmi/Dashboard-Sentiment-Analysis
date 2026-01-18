@@ -58,6 +58,7 @@ const Header = () => {
           <a href="#features" className="hover:text-blue-600 cursor-pointer">Features</a>
           <a href="#how-it-works" className="hover:text-blue-600 cursor-pointer">How it works</a>
           <a href="#contact-us" className="hover:text-blue-600 cursor-pointer">Contact Us</a>
+          <Link to="/research-version" className="hover:text-blue-600 cursor-pointer">Research Version</Link>
         </ul>
 
         {/* Desktop Actions */}
