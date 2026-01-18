@@ -7,6 +7,8 @@ import SentimentTrend from '@/features/Sentiment/components/SentimentTrend';
 import PostingScheduleSection from '@/features/Recomendation/components/PostingScheduleSection';
 import Insight from './Insight';
 
+import Chatbot from '@/features/Dashboard/components/Chatbot';
+
 type DashboardResultProps = {
   scrapers: Scraper[];
   activeDataset: Scraper;
@@ -52,6 +54,7 @@ const DashboardResult = ({ scrapers,
         </div>
       </div>
       <Insight datasetId={activeDataset.id} />
+      <Chatbot datasetId={activeDataset.id} />
     </div>
   );
 };

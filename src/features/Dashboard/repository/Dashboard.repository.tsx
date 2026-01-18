@@ -19,10 +19,11 @@ export const DashboardRepository = () => ({
       throw error;
     }
   },
-  postChatbot: async (id: string, payload: ChatbotPayload): Promise<ChatbotResponse> => {
+  postChatbot: async (id: string | undefined, payload: ChatbotPayload): Promise<ChatbotResponse> => {
     try {
+      const url = id ? `/rag/query/${id}` : '/rag/query';
       const response = await axiosClient.post<ChatbotResponse>(
-        `/rag/query/${id}`,
+        url,
         payload
       );
       console.log('Post chatbot response:', response.data);
