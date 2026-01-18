@@ -5,6 +5,7 @@ import type { Dashboard } from '../types/dasboard';
 import MiniSnapshot, { type SentimentValues } from './MiniSpanshot';
 import SentimentTrend from '@/features/Sentiment/components/SentimentTrend';
 import PostingScheduleSection from '@/features/Recomendation/components/PostingScheduleSection';
+import Insight from './Insight';
 
 type DashboardResultProps = {
   scrapers: Scraper[];
@@ -50,6 +51,7 @@ const DashboardResult = ({ scrapers,
           <PostingScheduleSection data={data.recommendationBestPostings} isOnlyOne={true} />
         </div>
       </div>
+      <Insight datasetId={activeDataset.id} />
     </div>
   );
 };

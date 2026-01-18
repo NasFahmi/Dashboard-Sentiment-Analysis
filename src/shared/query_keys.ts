@@ -25,3 +25,17 @@ export const dashboardKeys = {
   detail: (datasetId: string) =>
     [...dashboardKeys.all, "detail", datasetId] as const,
 };
+
+
+export const insightKeys = {
+  all: ["insight"] as const,
+  list: () => [...insightKeys.all, "list"] as const,
+  detail: (id: string) => [...insightKeys.all, "detail", id] as const,
+};
+
+
+export const chatbotKeys = {
+  all: ["chatbot"] as const,
+  list: () => [...chatbotKeys.all, "list"] as const,
+  detail: (id: string) => [...chatbotKeys.all, "detail", id] as const,
+};
