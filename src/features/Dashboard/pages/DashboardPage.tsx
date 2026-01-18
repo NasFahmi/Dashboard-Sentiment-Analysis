@@ -9,6 +9,7 @@ import { useDatasetContextSync } from "@/hooks/useDatasetContextSync";
 import { DashbaordSkeletonComponent } from "@/components/DashbaordSkeletonComponent";
 import { useDashboardQuery } from "../hooks/useDashboardQuery";
 import ErrorStateData from "@/components/ErrorStateData";
+import type { Scraper } from "@/features/Scraper/types/scraper";
 
 const DashboardPage: React.FC = () => {
   usePageHeader(dashboardBreadcrumbs);
@@ -17,16 +18,10 @@ const DashboardPage: React.FC = () => {
   const { activeDataset, status } =
     useDatasetContextSync(scrapers)
 
-
-  const { data: dashboardData, isLoading: isDashboardLoading, isError: isDashboardError } = useDashboardQuery(activeDataset?.id || "");
   // =====================================================
-  // LOADING STATE
+  // LOADING STATE (CONTEXT RESOLVING)
   // =====================================================
-  if (
-    isDashboardLoading ||
-    status === "resolving" ||
-    (status === "ready" && isDashboardLoading)
-  ) {
+  if (status === "resolving") {
     return (
       <div>
         <Header />
@@ -38,11 +33,8 @@ const DashboardPage: React.FC = () => {
   // =====================================================
   // EMPTY STATE
   // =====================================================
-  if (
-    status === "empty" ||
-    (status === "ready" && !activeDataset) ||
-    !dashboardData
-  ) {
+  // Jika status ready tapi tidak ada activeDataset, atau status empty
+  if (status === "empty" || !activeDataset) {
     return (
       <div>
         <Header />
@@ -52,8 +44,36 @@ const DashboardPage: React.FC = () => {
   }
 
   // =====================================================
-  // ERROR STATE
+  // READY STATE (With Valid ID)
   // =====================================================
+  return (
+    <DashboardContent
+      activeDataset={activeDataset}
+      scrapers={scrapers}
+    />
+  );
+};
+
+// Internal component to ensure useQuery is only called with valid ID
+const DashboardContent: React.FC<{
+  activeDataset: Scraper;
+  scrapers: Scraper[];
+}> = ({ activeDataset, scrapers }) => {
+  const {
+    data: dashboardData,
+    isLoading: isDashboardLoading,
+    isError: isDashboardError
+  } = useDashboardQuery(activeDataset.id);
+
+  if (isDashboardLoading) {
+    return (
+      <div>
+        <Header />
+        <DashbaordSkeletonComponent />
+      </div>
+    );
+  }
+
   if (isDashboardError) {
     return (
       <div>
@@ -63,15 +83,23 @@ const DashboardPage: React.FC = () => {
     );
   }
 
-  // =====================================================
-  // RENDER CONTENT
-  // =====================================================
+  if (!dashboardData) {
+    return (
+      <div>
+        <Header />
+        <EmtpyStateData />
+      </div>
+    );
+  }
 
   return (
-    <div >
-      {/* Header */}
+    <div>
       <Header />
-      <DashboardResult scrapers={scrapers} activeDataset={activeDataset!} data={dashboardData} />
+      <DashboardResult
+        scrapers={scrapers}
+        activeDataset={activeDataset}
+        data={dashboardData}
+      />
     </div>
   );
 };
