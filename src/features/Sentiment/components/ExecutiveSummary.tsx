@@ -1,12 +1,8 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import React from "react";
+import type { Summary } from "../types/sentiment";
 
 type ExecutiveSummaryProps = {
-  overallSentiment: "positive" | "neutral" | "negative";
-  dominantAspect: string;
-  insight: string;
-  relevantComments: number;
-  totalComments: number;
+  data: Summary;
 };
 
 const sentimentStyle = {
@@ -27,13 +23,40 @@ const sentimentStyle = {
   },
 };
 
-const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({
-  overallSentiment,
-  dominantAspect,
-  insight,
-  relevantComments,
-  totalComments,
-}) => {
+const getDominantSentiment = (data: {
+  positive: number;
+  neutral: number;
+  negative: number;
+}): "positive" | "neutral" | "negative" => {
+  const { positive, neutral, negative } = data;
+  if (positive >= neutral && positive >= negative) return "positive";
+  if (neutral >= positive && neutral >= negative) return "neutral";
+  return "negative";
+};
+
+const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ data }) => {
+  // 1. Calculate Overall Sentiment
+  const overallSentiment = getDominantSentiment(data.overall_sentiment);
+
+  // 2. Calculate Dominant Aspect
+  const aspects = [
+    { name: "food_quality", ...data.distribution.food_quality },
+    { name: "price", ...data.distribution.price },
+    { name: "service", ...data.distribution.service },
+  ];
+
+  const dominantAspect = aspects.reduce((prev, current) => {
+    const prevTotal = prev.positive + prev.neutral + prev.negative;
+    const currTotal = current.positive + current.neutral + current.negative;
+    return prevTotal > currTotal ? prev : current;
+  }).name;
+
+  // 3. Data Coverage
+  const relevantComments = data.relevance_analysis.relevant_comments;
+  const totalComments =
+    data.relevance_analysis.relevant_comments +
+    data.relevance_analysis.non_relevant_comments;
+
   const sentiment = sentimentStyle[overallSentiment];
 
   return (
@@ -51,58 +74,37 @@ const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({
       {/* Content */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
         {/* LEFT: Key Indicators */}
-        <div className="space-y-4">
+        <div className="space-y-8">
           {/* Overall Sentiment */}
           <div className={`rounded-xl px-4 py-3 ${sentiment.bg}`}>
-            <p className="text-xs font-medium text-slate-600">
+            <p className="text-base font-medium text-slate-600">
               Overall Sentiment
             </p>
-            <p className={`mt-1 text-sm font-semibold ${sentiment.text}`}>
+            <p className={`mt-1 text-lg font-semibold ${sentiment.text}`}>
               {sentiment.label}
             </p>
           </div>
 
           {/* Dominant Aspect */}
           <div className="rounded-xl bg-blue-50 px-4 py-3">
-            <p className="text-xs font-medium text-slate-600">
+            <p className="text-base font-medium text-slate-600">
               Dominant Aspect
             </p>
-            <p className="mt-1 text-sm font-semibold text-blue-800 capitalize">
+            <p className="mt-1 text-lg font-semibold text-blue-800 capitalize">
               {dominantAspect.replace("_", " ")}
             </p>
           </div>
 
           {/* Data Coverage */}
           <div className="rounded-xl bg-amber-50 px-4 py-3">
-            <p className="text-xs font-medium text-slate-600">
+            <p className="text-base font-medium text-slate-600">
               Data Coverage
             </p>
-            <p className="mt-1 text-sm text-amber-700">
+            <p className="mt-1 text-lg text-amber-700">
               {relevantComments} dari {totalComments} komentar relevan dianalisis
             </p>
           </div>
         </div>
-
-        {/* RIGHT: Insight */}
-        {/* RIGHT: Insight */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="rounded-xl bg-indigo-50 px-5 py-4">
-              <p className="text-xs font-medium tracking-wide text-indigo-600">
-                Insight Utama -{' '}
-                <span className="text-indigo-400 font-normal text-xs">
-                  Generated insight based on aggregated sentiment patterns
-                </span>
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-indigo-900">
-                {insight}
-              </p>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent >
-            <p >Ringkasan otomatis berdasarkan pola sentimen komentar</p>
-          </TooltipContent>
-        </Tooltip>
       </div>
     </section>
   );

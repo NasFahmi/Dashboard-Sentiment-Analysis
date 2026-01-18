@@ -1,5 +1,5 @@
 import { recomendationKeys } from "@/shared/query_keys";
-import { RecomendationRepository } from "../repository/Recomendation.repository";
+import { RecomendationRepository } from "../repository/recomendation.repository";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { mapToRecomendation, type Recomendation, type RecomendationResponse } from "../types/recomendation";
 export const useRecomandationQuery = (id: string) => {

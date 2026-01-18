@@ -8,16 +8,10 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-
-type AspectSentimentItem = {
-  aspect: string;
-  positive: number;
-  neutral: number;
-  negative: number;
-};
+import type { Summary } from "../types/sentiment";
 
 type AspectSentimentProps = {
-  data: AspectSentimentItem[];
+  data: Summary;
 };
 
 const COLORS = {
@@ -27,6 +21,22 @@ const COLORS = {
 };
 
 const AspectSentiment: React.FC<AspectSentimentProps> = ({ data }) => {
+  // Map data inside component
+  const chartData = [
+    {
+      aspect: "Food Quality",
+      ...data.percentage.food_quality,
+    },
+    {
+      aspect: "Service",
+      ...data.percentage.service,
+    },
+    {
+      aspect: "Price",
+      ...data.percentage.price,
+    },
+  ];
+
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-6">
       {/* Header */}
@@ -43,7 +53,7 @@ const AspectSentiment: React.FC<AspectSentimentProps> = ({ data }) => {
       <div className="h-[360px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={data}
+            data={chartData}
             margin={{ top: 10, right: 20, left: 0, bottom: 20 }}
           >
             <XAxis

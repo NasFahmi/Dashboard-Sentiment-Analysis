@@ -6,11 +6,10 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import type { RelevanceAnalysis as RelevanceAnalysisType } from "../types/sentiment";
 
 type RelevanceNoiseProps = {
-  relevantComments: number;
-  nonRelevantComments: number;
-  relevanceRatio: number; // percent
+  data: RelevanceAnalysisType;
 };
 
 // Palet warna yang konsisten (Hijau untuk Data, Abu untuk Noise)
@@ -19,11 +18,12 @@ const COLORS = {
   nonRelevant: "#cbd5e1", // slate-300
 };
 
-const RelevanceAnalysis: React.FC<RelevanceNoiseProps> = ({
-  relevantComments,
-  nonRelevantComments,
-  relevanceRatio,
-}) => {
+const RelevanceAnalysis: React.FC<RelevanceNoiseProps> = ({ data }) => {
+  const {
+    relevant_comments: relevantComments,
+    non_relevant_comments: nonRelevantComments,
+    relevant_ratio_percent: relevanceRatio,
+  } = data;
   const chartData = [
     { name: "Relevant Comments", value: relevantComments },
     { name: "Non-Relevant Comments", value: nonRelevantComments },

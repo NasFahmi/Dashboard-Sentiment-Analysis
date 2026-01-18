@@ -1,57 +1,111 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   PieChart,
   Pie,
   Cell,
   ResponsiveContainer,
+  Tooltip as PieTooltip
 } from "recharts";
 
+// 1. Export tipe agar bisa dipakai di luar
+export type SentimentValues = {
+  positive: number;
+  neutral: number;
+  negative: number;
+};
+
 type MiniSnapshotProps = {
-  sentimentDistribution: {
-    positive: number;
-    neutral: number;
-    negative: number;
-  };
-  topAspects: {
-    aspect: string;
-    total: number;
-    dominantSentiment: "positive" | "neutral" | "negative";
-  }[];
+  sentimentDistribution: SentimentValues;
+  aspects: Record<string, SentimentValues>;
 };
 
-const SENTIMENT_COLORS = {
-  positive: "bg-green-500",
-  neutral: "bg-slate-300",
-  negative: "bg-red-500",
+// Konstanta warna yang konsisten
+const COLORS = {
+  positive: "#10b981", // Emerald-500
+  neutral: "#cbd5e1",  // Slate-300
+  negative: "#f43f5e", // Rose-500
 };
 
-const DONUT_COLORS = ["#22c55e", "#cbd5e1", "#ef4444"];
+const DONUT_COLORS = [COLORS.positive, COLORS.neutral, COLORS.negative];
 
 const MiniSnapshot: React.FC<MiniSnapshotProps> = ({
   sentimentDistribution,
-  topAspects,
+  aspects,
 }) => {
-  const donutData = [
+
+  // --- LOGIC 1: Donut Chart Data ---
+  const donutData = useMemo(() => [
     { name: "Positive", value: sentimentDistribution.positive },
     { name: "Neutral", value: sentimentDistribution.neutral },
     { name: "Negative", value: sentimentDistribution.negative },
-  ];
+  ], [sentimentDistribution]);
 
-  const maxTotal = Math.max(...topAspects.map((a) => a.total));
+  const totalComments = sentimentDistribution.positive + sentimentDistribution.neutral + sentimentDistribution.negative;
+
+  // --- LOGIC 2: Transform Aspect Data untuk Stacked Bar ---
+  const sortedAspects = useMemo(() => {
+    const processed = Object.entries(aspects).map(([key, value]) => {
+      const total = value.positive + value.neutral + value.negative;
+
+      // Hitung persentase untuk CSS width
+      // (Gunakan Math.max(0.1) agar bar kecil tetap terlihat sedikit jika ada isinya)
+      const pctPositive = total > 0 ? (value.positive / total) * 100 : 0;
+      const pctNeutral = total > 0 ? (value.neutral / total) * 100 : 0;
+      const pctNegative = total > 0 ? (value.negative / total) * 100 : 0;
+
+      // Format Label
+      const label = key
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+
+      return {
+        aspect: label,
+        total,
+        raw: value, // Simpan nilai asli untuk tooltip/display
+        percentages: {
+          positive: pctPositive,
+          neutral: pctNeutral,
+          negative: pctNegative
+        }
+      };
+    });
+
+    // Sort descending berdasarkan total mention
+    return processed.sort((a, b) => b.total - a.total);
+  }, [aspects]);
 
   return (
-    <section className="grid grid-cols-1 gap-4 md:grid-cols-12">
-      {/* ================= MINI SENTIMENT SNAPSHOT ================= */}
-      <div className="rounded-2xl border border-slate-200 col-span-6 bg-white p-5">
-        {/* Header */}
-        <p className="text-sm font-medium text-slate-500">
-          Sentiment Snapshot
-        </p>
+    <section className="grid grid-cols-1 gap-5 md:grid-cols-12">
 
-        {/* Content */}
-        <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-center">
-          {/* Donut + Center Label */}
+      {/* ================= SECTION KIRI: SENTIMENT SNAPSHOT (DONUT) ================= */}
+      <div className="rounded-2xl border border-slate-200 col-span-12 lg:col-span-5 bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-6">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Overall Sentiment
+          </p>
+          <span className="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-full">
+            ALL DATA
+          </span>
+        </div>
+
+        <div className="flex flex-col items-center gap-8 sm:flex-row sm:justify-center">
+          {/* Donut Chart Wrapper */}
           <div className="relative h-44 w-44 shrink-0">
+
+            {/* 1. CENTER LABEL (Pindahkan ke sini/ATAS) */}
+            {/* Karena ditulis duluan, dia akan berada di layer paling bawah (background) */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span className="text-2xl font-bold text-slate-800 tracking-tight">
+                {totalComments}
+              </span>
+              <span className="text-[10px] uppercase text-slate-400 font-bold">
+                Comments
+              </span>
+            </div>
+
+            {/* 2. CHART (Taruh di BAWAH label) */}
+            {/* Karena ditulis belakangan, dia akan berada di layer atas, sehingga Tooltip aman */}
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -59,108 +113,135 @@ const MiniSnapshot: React.FC<MiniSnapshotProps> = ({
                   dataKey="value"
                   cx="50%"
                   cy="50%"
-                  innerRadius={44}
-                  outerRadius={58}
-                  paddingAngle={2}
+                  innerRadius={50}
+                  outerRadius={65}
+                  paddingAngle={4}
                   stroke="none"
+                  startAngle={90}
+                  endAngle={-270}
+                  cornerRadius={4}
                 >
-                  {DONUT_COLORS.map((color, idx) => (
-                    <Cell key={idx} fill={color} />
+                  {donutData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={DONUT_COLORS[index]} />
                   ))}
                 </Pie>
+
+                {/* Tambahkan wrapperStyle zIndex untuk memastikan tooltip selalu paling atas */}
+                <PieTooltip
+                  wrapperStyle={{ zIndex: 100 }}
+                  contentStyle={{
+                    borderRadius: "8px",
+                    border: "none",
+                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                  }}
+                  itemStyle={{ fontSize: "12px", fontWeight: 600 }}
+                />
               </PieChart>
             </ResponsiveContainer>
-
-            {/* Center Text */}
-            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-lg font-semibold text-slate-900">
-                {sentimentDistribution.positive +
-                  sentimentDistribution.neutral +
-                  sentimentDistribution.negative}
-              </span>
-              <span className="text-[11px] text-slate-500">
-                komentar
-              </span>
-            </div>
           </div>
 
-          {/* Legend */}
-          <div className="grid w-full grid-cols-3 gap-3 text-center sm:grid-cols-1 sm:text-left">
-            <div className="flex items-center justify-center gap-2 sm:justify-start">
-              <span className="h-2.5 w-2.5 rounded-full bg-green-500" />
-              <span className="text-sm text-slate-700">
-                Positive
-              </span>
-              <span className="ml-auto text-sm font-medium text-slate-900 sm:ml-0">
-                {sentimentDistribution.positive}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-center gap-2 sm:justify-start">
-              <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
-              <span className="text-sm text-slate-700">
-                Neutral
-              </span>
-              <span className="ml-auto text-sm font-medium text-slate-900 sm:ml-0">
-                {sentimentDistribution.neutral}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-center gap-2 sm:justify-start">
-              <span className="h-2.5 w-2.5 rounded-full bg-red-500" />
-              <span className="text-sm text-slate-700">
-                Negative
-              </span>
-              <span className="ml-auto text-sm font-medium text-slate-900 sm:ml-0">
-                {sentimentDistribution.negative}
-              </span>
-            </div>
+          {/* Legend Custom */}
+          <div className="flex flex-col gap-3 w-full sm:w-auto">
+            {donutData.map((item, idx) => (
+              <div
+                key={item.name}
+                className="flex items-center justify-between gap-6 text-sm group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span
+                    className="w-3 h-3 rounded-md transition-transform group-hover:scale-110"
+                    style={{ backgroundColor: DONUT_COLORS[idx] }}
+                  />
+                  <span className="text-slate-600 font-medium">{item.name}</span>
+                </div>
+                <div className="text-right">
+                  <span className="block font-bold text-slate-800">{item.value}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* Description */}
-        <p className="mt-4 text-xs text-slate-500">
-          Distribusi singkat sentimen pelanggan berdasarkan komentar yang dianalisis.
-        </p>
       </div>
 
-
-      {/* ================= TOP ASPECT SNAPSHOT ================= */}
-      <div className="rounded-2xl col-span-6 border border-slate-200 bg-white p-5">
-        <div className="flex items-center gap-2">
-          <p className="text-normal font-medium text-slate-500">
-            Top Aspects
+      {/* ================= SECTION KANAN: ASPECT BREAKDOWN (STACKED BAR) ================= */}
+      <div className="rounded-2xl border border-slate-200 col-span-12 lg:col-span-7 bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-6">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Sentiment by Aspect
           </p>
+          <div className="flex gap-2">
+            {/* Mini Legend untuk Bar */}
+            <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500"></div><span className="text-[10px] text-slate-400">Positive</span></div>
+            <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-slate-300"></div><span className="text-[10px] text-slate-400">Neutral</span></div>
+            <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-rose-500"></div><span className="text-[10px] text-slate-400">Negative</span></div>
+          </div>
         </div>
 
-        <div className="mt-4 space-y-4">
-          {topAspects.map((aspect) => (
-            <div key={aspect.aspect}>
-              <div className="mb-1 flex justify-between text-sm">
-                <span className="font-medium text-slate-800">
-                  {aspect.aspect}
-                </span>
-                <span className="text-slate-500">
-                  {aspect.total}
+        <div className="space-y-6">
+          {sortedAspects.map((item) => (
+            <div key={item.aspect} className="group">
+              {/* Header: Nama Aspek & Total */}
+              <div className="flex justify-between items-end mb-2">
+                <span className="text-sm font-bold text-slate-700  transition-colors">
+                  {item.aspect}
                 </span>
               </div>
 
-              <div className="h-5 w-full rounded-full bg-slate-100 overflow-hidden">
-                <div
-                  className={`h-full rounded-full ${SENTIMENT_COLORS[aspect.dominantSentiment]
-                    }`}
-                  style={{
-                    width: `${(aspect.total / maxTotal) * 100}%`,
-                  }}
-                />
+              {/* Stacked Bar Container */}
+              <div className="relative h-4 w-full rounded-full bg-slate-100 overflow-hidden flex shadow-inner">
+                {/* Positive Segment */}
+                {item.percentages.positive > 0 && (
+                  <div
+                    className="h-full bg-emerald-500 transition-all duration-700 hover:bg-emerald-400 relative group/segment"
+                    style={{ width: `${item.percentages.positive}%` }}
+                  >
+                    {/* Tooltip Hover (Opsional, agar user tau angka pasti) */}
+                    <div className="opacity-0 group-hover/segment:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                      {item.raw.positive} Positive
+                    </div>
+                  </div>
+                )}
+
+                {/* Neutral Segment */}
+                {item.percentages.neutral > 0 && (
+                  <div
+                    className="h-full bg-slate-300 transition-all duration-700 hover:bg-slate-400 relative group/segment border-l border-white/50"
+                    style={{ width: `${item.percentages.neutral}%` }}
+                  >
+                    <div className="opacity-0 group-hover/segment:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                      {item.raw.neutral} Neutral
+                    </div>
+                  </div>
+                )}
+
+                {/* Negative Segment */}
+                {item.percentages.negative > 0 && (
+                  <div
+                    className="h-full bg-rose-500 transition-all duration-700 hover:bg-rose-400 relative group/segment border-l border-white/50"
+                    style={{ width: `${item.percentages.negative}%` }}
+                  >
+                    <div className="opacity-0 group-hover/segment:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                      {item.raw.negative} Negative
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Optional: Menampilkan persentase di bawah bar jika perlu detail */}
+              <div className="mt-1 flex justify-between text-[10px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span>{Math.round(item.percentages.positive)}%</span>
+                <span>{Math.round(item.percentages.negative)}%</span>
               </div>
             </div>
           ))}
-        </div>
 
-        <p className="mt-4 text-xs text-slate-600">
-          Aspek yang paling sering dibicarakan oleh pelanggan.
-        </p>
+          {/* Empty State jika data kosong */}
+          {sortedAspects.length === 0 && (
+            <div className="py-8 text-center text-slate-400 text-sm italic">
+              No aspect data available yet.
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );

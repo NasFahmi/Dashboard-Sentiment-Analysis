@@ -1,104 +1,122 @@
 import React from "react";
-import { CirclePlus, MessageCircleWarning, Smile, Meh, Frown } from 'lucide-react';
+import {
+  Smile, Meh, Frown,
+  AlertTriangle,
+  Target
+} from 'lucide-react';
 
+// 1. Update Props sesuai Dashboard Row 1
 type CardInformationProps = {
   overallSentiment: "positive" | "neutral" | "negative";
-  dominantAspect: string;
-  attentionMessage?: string; // ⬅️ single focus message
+  criticalAspect: string;    // Menggantikan dominantAspect
+  immediateAction: string;   // Menggantikan attentionMessage
 };
 
+// Helper: Styling untuk Sentiment
 const sentimentStyle = {
   positive: {
     label: "Positive",
-    bg: "bg-green-50",
-    text: "text-green-700",
+    bg: "bg-emerald-50",
+    text: "text-emerald-700",
+    border: "border-emerald-100",
     icon: Smile
   },
   neutral: {
     label: "Neutral",
-    bg: "bg-slate-100",
-    text: "text-slate-700",
+    bg: "bg-slate-50",
+    text: "text-slate-600",
+    border: "border-slate-200",
     icon: Meh
   },
   negative: {
     label: "Negative",
     bg: "bg-red-50",
     text: "text-red-700",
+    border: "border-red-100",
     icon: Frown
   },
 };
 
 const CardInformation: React.FC<CardInformationProps> = ({
   overallSentiment,
-  dominantAspect,
-  attentionMessage,
+  criticalAspect,
+  immediateAction,
 }) => {
   const sentiment = sentimentStyle[overallSentiment];
 
+  // Helper untuk format text aspect (misal: "food_quality" -> "Food Quality")
+  const formatAspect = (text: string) => {
+    return text.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  };
+
   return (
-    <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-      {/* ================= OVERALL SENTIMENT ================= */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5">
-        <div className="flex items-center gap-2">
-          <div className={`flex items-center justify-center ${sentiment.bg} p-2 rounded-lg`}>
-            <sentiment.icon className={`w-5 h-5 ${sentiment.text}`} />
+    <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
+
+      {/* ================= CARD 1: OVERALL SENTIMENT ================= */}
+      <div className={`rounded-2xl h-48 border bg-white p-5 shadow-sm transition-all hover:shadow-md ${sentiment.border}`}>
+        <div className="flex flex-col items-start h-full justify-between mb-4">
+
+          <div className="flex items-center w-full  justify-between">
+            <p className="text-sm font-medium  text-slate-500 mb-1">
+              Overall Sentiment
+            </p>
+            <div className={`flex items-center justify-center p-2.5 rounded-xl ${sentiment.bg}`}>
+              <sentiment.icon className={`w-6 h-6 ${sentiment.text}`} />
+            </div>
           </div>
-          <p className="text-sm font-medium text-slate-500">
-            Overall Sentiment
+          <h4 className={`text-2xl font-bold ${sentiment.text}`}>
+            {sentiment.label}
+          </h4>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Gambaran umum sentimen audiens berdasarkan analisis data terbaru.
           </p>
 
+
         </div>
-        <div
-          className={`mt-3 inline-flex items-center rounded-full px-4 py-1 text-sm font-semibold ${sentiment.bg} ${sentiment.text}`}
-        >
-          {sentiment.label}
-        </div>
-        <p className="mt-3 text-sm text-slate-600">
-          Gambaran umum perasaan pelanggan terhadap akun yang dianalisis.
-        </p>
+
       </div>
 
-      {/* ================= DOMINANT ASPECT ================= */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center bg-blue-100 p-2 rounded-lg">
-            <CirclePlus className="w-5 h-5 text-blue-500" />
+      {/* ================= CARD 2: CRITICAL ASPECT (Ex-Dominant) ================= */}
+      {/* ================= CARD 2: CRITICAL ASPECT ================= */}
+      <div className="rounded-2xl h-48 border border-orange-100 bg-white p-5 shadow-sm transition-all hover:shadow-md">
+        <div className="flex flex-col items-start h-full justify-between mb-4">
+          <div className="flex items-center w-full justify-between">
+            <p className="text-sm font-medium text-slate-500 mb-1">
+              Critical Aspect
+            </p>
+            <div className="flex items-center justify-center p-2.5 rounded-xl bg-orange-50">
+              <AlertTriangle className="w-6 h-6 text-orange-600" />
+            </div>
           </div>
-          <p className="text-sm font-medium text-slate-500">
-            Dominant Aspect
+          <h4 className="text-2xl font-bold text-orange-700 capitalize">
+            {formatAspect(criticalAspect)}
+          </h4>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Aspek dengan tingkat sentimen negatif tertinggi yang perlu diperbaiki.
           </p>
-
         </div>
-        <p className="mt-3 text-lg font-semibold text-blue-400">
-          {dominantAspect}
-        </p>
-        <p className="mt-3 text-sm text-slate-600">
-          Aspek yang paling sering dibicarakan oleh pelanggan.
-        </p>
       </div>
 
-      {/* ================= ATTENTION NEEDED ================= */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center bg-yellow-100 p-2 rounded-lg">
-            <MessageCircleWarning className="w-5 h-5 text-yellow-500" />
+      {/* ================= CARD 3: IMMEDIATE ACTION ================= */}
+      <div className="rounded-2xl h-48 border border-indigo-100 bg-white p-5 shadow-sm transition-all hover:shadow-md">
+        <div className="flex flex-col items-start h-full justify-between mb-4">
+          <div className="flex items-center w-full justify-between">
+            <p className="text-sm font-medium text-slate-500 mb-1">
+              Immediate Action
+            </p>
+            <div className="flex items-center justify-center p-2.5 rounded-xl bg-indigo-50">
+              <Target className="w-6 h-6 text-indigo-600" />
+            </div>
           </div>
-          <p className="text-sm font-medium text-slate-500">
-            Attention Needed
+          <p className="text-base font-bold text-indigo-900 leading-tight line-clamp-2">
+            "{immediateAction}"
           </p>
-
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Rekomendasi strategi konten prioritas berdasarkan analisis terbaru.
+          </p>
         </div>
-
-        {attentionMessage ? (
-          <div className="mt-3 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            {attentionMessage}
-          </div>
-        ) : (
-          <p className="mt-3 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800">
-            Tidak ada perhatian khusus terkait sentimen saat ini.
-          </p>
-        )}
       </div>
+
     </section>
   );
 };

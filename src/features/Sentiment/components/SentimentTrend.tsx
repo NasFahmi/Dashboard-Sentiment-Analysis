@@ -16,18 +16,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { id } from "date-fns/locale"; // Locale Indonesia
-
-type TrendItem = {
-  date: string; // ISO date (YYYY-MM-DD)
-  positive: number;
-  neutral: number;
-  negative: number;
-};
+import type { SentimentTrend as SentimentTrendType } from "../types/sentiment";
 
 type SentimentTrendProps = {
-  data: TrendItem[];
+  data: SentimentTrendType;
 };
 
 // Tipe granularity sekarang: Harian (Daily), Bulanan (Monthly), Tahunan (Yearly)
@@ -45,20 +39,25 @@ const SentimentTrend: React.FC<SentimentTrendProps> = ({ data }) => {
 
   const chartData = useMemo(() => {
     // 1. Sort data dulu biar urut dari tanggal terlama ke terbaru
-    const sortedData = [...data].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    const sortedData = [...data.trend].sort(
+      (a, b) => a.date.getTime() - b.date.getTime()
     );
 
     // OPSI 1: HARIAN (Tampilkan semua data mentah apa adanya)
     if (granularity === "daily") {
-      return sortedData;
+      return sortedData.map(item => ({
+        ...item,
+        date: item.date.toISOString(), // Recharts butuh string/number buat key, tapi kita pass object Date juga bisa sebenarnya, cuma formatter axis butuh string biasanya
+      }));
     }
 
     // OPSI 2 & 3: AGREGASI BULANAN ATAU TAHUNAN
-    const map = new Map<string, TrendItem>();
+    // Kita pakai Map<string, ...>
+    // Struktur value map harus sesuai dengan yang mau kita return
+    const map = new Map<string, { date: string; positive: number; neutral: number; negative: number }>();
 
     sortedData.forEach((item) => {
-      const dateObj = parseISO(item.date);
+      const dateObj = item.date;
       let key = "";
 
       // Tentukan format key pengelompokan
@@ -70,7 +69,7 @@ const SentimentTrend: React.FC<SentimentTrendProps> = ({ data }) => {
 
       if (!map.has(key)) {
         map.set(key, {
-          date: key, // Date disini berisi wakil kelompok (bulan/tahun)
+          date: key, // Date disini berisi wakil kelompok (bulan/tahun) sebagai string
           positive: 0,
           neutral: 0,
           negative: 0,

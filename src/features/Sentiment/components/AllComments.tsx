@@ -11,31 +11,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import type { SentimentComment } from "../types/sentiment";
 
 type SentimentLabel = "positive" | "neutral" | "negative";
 
-type CommentItem = {
-  id: string;
-  comment: string;
-  foodQuality: SentimentLabel;
-  service: SentimentLabel;
-  price: SentimentLabel;
-  date: string;
-};
-
 const PAGE_SIZE = 10;
 
-// dummy data contoh
-const dummyComments: CommentItem[] = Array.from({ length: 100 }).map(
-  (_, i) => ({
-    id: `${i + 1}`,
-    comment: `Komentar  mengenai pelayanan dan kualitas makanan. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cupiditate delectus asperiores voluptatibus et suscipit fugiat perferendis optio, maxime similique soluta, dolor vero. ke-${i + 1}`,
-    foodQuality: i % 3 === 0 ? "positive" : i % 3 === 1 ? "neutral" : "negative",
-    service: i % 2 === 0 ? "positive" : "neutral",
-    price: i % 4 === 0 ? "negative" : "neutral",
-    date: new Date(2026, 0, i + 1).toISOString(),
-  })
-);
+type AllCommentsProps = {
+  data: SentimentComment[];
+};
 
 const SentimentBadge = ({ value }: { value: SentimentLabel }) => {
   const baseClass =
@@ -52,24 +36,34 @@ const SentimentBadge = ({ value }: { value: SentimentLabel }) => {
 };
 
 
-const AllComments = () => {
+const AllComments = ({ data }: AllCommentsProps) => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [sortAsc, setSortAsc] = useState(true);
 
   const filteredData = useMemo(() => {
-    const filtered = dummyComments.filter((item) =>
+    // Map data API ke format internal
+    const mappedData = data.map(item => ({
+      id: item.id,
+      comment: item.comment,
+      foodQuality: item.food_quality as SentimentLabel,
+      service: item.service as SentimentLabel,
+      price: item.price as SentimentLabel,
+      date: item.created_at, // Keep as Date object
+    }));
+
+    const filtered = mappedData.filter((item) =>
       item.comment.toLowerCase().includes(search.toLowerCase())
     );
 
     filtered.sort((a, b) =>
       sortAsc
-        ? new Date(a.date).getTime() - new Date(b.date).getTime()
-        : new Date(b.date).getTime() - new Date(a.date).getTime()
+        ? a.date.getTime() - b.date.getTime()
+        : b.date.getTime() - a.date.getTime()
     );
 
     return filtered;
-  }, [search, sortAsc]);
+  }, [search, sortAsc, data]);
 
   const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
 
@@ -173,7 +167,7 @@ const AllComments = () => {
                       <SentimentBadge value={item.price} />
                     </TableCell>
                     <TableCell>
-                      {new Date(item.date).toLocaleDateString('id-ID', {
+                      {item.date.toLocaleDateString('id-ID', {
                         day: 'numeric',
                         month: 'long',
                         year: 'numeric'

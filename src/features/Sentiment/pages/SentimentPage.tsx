@@ -1,37 +1,96 @@
-
+import React from 'react';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import { sentimentBreadcrumbs } from '@/shared/breadcumb-config';
-import React from 'react';
-import { isFirstime } from '@/lib/constant';
 import EmtpyStateData from '@/components/EmtpyStateData';
 import SentimentResult from '../components/SentimentResult';
-
+import { useScrapers } from '@/hooks/useScraper';
+import { useDatasetContextSync } from '@/hooks/useDatasetContextSync';
+import { useSentimentQuery } from '../hooks/useSentimentQuery';
+import { DashbaordSkeletonComponent } from '@/components/DashbaordSkeletonComponent';
+import ErrorStateData from '@/components/ErrorStateData';
 
 const SentimentPage: React.FC = () => {
   usePageHeader(sentimentBreadcrumbs);
-  // null = belum memilih dataset
 
-  // const [activeDataset, setActiveDataset] =
-  //   useState<ScrapeDataset | null>(null);
+  // 1. Get All Scrapers (Master Data)
+  const { scrapers, isLoading: isScrapersLoading } = useScrapers();
 
-  // const onChangeDataset = (dataset: ScrapeDataset) => {
-  //   setActiveDataset(dataset);
-  // };
-  return (
+  // 2. Sync URL <-> Active Dataset
+  const { activeDataset, status } = useDatasetContextSync(scrapers);
 
-    <div>
-      <h1 className="text-2xl font-bold">Sentiment Analysis</h1>
-      <p className="mt-2 text-xs sm:text-sm text-slate-500">
-        Sentiments Analysis page content goes here
-      </p>
+  // 3. Fetch Sentiment Data (Only if we have an active dataset)
+  const {
+    data: sentimentData,
+    isLoading: isSentimentLoading,
+    isError,
+  } = useSentimentQuery(activeDataset?.id ?? "");
 
-      {isFirstime ? (
+  // =====================================================
+  // LOADING STATE
+  // =====================================================
+  if (
+    isScrapersLoading ||
+    status === "resolving" ||
+    (status === "ready" && isSentimentLoading)
+  ) {
+    return (
+      <div>
+        <Header />
+        <DashbaordSkeletonComponent />
+      </div>
+    );
+  }
+
+  // =====================================================
+  // EMPTY STATE
+  // =====================================================
+  if (
+    status === "empty" ||
+    (status === "ready" && !activeDataset) ||
+    !sentimentData
+  ) {
+    return (
+      <div>
+        <Header />
         <EmtpyStateData />
-      ) : (
-        <SentimentResult />
-      )}
+      </div>
+    );
+  }
+
+  // =====================================================
+  // ERROR STATE
+  // =====================================================
+  if (isError) {
+    return (
+      <div>
+        <Header />
+        <ErrorStateData />
+      </div>
+    );
+  }
+
+  // =====================================================
+  // RENDER CONTENT
+  // =====================================================
+  return (
+    <div>
+      <Header />
+      <SentimentResult
+        scrapers={scrapers}
+        activeDataset={activeDataset!}
+        data={sentimentData}
+      />
     </div>
   );
 };
+
+const Header = () => (
+  <div className="mb-6">
+    <h1 className="text-2xl font-bold text-slate-900">Sentiment Analysis</h1>
+    <p className="mt-2 text-xs sm:text-sm text-slate-500">
+      Sentiments Analysis page content goes here
+    </p>
+  </div>
+);
 
 export default SentimentPage;

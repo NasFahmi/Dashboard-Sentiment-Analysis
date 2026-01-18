@@ -1,25 +1,30 @@
-import { Calendar, Lightbulb, Sparkles, TrendingUp, BarChart3, AlertCircle } from "lucide-react";
+import React from "react";
+import {
+  Calendar,
+  Lightbulb,
+  Sparkles,
+  TrendingUp,
+  BarChart3,
+  AlertCircle
+} from "lucide-react";
 
-// 1. Gunakan Interface yang SAMA dengan Entity Anda
-// Anda bisa meng-import ini dari file types Anda, atau definisikan ulang di sini jika perlu.
 export interface RecommendationBestPostingEntity {
   id: string;
-  created_at: Date;      // Sudah disesuaikan menjadi Date
-  updated_at: Date;      // Sudah disesuaikan menjadi Date
+  created_at: Date;
+  updated_at: Date;
   time: string;
   day: string;
   reason: string;
-  engagement_potential: string; // Di Entity ini string generic
+  engagement_potential: string;
   best_content: string;
 }
 
 interface PostingScheduleSectionProps {
   data: RecommendationBestPostingEntity[];
+  isOnlyOne?: boolean; // New Prop
 }
 
-// Helper: Menentukan gaya visual (Type Guard untuk string potential)
 const getPotentialStyle = (potential: string) => {
-  // Normalisasi string (jaga-jaga jika ada perbedaan case)
   const key = potential.toLowerCase();
 
   switch (key) {
@@ -66,14 +71,20 @@ const getPotentialStyle = (potential: string) => {
   }
 };
 
-const PostingScheduleSection = ({ data }: PostingScheduleSectionProps) => {
-  // Sorting: Prioritaskan 'very_high', lalu 'high'
-  const sortedData = [...data].sort((a, b) => {
+const PostingScheduleSection = ({ data, isOnlyOne = false }: PostingScheduleSectionProps) => {
+
+  // 1. Sorting Logic: Tetap urutkan dari yang terbaik
+  let processedData = [...data].sort((a, b) => {
     const priority: Record<string, number> = { very_high: 3, high: 2, medium: 1, low: 0 };
     const pA = priority[a.engagement_potential.toLowerCase()] || 0;
     const pB = priority[b.engagement_potential.toLowerCase()] || 0;
     return pB - pA;
   });
+
+  // 2. Filtering Logic: Jika isOnlyOne true, ambil item pertama saja
+  if (isOnlyOne) {
+    processedData = processedData.slice(0, 1);
+  }
 
   if (!data || data.length === 0) {
     return (
@@ -85,27 +96,32 @@ const PostingScheduleSection = ({ data }: PostingScheduleSectionProps) => {
 
   return (
     <div className="w-full space-y-4 rounded-xl border border-slate-200 bg-white p-5">
+
       {/* Section Header */}
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-            Best Posting Time
+            {isOnlyOne ? "Top Posting Time" : "Best Posting Time"}
           </h3>
           <p className="text-sm text-slate-500 mt-0.5">
-            Optimized schedule based on your audience activity
+            {isOnlyOne
+              ? "The most optimal time to post for maximum engagement"
+              : "Optimized schedule based on your audience activity"}
           </p>
         </div>
       </div>
 
-      {/* Grid Layout - Responsive */}
-      <div className="grid gap-4 sm:grid-cols-1 ">
-        {sortedData.map((item) => {
+      {/* Grid Layout */}
+      {/* Jika isOnlyOne, gunakan 1 kolom penuh. Jika tidak, tetap responsive 1 atau 2 kolom */}
+      <div className={`grid gap-4 ${isOnlyOne ? 'grid-cols-1' : 'sm:grid-cols-1 lg:grid-cols-1'}`}>
+
+        {processedData.map((item) => {
           const style = getPotentialStyle(item.engagement_potential);
 
           return (
             <div
               key={item.id}
-              className={`group relative flex flex-col justify-between rounded-xl border p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 ${style.containerBorder} ${style.containerBg}`}
+              className={`group flex flex-col justify-between rounded-xl border p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 ${style.containerBorder} ${style.containerBg}`}
             >
               {/* Header Card: Badge & Day */}
               <div className="flex justify-between items-start mb-3">
