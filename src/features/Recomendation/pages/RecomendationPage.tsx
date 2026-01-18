@@ -7,6 +7,7 @@ import ErrorStateData from "@/components/ErrorStateData";
 import { useScrapers } from "@/hooks/useScraper";
 import { useDatasetContextSync } from "@/hooks/useDatasetContextSync";
 import { DashbaordSkeletonComponent } from "@/components/DashbaordSkeletonComponent";
+import type { Scraper } from "@/features/Scraper/types/scraper";
 
 const RecomendationPage: React.FC = () => {
   usePageHeader(recomendationBreadcrumbs);
@@ -17,23 +18,13 @@ const RecomendationPage: React.FC = () => {
   // 2. Sync URL <-> Active Dataset
   const { activeDataset, status } = useDatasetContextSync(scrapers);
 
-  // 3. Fetch Recommendation Data (Only if we have an active dataset)
-  //    Jika activeDataset null, query tidak akan jalan (enabled: false secara implisit jika id undefined/null)
-  //    Tapi karena query key memerlukan ID string, kita kasih fallback string kosong atau handle di query-nya
-  const {
-    data: recommendationData,
-    isLoading: isRecommendationLoading,
-    isError,
-  } = useRecomandationQuery(activeDataset?.id ?? "");
-
   // =====================================================
   // LOADING STATE
   // Gabungan loading scrapers, resolving status, dan query actual
   // =====================================================
   if (
     isScrapersLoading ||
-    status === "resolving" ||
-    (status === "ready" && isRecommendationLoading)
+    status === "resolving"
   ) {
     return (
       <div>
@@ -49,8 +40,7 @@ const RecomendationPage: React.FC = () => {
   // =====================================================
   if (
     status === "empty" ||
-    (status === "ready" && !activeDataset) ||
-    !recommendationData
+    !activeDataset
   ) {
     return (
       <div>
@@ -61,8 +51,35 @@ const RecomendationPage: React.FC = () => {
   }
 
   // =====================================================
-  // ERROR STATE
+  // RENDER CONTENT
   // =====================================================
+  return (
+    <RecomendationContent activeDataset={activeDataset} scrapers={scrapers} />
+  );
+};
+
+const RecomendationContent: React.FC<{
+  activeDataset: Scraper;
+  scrapers: Scraper[];
+}> = ({ activeDataset, scrapers }) => {
+  // 3. Fetch Recommendation Data (Only if we have an active dataset)
+  //    Jika activeDataset null, query tidak akan jalan (enabled: false secara implisit jika id undefined/null)
+  //    Tapi karena query key memerlukan ID string, kita kasih fallback string kosong atau handle di query-nya
+  const {
+    data: recommendationData,
+    isLoading: isRecommendationLoading,
+    isError,
+  } = useRecomandationQuery(activeDataset.id);
+
+  if (isRecommendationLoading) {
+    return (
+      <div>
+        <Header />
+        <DashbaordSkeletonComponent />
+      </div>
+    );
+  }
+
   if (isError) {
     return (
       <div>
@@ -72,15 +89,21 @@ const RecomendationPage: React.FC = () => {
     );
   }
 
-  // =====================================================
-  // RENDER CONTENT
-  // =====================================================
+  if (!recommendationData) {
+    return (
+      <div>
+        <Header />
+        <EmtpyStateData />
+      </div>
+    );
+  }
+
   return (
     <div>
       <Header />
       <RecomendationResult
         scrapers={scrapers}
-        activeDataset={activeDataset!}
+        activeDataset={activeDataset}
         data={recommendationData}
       />
     </div>

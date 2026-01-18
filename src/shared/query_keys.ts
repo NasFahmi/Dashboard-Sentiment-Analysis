@@ -24,12 +24,4 @@ export const dashboardKeys = {
   // satu dashboard per dataset
   detail: (datasetId: string) =>
     [...dashboardKeys.all, "detail", datasetId] as const,
-
-  // ===== SUB QUERIES (INTERNAL) =====
-
-  absa: (datasetId: string) =>
-    [...dashboardKeys.all, "detail", datasetId, "absa"] as const,
-
-  recommendation: (datasetId: string) =>
-    [...dashboardKeys.all, "detail", datasetId, "recommendation"] as const,
 };

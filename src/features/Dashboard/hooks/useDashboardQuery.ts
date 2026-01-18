@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { dashboardKeys } from "@/shared/query_keys";
+import { recomendationKeys, sentimentKeys } from "@/shared/query_keys";
 
 // Repositories
 import { RecomendationRepository } from "@/features/Recomendation/repository/recomendation.repository";
@@ -18,7 +18,7 @@ export const useDashboardQuery = (datasetId: string) => {
   const RecomendationRepo = RecomendationRepository();
 
   const absaQuery = useQuery<SentimentResponse>({
-    queryKey: dashboardKeys.absa(datasetId),
+    queryKey: sentimentKeys.detail(datasetId),
     queryFn: () => AbsaRepo.getById(datasetId),
     enabled: !!datasetId,
     staleTime: 5 * 60 * 1000,
@@ -28,7 +28,7 @@ export const useDashboardQuery = (datasetId: string) => {
   });
 
   const recommendationQuery = useQuery<RecomendationResponse>({
-    queryKey: dashboardKeys.recommendation(datasetId),
+    queryKey: recomendationKeys.detail(datasetId),
     queryFn: () => RecomendationRepo.getById(datasetId),
     enabled: !!datasetId && absaQuery.isSuccess,
     staleTime: 10 * 60 * 1000,
