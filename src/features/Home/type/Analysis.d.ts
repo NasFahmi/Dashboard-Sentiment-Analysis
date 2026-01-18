@@ -1,8 +1,17 @@
-// types/Analysis.d.ts
+// types/Analysis.ts
+
+
+// shared/types/api.ts
+export interface ResponseAnalysis {
+  message: string;
+  data: Analysis;
+}
+
+
 export interface Analysis {
   ringkasan_keseluruhan: RingkasanKeseluruhan;
-  sentimen_per_kategori: { [key: string]: SentimenKategori };
-  sentimen_per_brand: { [key: string]: SentimenBrand };
+  sentimen_per_kategori: Record<string, SentimenKategori>;
+  sentimen_per_brand: Record<string, SentimenBrand>;
   engagement_per_sentimen: EngagementPerSentimen;
   faktor_positif_top10: Keyword[];
   faktor_negatif_top10: Keyword[];

@@ -9,7 +9,7 @@ import { TbLoader2 } from "react-icons/tb";
 import { LuFrown, LuMeh, LuMessageSquare, LuSmile } from "react-icons/lu";
 import { LuUtensils } from "react-icons/lu";
 import { FaCrown, FaFire } from "react-icons/fa";
-import type { Analysis, SentimenBrand, SentimenKategori } from "../type/Analysis";
+import type { Analysis, ResponseAnalysis, SentimenBrand, SentimenKategori } from "../type/Analysis";
 import Chatbot from "../components/Chatbot";
 import { OverviewTabSection } from "../components/OverviewTabSection";
 import { CategoriTabSection } from "../components/CategoriTabSection";
@@ -17,6 +17,7 @@ import { BrandTabSection } from "../components/BrandTabSection";
 import { EngagementTabSection } from "../components/EngagementTabSection";
 import { KeywordTabSection } from "../components/KeywordTabSection";
 import { MessageCircle } from "lucide-react";
+import axiosClient from "@/lib/axios";
 
 const HomePage = () => {
   const [data, setData] = useState<Analysis | null>(null);
@@ -28,18 +29,21 @@ const HomePage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/json/analysis.json");
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const response = await axiosClient.get<ResponseAnalysis>("/umkm");
 
-        const jsonData: Analysis = await response.json();
-        setData(jsonData);
+        setData(response.data.data);
         setError(null);
+
       } catch (err) {
         console.error("Error fetching data:", err);
-        setError(err instanceof Error ? err.message : "An error occurred");
+
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unexpected error occurred");
+        }
+
       } finally {
         setLoading(false);
       }
@@ -47,6 +51,7 @@ const HomePage = () => {
 
     fetchData();
   }, []);
+
 
   // Transform data for charts with null safety
   const overallSentimentData = useMemo(() => {
