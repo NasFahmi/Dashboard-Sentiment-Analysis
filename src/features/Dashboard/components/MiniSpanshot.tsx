@@ -121,7 +121,7 @@ const MiniSnapshot: React.FC<MiniSnapshotProps> = ({
                   endAngle={-270}
                   cornerRadius={4}
                 >
-                  {donutData.map((entry, index) => (
+                  {donutData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={DONUT_COLORS[index]} />
                   ))}
                 </Pie>
