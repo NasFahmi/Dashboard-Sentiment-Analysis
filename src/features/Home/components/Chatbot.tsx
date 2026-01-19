@@ -22,7 +22,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { axiosClient } from '@/lib/axios';
 import axios from 'axios';
 import DOMPurify from 'dompurify';
-import parse, { domToReact, Element } from 'html-react-parser';
+import parse, { domToReact, Element, type HTMLReactParserOptions } from 'html-react-parser';
 import {
   Table,
   TableBody,
@@ -144,7 +144,7 @@ const convertMarkdownToHtml = (text: string | null | undefined): string => {
     // Table conversion (Simplified Markdown Table)
     const tableRegex = /(\|.*\|\n)((?:\|.*[-]+\|.*\n))((?:\|.*\|\n?)+)/g;
 
-    html = html.replace(tableRegex, (match, header, separator, body) => {
+    html = html.replace(tableRegex, (header, body) => {
       const parseRow = (row: string, isHeader: boolean = false) => {
         const cells = row.split('|').filter(cell => cell.trim() !== '');
         const tag = isHeader ? 'th' : 'td';
@@ -190,7 +190,8 @@ const HtmlContent: React.FC<{ content: string | null | undefined }> = ({ content
         ALLOWED_ATTR: ['class', 'style']
       });
       const options: HTMLReactParserOptions = {
-        replace: (domNode) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        replace: (domNode: any) => {
           if (domNode instanceof Element && domNode.name === 'table') {
             return <Table className="border rounded-md my-2">{domToReact(domNode.children as any, options)}</Table>;
           }
@@ -207,6 +208,7 @@ const HtmlContent: React.FC<{ content: string | null | undefined }> = ({ content
             return <TableHead className="font-bold">{domToReact(domNode.children as any, options)}</TableHead>;
           }
           if (domNode instanceof Element && domNode.name === 'td') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return <TableCell>{domToReact(domNode.children as any, options)}</TableCell>;
           }
         }
