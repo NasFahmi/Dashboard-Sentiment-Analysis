@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import type { AxiosError } from "axios";
-import { DashboardRepository } from "../repository/dashboard.repository.tsx1";
+import { DashboardRepository } from "../repository/dashboard.repository.tsx";
 import type { ChatbotPayload, ChatbotResponse } from "../types/chatbot";
 
 export interface Message {
