@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CACHE_KEY_SENTIMENT_DASHBOARD } from "@/lib/local-storage";
 import { insightKeys } from "@/shared/query_keys";
 import type { CachedInsight, InsightResponse } from "../types/insight";
-import { DashboardRepository } from "../repository/dashboard.repository";
+import { DashboardRepository } from "../repository/dashboard.repository.tsx1";
 
 // Helpers
 const getLocalStorageCache = (id: string): CachedInsight | null => {
