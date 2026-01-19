@@ -1,6 +1,6 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { SentimentRepository } from "../repository/sentiment.repository";
+import { SentimentRepository } from "../repository/sentiment.repository.tsx1";
 import { type SentimentResponse, type Sentiment } from "../types/sentiment";
 import { sentimentKeys } from "@/shared/query_keys";
 import { mapToSentiment } from "../types/sentiment";
