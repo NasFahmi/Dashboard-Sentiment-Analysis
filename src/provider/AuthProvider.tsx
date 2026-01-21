@@ -25,13 +25,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    document.cookie = `access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
-    document.cookie = `refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    useDatasetContextStore.getState().reset();
-    setIsAuthenticated(false);
-    logoutmutation.mutate();
+    console.log(`acces token ${localStorage.getItem('access_token')}`);
+    console.log(`refresh token ${localStorage.getItem('refresh_token')}`);
+    console.log("logout");
+
+    // Execute logout mutation which calls the API
+    logoutmutation.mutate(undefined, {
+      onSuccess: () => {
+        // Only remove tokens after successful API call
+        document.cookie = `access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+        document.cookie = `refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        useDatasetContextStore.getState().reset();
+        setIsAuthenticated(false);
+      },
+      onError: () => {
+        // Even if API call fails, still clean up local state
+        document.cookie = `access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+        document.cookie = `refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        useDatasetContextStore.getState().reset();
+        setIsAuthenticated(false);
+      }
+    });
   };
 
   return (

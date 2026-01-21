@@ -9,10 +9,11 @@ export const useLogoutMutation = () => {
 
   return useMutation<LogoutResponse, AxiosError>({
     mutationFn: repo.logout,
-    onSuccess: () => {
-      toast.success("Logout berhasil");
+    onSuccess: (data) => {
+      toast.success(data.message || "Logout berhasil");
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Logout error:", error);
       toast.error("Logout gagal");
     },
   });

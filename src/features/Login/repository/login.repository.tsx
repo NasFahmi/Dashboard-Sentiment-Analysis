@@ -15,7 +15,16 @@ export const loginRepository = () => ({
   },
 
   logout: async (): Promise<LogoutResponse> => {
-    const response = await axiosClient.post<LogoutResponse>("/auth/logout");
-    return response.data;
+    try {
+      // Make logout request with flag to prevent retry logic
+      const response = await axiosClient.post<LogoutResponse>("/auth/logout", {}, {
+      });
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Logout API error:", error);
+      // Re-throw the error so it can be handled by the mutation
+      throw error;
+    }
   },
 });
