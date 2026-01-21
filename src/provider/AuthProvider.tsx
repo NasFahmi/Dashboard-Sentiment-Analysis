@@ -1,11 +1,13 @@
 import { type ReactNode, useState, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useDatasetContextStore } from '@/store/useDatasetContextStore';
+import { useLogoutMutation } from '@/hooks/useLogoutMutation';
 
 // 3. Provider
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const logoutmutation = useLogoutMutation();
 
   useEffect(() => {
     const access_token = localStorage.getItem('access_token');
@@ -29,6 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('refresh_token');
     useDatasetContextStore.getState().reset();
     setIsAuthenticated(false);
+    logoutmutation.mutate();
   };
 
   return (
