@@ -27,11 +27,13 @@ interface ChatbotProps {
 
 // Suggested questions
 const suggestedQuestions = [
-  "Berapa jumlah data mention?",
-  "Brand mana yang memiliki sentimen positif tertinggi?",
-  "Bagaimana performa engagement per sentimen?",
-  "Kategori kuliner mana yang paling populer?"
+  "Berapa jumlah komentar yang dianalisis pada dataset ini?",
+  "Bagaimana distribusi sentimen positif, netral, dan negatif?",
+  "Aspek apa yang paling banyak mendapatkan sentimen negatif?",
+  "Bagaimana tren sentimen berdasarkan waktu pada dataset ini?",
+  "Apa rekomendasi konten yang dapat dilakukan berdasarkan hasil analisis?"
 ];
+
 
 // Component untuk merender HTML content dengan sanitasi
 const HtmlContent: React.FC<{ content: string | null | undefined }> = ({ content }) => {
