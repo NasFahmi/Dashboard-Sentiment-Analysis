@@ -5,8 +5,9 @@ import { createContext } from 'react';
 type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (access_token: string, refresh_token: string) => void;
+  login: (access_token: string, refresh_token: string, username: string) => void;
   logout: () => void;
+  username: string;
 };
 
 // 2. Buat context — pastikan ini diekspor!

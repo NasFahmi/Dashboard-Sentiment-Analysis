@@ -7,20 +7,27 @@ import { useLogoutMutation } from '@/hooks/useLogoutMutation';
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setuser] = useState('');
   const logoutmutation = useLogoutMutation();
 
   useEffect(() => {
     const access_token = localStorage.getItem('access_token');
     const refresh_token = localStorage.getItem('refresh_token');
+    const storedUser = localStorage.getItem('username');
+    if (storedUser) {
+      setuser(storedUser);
+    }
     setIsAuthenticated(!!access_token && !!refresh_token);
     setIsLoading(false);
   }, []);
 
-  const login = (acces_token: string, refresh_token: string) => {
+  const login = (acces_token: string, refresh_token: string, username: string) => {
     document.cookie = `access_token=${acces_token}; path=/`;
     document.cookie = `refresh_token=${refresh_token}; path=/`;
     localStorage.setItem('access_token', acces_token);
     localStorage.setItem('refresh_token', refresh_token);
+    localStorage.setItem('username', username);
+    setuser(username);
     setIsAuthenticated(true);
   };
 
@@ -37,6 +44,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         document.cookie = `refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        localStorage.removeItem('username');
+        setuser('');
         useDatasetContextStore.getState().reset();
         setIsAuthenticated(false);
       },
@@ -46,6 +55,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         document.cookie = `refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        localStorage.removeItem('username');
+        setuser('');
         useDatasetContextStore.getState().reset();
         setIsAuthenticated(false);
       }
@@ -53,7 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout, username: user }}>
       {children}
     </AuthContext.Provider>
   );

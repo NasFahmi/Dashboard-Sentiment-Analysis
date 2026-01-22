@@ -2,9 +2,11 @@ import { useHeaderStore } from "@/store/useHeaderStore";
 import { Menu, ChevronLeft } from "lucide-react";
 import { useSidebarStore } from "@/store/useSidebarStore";
 import { Link } from "react-router";
+import { useAuth } from "@/hooks/useAuth";
 
 const TopHeaderBarComponent = () => {
   const toggle = useSidebarStore((s) => s.toggle);
+  const { username } = useAuth();
   const { title, breadcrumbs, showBack } = useHeaderStore(
     (s) => s.meta
   );
@@ -72,7 +74,7 @@ const TopHeaderBarComponent = () => {
       {/* RIGHT */}
       <div className="hidden md:flex items-center gap-3">
         <div className="text-right">
-          <p className="font-semibold text-sm">Jhon Doe</p>
+          <p className="font-semibold text-sm">{username}</p>
           <p className="text-xs text-slate-600">User</p>
         </div>
         <img

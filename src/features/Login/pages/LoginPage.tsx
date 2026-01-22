@@ -14,8 +14,8 @@ const LoginPage: React.FC = () => {
   const loginMutation = useLoginMutation(
     {
       onSuccess: (data) => {
-        const { access_token, refresh_token } = data.data;
-        authContext.login(access_token, refresh_token);
+        const { access_token, refresh_token, username } = data.data;
+        authContext.login(access_token, refresh_token, username);
         navigate("/dashboard");
         toast.success("Login berhasil", {
           description: `Selamat Datang ${data.data.username}`,
