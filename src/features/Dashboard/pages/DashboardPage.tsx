@@ -10,6 +10,7 @@ import { DashbaordSkeletonComponent } from "@/components/DashbaordSkeletonCompon
 import { useDashboardQuery } from "../hooks/useDashboardQuery";
 import ErrorStateData from "@/components/ErrorStateData";
 import type { Scraper } from "@/features/Scraper/types/scraper";
+import Chatbot from "../components/Chatbot";
 
 const DashboardPage: React.FC = () => {
   usePageHeader(dashboardBreadcrumbs);
@@ -38,6 +39,7 @@ const DashboardPage: React.FC = () => {
     return (
       <div>
         <Header />
+        <Chatbot datasetId="" />
         <EmtpyStateData />
       </div>
     );
