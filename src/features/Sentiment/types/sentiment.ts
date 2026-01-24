@@ -1,17 +1,25 @@
 import { parseDate } from "@/helper/parseDate";
 
-//sentiment response
+/* =========================================================
+ * RESPONSE DARI BACKEND
+ * ======================================================= */
+
 export interface SentimentResponse {
   message: string;
-  data: Data;
+  data: SentimentData; // meta ADA DI DALAM data
 }
 
-export interface Data {
+export interface SentimentData {
   id: string;
   summary: Summary;
   sentiment_trend: SentimentTrend;
   sentimentComments: SentimentComment[];
+  meta: Meta;
 }
+
+/* =========================================================
+ * SUMMARY & ANALYSIS
+ * ======================================================= */
 
 export interface Summary {
   percentage: PercentageDistribution;
@@ -19,6 +27,7 @@ export interface Summary {
   overall_sentiment: PercentageDistributionDatum;
   relevance_analysis: RelevanceAnalysis;
 }
+
 export interface PercentageDistribution {
   price: PercentageDistributionDatum;
   service: PercentageDistributionDatum;
@@ -38,6 +47,9 @@ export interface RelevanceAnalysis {
   non_relevant_ratio_percent: number;
 }
 
+/* =========================================================
+ * SENTIMENT TREND
+ * ======================================================= */
 
 export interface OverallSentiment {
   date: Date;
@@ -46,65 +58,82 @@ export interface OverallSentiment {
   positive: number;
 }
 
-
-
-export interface Distribution {
-  price: OverallSentiment;
-  service: OverallSentiment;
-  food_quality: OverallSentiment;
+export interface SentimentTrend {
+  trend: OverallSentiment[];
+  granularity: string;
 }
 
-
-
+/* =========================================================
+ * COMMENT
+ * ======================================================= */
 
 export interface SentimentComment {
   id: string;
   created_at: Date;
-  updated_at: null | Date | string;
+  updated_at: Date | null;
   comment: string;
   food_quality: string;
   price: string;
   service: string;
 }
 
-export interface SentimentTrend {
-  trend: OverallSentiment[];
-  granularity: string;
+/* =========================================================
+ * PAGINATION META
+ * ======================================================= */
+
+export interface Meta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
+/* =========================================================
+ * ENTITY YANG DIGUNAKAN FRONTEND
+ * ======================================================= */
 
-//sentiment entity
 export interface Sentiment {
   id: string;
   summary: Summary;
   sentiment_trend: SentimentTrend;
   sentimentComments: SentimentComment[];
+  meta: Meta;
 }
 
+/* =========================================================
+ * MAPPING HELPERS
+ * ======================================================= */
 
-// Helper: map satu comment
+// Map satu komentar
 const mapComment = (comment: SentimentComment): SentimentComment => ({
   ...comment,
   created_at: parseDate(comment.created_at),
-  updated_at: parseDate(comment.updated_at),
+  updated_at: comment.updated_at ? parseDate(comment.updated_at) : null,
 });
 
-// Helper: map satu OverallSentiment (untuk trend)
+// Map satu data trend
 const mapOverallSentiment = (item: OverallSentiment): OverallSentiment => ({
   ...item,
-  date: parseDate(item.date), // pastikan date jadi Date
+  date: parseDate(item.date),
 });
 
-export const mapToSentiment = (response: SentimentResponse): Sentiment => {
+/* =========================================================
+ * MAIN MAPPER (INI KUNCI MASALAH KAMU SEBELUMNYA)
+ * ======================================================= */
+
+export const mapToSentiment = (
+  response: SentimentResponse
+): Sentiment => {
   const data = response.data;
 
   return {
     id: data.id,
-    summary: data.summary, // tidak perlu transformasi — sudah sesuai
+    summary: data.summary,
     sentiment_trend: {
       granularity: data.sentiment_trend.granularity,
       trend: data.sentiment_trend.trend.map(mapOverallSentiment),
     },
     sentimentComments: data.sentimentComments.map(mapComment),
+    meta: data.meta, // ✅ BENAR — BUKAN response.meta
   };
 };

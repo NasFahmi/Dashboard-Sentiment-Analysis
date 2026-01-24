@@ -8,10 +8,10 @@ import type { SentimentResponse } from "../types/sentiment";
 
 export const SentimentRepository = () => ({
 
-  getById: async (id: string): Promise<SentimentResponse> => {
+  getById: async (id: string, page: number, limit: number): Promise<SentimentResponse> => {
     try {
       const response = await axiosClient.get<SentimentResponse>(
-        `/absa/${id}`
+        `/absa/${id}?page=${page}&limit=${limit}`
       );
       console.log('Get sentiment response:', response.data);
       return response.data;

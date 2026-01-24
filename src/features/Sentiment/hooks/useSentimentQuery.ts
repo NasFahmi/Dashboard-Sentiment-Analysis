@@ -4,12 +4,12 @@ import { SentimentRepository } from "../repository/sentiment.repository.tsx";
 import { type SentimentResponse, type Sentiment } from "../types/sentiment";
 import { sentimentKeys } from "@/shared/query_keys";
 import { mapToSentiment } from "../types/sentiment";
-export const useSentimentQuery = (id: string) => {
+export const useSentimentQuery = (id: string, page: number, limit: number) => {
   const repo = SentimentRepository();
   const queryClient = useQueryClient();
   const query = useQuery<SentimentResponse, Error, Sentiment>({
-    queryKey: sentimentKeys.detail(id), // ✅ gunakan key terpusat
-    queryFn: () => repo.getById(id),
+    queryKey: [...sentimentKeys.detail(id), page, limit],
+    queryFn: () => repo.getById(id, page, limit),
     select: (response) => mapToSentiment(response),
     enabled: !!id,
     staleTime: 5 * 60 * 1000, // 5 menit

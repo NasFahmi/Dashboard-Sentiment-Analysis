@@ -11,6 +11,8 @@ import ErrorStateData from '@/components/ErrorStateData';
 
 const SentimentPage: React.FC = () => {
   usePageHeader(sentimentBreadcrumbs);
+  const [page, setPage] = React.useState(1);
+  const [limit] = React.useState(10);
 
   // 1. Get All Scrapers (Master Data)
   const { scrapers, isLoading: isScrapersLoading } = useScrapers();
@@ -23,7 +25,7 @@ const SentimentPage: React.FC = () => {
     data: sentimentData,
     isLoading: isSentimentLoading,
     isError,
-  } = useSentimentQuery(activeDataset?.id ?? "");
+  } = useSentimentQuery(activeDataset?.id ?? "", page, limit);
 
   // =====================================================
   // LOADING STATE
@@ -79,6 +81,7 @@ const SentimentPage: React.FC = () => {
         scrapers={scrapers}
         activeDataset={activeDataset!}
         data={sentimentData}
+        onPageChange={setPage}
       />
     </div>
   );

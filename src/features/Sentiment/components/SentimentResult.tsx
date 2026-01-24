@@ -11,6 +11,7 @@ type SentimentResultProps = {
   scrapers: Scraper[];
   activeDataset: Scraper;
   data: Sentiment;
+  onPageChange: (page: number) => void;
 };
 
 
@@ -19,7 +20,11 @@ const SentimentResult = ({
   scrapers,
   activeDataset,
   data,
+  onPageChange
 }: SentimentResultProps) => {
+  console.log("META FROM API:", data.meta);
+  console.log("COMMENTS:", data.sentimentComments);
+
   return (
     <div className="space-y-6">
       <DatasetContext scrapers={scrapers} activeDataset={activeDataset} />
@@ -38,7 +43,11 @@ const SentimentResult = ({
         </div>
       </div>
 
-      <AllComments data={data.sentimentComments} />
+      <AllComments
+        data={data.sentimentComments}
+        meta={data.meta}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 };
