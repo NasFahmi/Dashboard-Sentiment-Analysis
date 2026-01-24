@@ -134,6 +134,6 @@ export const mapToSentiment = (
       trend: data.sentiment_trend.trend.map(mapOverallSentiment),
     },
     sentimentComments: data.sentimentComments.map(mapComment),
-    meta: data.meta, // ✅ BENAR — BUKAN response.meta
+    meta: data.meta,
   };
 };

@@ -26,6 +26,7 @@ import { useDeleteHandler } from "../hooks/useDeleteHandler";
 import { useHandleAnalysis } from "../hooks/useHandleAnalysis";
 import { AlertDialogLoading } from "@/components/AlertDialogLoading";
 import { useDatasetContextStore } from "@/store/useDatasetContextStore";
+import { useNavigate } from "react-router";
 
 interface DataComponentsProps {
   data: Scraper[];
@@ -33,6 +34,8 @@ interface DataComponentsProps {
 
 export const DataComponents = ({ data }: DataComponentsProps) => {
   const [search, setSearch] = useState("");
+
+  const navigate = useNavigate();
 
   // =========================
   // GLOBAL DATASET CONTEXT
@@ -73,6 +76,7 @@ export const DataComponents = ({ data }: DataComponentsProps) => {
   };
 
   const handleLihatAnalisa = (id: string) => {
+    navigate(`/dashboard?dataset=${id}`); //dashboard?dataset=9f7a38b8-c19e-44c4-afb3-13039991376e
     setActiveDatasetId(id);
   };
 
