@@ -19,7 +19,7 @@ export const useDashboardQuery = (datasetId: string) => {
 
   const absaQuery = useQuery<SentimentResponse>({
     queryKey: sentimentKeys.detail(datasetId),
-    queryFn: () => AbsaRepo.getById(datasetId),
+    queryFn: () => AbsaRepo.getById(datasetId, 1, 10),
     enabled: !!datasetId,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
