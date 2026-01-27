@@ -16,8 +16,11 @@ import {
   Minimize2,
   Maximize2,
   Sparkles,
-  RefreshCw
+  RefreshCw,
+  Maximize,
+  Minimize
 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { motion, AnimatePresence } from 'framer-motion';
 import { axiosClient } from '@/lib/axios';
 import axios from 'axios';
@@ -232,6 +235,8 @@ const Chatbot: React.FC = () => {
   const [chatState] = useState(() => getChatStateFromStorage());
   const [isOpen, setIsOpen] = useState(chatState.isOpen);
   const [isMinimized, setIsMinimized] = useState(chatState.isMinimized);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const isMobile = useIsMobile();
 
   const [messages, setMessages] = useState<Message[]>(() => {
     const storedHistory = getChatHistoryFromStorage();
@@ -381,18 +386,19 @@ const Chatbot: React.FC = () => {
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: 100, scale: 0.8 }}
+        initial={{ opacity: 0, y: 100, scale: 0.8, width: '24rem' }}
         animate={{
           opacity: 1,
           y: 0,
           scale: 1,
-          height: isMinimized ? 'auto' : '600px'
+          height: isMinimized ? 'auto' : (isExpanded ? (isMobile ? '75vh' : '85vh') : '600px'),
+          width: isMinimized ? '24rem' : (isExpanded ? (isMobile ? '90vw' : '70vw') : '24rem')
         }}
         exit={{ opacity: 0, y: 100, scale: 0.8 }}
         transition={{ type: "spring", duration: 0.5 }}
-        className={`fixed bottom-6 right-6 w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 flex flex-col ${isMinimized ? 'h-auto' : 'h-[600px]'
+        className={`fixed bottom-6 right-6 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 flex flex-col ${isMinimized ? 'h-auto' : 'h-[600px]'
           }`}
-        style={{ maxHeight: '80vh' }}
+        style={{ maxHeight: '90vh', maxWidth: '90vw' }}
       >
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white rounded-t-2xl flex-shrink-0">
@@ -408,6 +414,17 @@ const Chatbot: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center gap-1">
+              {!isMinimized && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="w-8 h-8 text-white hover:bg-white/20"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  title={isExpanded ? "Restore size" : "Maximize"}
+                >
+                  {isExpanded ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+                </Button>
+              )}
               <Button
                 size="icon"
                 variant="ghost"
