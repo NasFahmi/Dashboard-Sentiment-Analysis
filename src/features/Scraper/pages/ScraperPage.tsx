@@ -15,7 +15,7 @@ const ScraperPage: React.FC = () => {
   usePageHeader(scrapesBreadcrumbs);
   // 🔴 DATA DARI PROVIDER, BUKAN QUERY
 
-  const { scrapers, isLoading, isError } = useScrapers();
+  const { scrapers, isLoading, isError, refetch } = useScrapers();
 
   if (isError) {
     return <ErrorStateData />;
@@ -53,7 +53,7 @@ const ScraperPage: React.FC = () => {
       ) : (scrapers ?? []).length === 0 ? (
         <InstruksiComponent />
       ) : (
-        <DataComponents data={scrapers ?? []} />
+        <DataComponents data={scrapers ?? []} refetch={refetch} />
       )}
 
 

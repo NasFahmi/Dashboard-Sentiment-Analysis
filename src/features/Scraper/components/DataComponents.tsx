@@ -1,7 +1,7 @@
 // components/DataComponents.tsx
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2, Trash2, RefreshCcw } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,10 +30,18 @@ import { useNavigate } from "react-router";
 
 interface DataComponentsProps {
   data: Scraper[];
+  refetch: () => void;
 }
 
-export const DataComponents = ({ data }: DataComponentsProps) => {
+export const DataComponents = ({ data, refetch }: DataComponentsProps) => {
   const [search, setSearch] = useState("");
+  const [isRefetching, setIsRefetching] = useState(false);
+
+  const handleRefetch = async () => {
+    setIsRefetching(true);
+    await refetch();
+    setTimeout(() => setIsRefetching(false), 1000);
+  };
 
   const navigate = useNavigate();
 
@@ -94,6 +102,15 @@ export const DataComponents = ({ data }: DataComponentsProps) => {
           placeholder="Cari akun Instagram"
           className="w-full sm:max-w-md rounded-lg border border-slate-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleRefetch}
+          disabled={isRefetching}
+          className="shrink-0"
+        >
+          <RefreshCcw className={cn("h-4 w-4", isRefetching && "animate-spin")} />
+        </Button>
       </div>
 
       <p className="text-xs text-slate-600">

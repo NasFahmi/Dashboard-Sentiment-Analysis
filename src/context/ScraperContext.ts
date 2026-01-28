@@ -6,6 +6,7 @@ type ScraperContextValue = {
   scrapers: Scraper[];
   isLoading: boolean;
   isError: boolean;
+  refetch: () => void;
 };
 
 export const ScraperContext = createContext<ScraperContextValue | null>(null);
