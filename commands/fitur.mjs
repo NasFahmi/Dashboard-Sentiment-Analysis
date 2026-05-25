@@ -24,11 +24,11 @@ if (!featureName) {
 }
 
 // Capitalize the first letter of the feature name
-const capitalizedFeatureName = featureName.charAt(0).toUpperCase() + featureName.slice(1);
+const lowerCaseFeatureName = featureName.charAt(0).toLowerCase() + featureName.slice(1);
 
 // Define the features directory path
 const featuresDir = path.join(process.cwd(), 'src', 'features');
-const featureDir = path.join(featuresDir, capitalizedFeatureName);
+const featureDir = path.join(featuresDir, lowerCaseFeatureName);
 
 // Create the main feature directory if it doesn't exist
 if (!fs.existsSync(featuresDir)) {
@@ -36,7 +36,7 @@ if (!fs.existsSync(featuresDir)) {
 }
 
 if (fs.existsSync(featureDir)) {
-  console.error(`Feature ${capitalizedFeatureName} already exists!`);
+  console.error(`Feature ${lowerCaseFeatureName} already exists!`);
   process.exit(1);
 }
 

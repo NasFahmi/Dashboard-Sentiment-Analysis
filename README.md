@@ -89,3 +89,43 @@ export default tseslint.config([
   },
 ])
 ```
+
+## Docker Configuration
+
+This project includes Docker configuration for containerized deployment. The setup includes:
+
+- Multi-stage Dockerfile for optimized builds
+- Nginx server to serve the React application
+- Docker Compose configuration for easy deployment
+- Proper .dockerignore file to exclude unnecessary files
+
+### Building and Running with Docker
+
+To build and run the application using Docker:
+
+1. Build the image:
+   ```bash
+   docker build -t dashboard-analysis .
+   ```
+
+2. Run the container:
+   ```bash
+   docker run -p 80:80 dashboard-analysis
+   ```
+
+Alternatively, you can use Docker Compose:
+
+1. Build and run with Docker Compose:
+   ```bash
+   docker-compose up --build
+   ```
+
+The application will be available at `http://localhost`
+
+### Production Deployment
+
+The Docker image is optimized for production use with:
+- Gzip compression enabled
+- Proper caching headers for static assets
+- Security headers
+- Support for client-side routing (React Router)

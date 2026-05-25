@@ -1,185 +1,207 @@
-import axios, { type AxiosRequestConfig } from "axios";
-import { toast } from "sonner";
+import axios, {
+  AxiosError,
+  AxiosHeaders,
+  type AxiosRequestConfig,
+  type InternalAxiosRequestConfig,
+} from "axios";
+import { env } from "./env";
+import { normalizeApiError } from "./normalize-api-error";
+import { isTokenExpired } from "./jwt";
+import { refreshAccessToken } from "./refresh";
 
+/**
+ * =====================================================
+ * Extend Axios request config with _retry flag
+ * =====================================================
+ */
+interface AxiosRequestConfigWithRetry
+  extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
+
+/**
+ * =====================================================
+ * Axios Instance
+ * =====================================================
+ */
 export const axiosClient = axios.create({
-  // baseURL: "http://localhost:3000",
-  // baseURL: "https://dashboard.nasrulfahmi.my.id",
-  baseURL: "https://chatbot.phpenjoyer.my.id/",
+  baseURL: `${env.apiBaseUrl}/api`,
   timeout: undefined,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
-    // Global cache disable headers
     "Cache-Control": "no-cache, no-store, must-revalidate",
     Pragma: "no-cache",
     Expires: "0",
   },
 });
 
+/**
+ * =====================================================
+ * Helper: Logout (centralized)
+ * =====================================================
+ */
+const logout = () => {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+  window.dispatchEvent(new Event("auth:logout"));
+};
 
-
-// ===== REQUEST INTERCEPTOR =====
-// Automatically add Authorization header to every request
+/**
+ * =====================================================
+ * REQUEST INTERCEPTOR
+ * =====================================================
+ */
 axiosClient.interceptors.request.use(
-  (config) => {
-    // Get token from localStorage
-    const token = localStorage.getItem("token");
+  async (config) => {
+    let accessToken = localStorage.getItem("access_token");
 
-    if (token) {
-      // Add Authorization header
-      config.headers.Authorization = `Bearer ${token}`;
+    // ===============================
+    // AUTO REFRESH BEFORE REQUEST
+    // ===============================
+    if (accessToken && isTokenExpired(accessToken)) {
+      const newToken = await refreshAccessToken();
+
+      if (!newToken) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        window.dispatchEvent(new Event("auth:logout"));
+        return Promise.reject(
+          new Error("Session expired, please login again")
+        );
+      }
+
+      accessToken = newToken;
     }
 
-    // Optional: Log request for debugging (remove in production)
+    if (accessToken) {
+      if (!(config.headers instanceof AxiosHeaders)) {
+        config.headers = new AxiosHeaders(config.headers);
+      }
+      config.headers.set("Authorization", `Bearer ${accessToken}`);
+    }
 
     return config;
   },
-  (error) => {
-    console.error("❌ Request Error:", error);
-
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error)
 );
 
-// ===== RESPONSE INTERCEPTOR =====
-// Handle responses and errors globally
+
+/**
+ * =====================================================
+ * RESPONSE INTERCEPTOR (REFRESH TOKEN HANDLING)
+ * =====================================================
+ */
 axiosClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    console.error("❌ API Error:", error);
+  (response) => response,
 
-    // Handle different error scenarios
-    if (error.response) {
-      const { status, data } = error.response;
+  async (error: AxiosError) => {
+    const normalizedError = normalizeApiError(error);
 
-      switch (status) {
-        case 401:
-          // Unauthorized - Token invalid/expired
-          console.log("🔐 Unauthorized access - clearing auth data");
+    const errorDetails =
+      normalizedError ?? {
+        statusCode: error.response?.status,
+        error: error.response?.statusText || "Unknown Error",
+        message:
+          error.message || "Terjadi kesalahan yang tidak diketahui",
+      };
 
-          // Clear auth data
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          localStorage.removeItem("user_id");
+    console.group("❌ API Error");
+    console.log("Status:", errorDetails.statusCode);
+    console.log("Error:", errorDetails.error);
+    console.log("Message:", errorDetails.message);
+    console.log("Full error object:", error);
+    console.groupEnd();
 
-          // Show error toast
-          toast.error("Sesi Anda telah berakhir", {
-            description: "Silakan login kembali untuk melanjutkan",
-          });
+    /**
+     * Guard: error.config can be undefined
+     */
+    const originalRequest =
+      error.config as AxiosRequestConfigWithRetry | undefined;
 
-          // Redirect to login (after a short delay to show toast)
-          setTimeout(() => {
-            // Only redirect if not already on login page
-            if (!window.location.pathname.includes("/login")) {
-              window.location.href = "/login";
-            }
-          }, 1000);
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
 
-          break;
+    /**
+     * Handle 401 Unauthorized with refresh token
+     */
+    if (
+      errorDetails.statusCode === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
 
-        case 403:
-          // Forbidden - No permission
-          toast.error("Akses Ditolak", {
-            description:
-              "Anda tidak memiliki izin untuk mengakses resource ini",
-          });
-          break;
+      const refreshToken =
+        localStorage.getItem("refresh_token");
 
-        case 404:
-          // Not Found
-          toast.error("Resource Tidak Ditemukan", {
-            description: "Endpoint yang diminta tidak tersedia",
-          });
-          break;
+      console.log(`refreshToken is ${refreshToken}`);
 
-        case 422:
-          // Validation Error
-          {
-            const validationMessage =
-              data?.message || "Data yang dikirim tidak valid";
+      try {
+        // Gunakan fungsi refreshAccessToken yang sudah benar
+        const newAccessToken = await refreshAccessToken();
 
-            toast.error("Validasi Error", {
-              description: validationMessage,
-            });
-            break;
-          }
+        if (!newAccessToken) {
+          // Jika refreshAccessToken mengembalikan null, artinya refresh token juga tidak valid.
+          // Fungsi refreshAccessToken sudah menangani penghapusan token internalnya.
+          // Kita cukup memicu logout di sini.
+          logout();
+          return Promise.reject(new Error("Failed to refresh token. Session expired."));
+        }
 
-        case 429:
-          // Too Many Requests
-          toast.error("Terlalu Banyak Permintaan", {
-            description: "Silakan tunggu beberapa saat sebelum mencoba lagi",
-          });
-          break;
+        // Update header untuk request original dengan token baru
+        if (!(originalRequest.headers instanceof AxiosHeaders)) {
+          originalRequest.headers = new AxiosHeaders(originalRequest.headers);
+        }
+        originalRequest.headers.set("Authorization", `Bearer ${newAccessToken}`);
 
-        case 500:
-          // Internal Server Error
-          toast.error("Server Error", {
-            description:
-              "Terjadi kesalahan pada server. Silakan coba lagi nanti",
-          });
-          break;
+        // Ulangi request original dengan token baru
+        return axiosClient(originalRequest);
 
-        default:
-          // Generic error
-          {
-            const genericMessage =
-              data?.message || "Terjadi kesalahan yang tidak diketahui";
-
-            toast.error("Error", {
-              description: genericMessage,
-            });
-          }
+      } catch (refreshError) {
+        // Jika refreshAccessToken melempar error (misalnya masalah jaringan)
+        console.error("Refresh token failed. Logging out.", refreshError);
+        logout();
+        return Promise.reject(refreshError);
       }
-    } else if (error.request) {
-      // Network error - no response received
-      console.error("🌐 Network Error:", error.request);
-      toast.error("Masalah Koneksi", {
-        description:
-          "Tidak dapat terhubung ke server. Periksa koneksi internet Anda",
-      });
-    } else {
-      // Something else happened
-      console.error("⚠️ Unknown Error:", error.message);
-      toast.error("Error", {
-        description: "Terjadi kesalahan yang tidak terduga",
-      });
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
-// ===== UTILITY FUNCTIONS =====
+/**
+ * =====================================================
+ * Utility Functions
+ * =====================================================
+ */
 
-// Function to manually set token (useful for testing or dynamic token updates)
+// Set token manually
 export const setAuthToken = (token: string | null) => {
   if (token) {
-    // Set default authorization header for all future requests
-    axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    localStorage.setItem("token", token);
+    axiosClient.defaults.headers.common.Authorization =
+      `Bearer ${token}`;
+    localStorage.setItem("access_token", token);
   } else {
-    // Remove authorization header
-    delete axiosClient.defaults.headers.common["Authorization"];
-    localStorage.removeItem("token");
+    delete axiosClient.defaults.headers.common.Authorization;
+    localStorage.removeItem("access_token");
   }
 };
 
-// Function to get current token
+// Get current token
 export const getAuthToken = (): string | null => {
-  return localStorage.getItem("token");
+  return localStorage.getItem("access_token");
 };
 
-// Function to check if user is authenticated
+// Check authentication state
 export const isAuthenticated = (): boolean => {
-  const token = getAuthToken();
-
-  return !!token;
+  return !!getAuthToken();
 };
 
-// Function to make authenticated request manually (if needed)
-export const authenticatedRequest = async (config: AxiosRequestConfig<never>) => {
+// Manual authenticated request
+export const authenticatedRequest = async (
+  config: AxiosRequestConfig
+) => {
   const token = getAuthToken();
 
   if (!token) {
@@ -195,5 +217,11 @@ export const authenticatedRequest = async (config: AxiosRequestConfig<never>) =>
   });
 };
 
-// ===== EXPORT DEFAULT =====
+// Manual refresh access token (optional usage
+
+/**
+ * =====================================================
+ * EXPORT DEFAULT
+ * =====================================================
+ */
 export default axiosClient;
