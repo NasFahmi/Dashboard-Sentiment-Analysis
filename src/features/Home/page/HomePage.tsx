@@ -9,7 +9,7 @@
   import { LuFrown, LuMeh, LuMessageSquare, LuSmile } from "react-icons/lu";
   import { LuUtensils } from "react-icons/lu";
   import { FaCrown, FaFire } from "react-icons/fa";
-  import type { Analysis, SentimenBrand, SentimenKategori } from "../type/Analysis";
+  import type { Analysis, ResponseAnalysis, SentimenBrand, SentimenKategori } from "../type/Analysis";
   import Chatbot from "../components/Chatbot";
   import { OverviewTabSection } from "../components/OverviewTabSection";
   import { CategoriTabSection } from "../components/CategoriTabSection";
@@ -17,7 +17,7 @@
   import { EngagementTabSection } from "../components/EngagementTabSection";
   import { KeywordTabSection } from "../components/KeywordTabSection";
   import { MessageCircle } from "lucide-react";
-  // import axiosClient from "@/lib/axios";
+  import axiosClient from "@/lib/axios";
 
   const HomePage = () => {
     const [data, setData] = useState<Analysis | null>(null);
@@ -30,20 +30,9 @@
         try {
           setLoading(true);
 
-          const response = await fetch("/json/analysis.json");
-
-          if (!response.ok) {
-            throw new Error("Failed to load analysis.json");
-          }
-
-          const jsonData = (await response.json()) as Analysis;
-
-          setData(jsonData);
+          const response = await axiosClient.get<ResponseAnalysis>("/umkm");
+          setData(response.data.data);
           setError(null);
-
-          // Kode asli dari API:
-          // const response = await axiosClient.get<ResponseAnalysis>("/umkm");
-          // setData(response.data.data);
 
         } catch (err) {
           console.error("Error fetching data:", err);
