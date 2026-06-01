@@ -19,7 +19,7 @@ yarn-error.log*
 *~
 
 # Build outputs
-dist/
+# dist/
 build/
 .nyc_output/
 coverage/

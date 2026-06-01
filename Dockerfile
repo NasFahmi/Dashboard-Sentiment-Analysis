@@ -1,32 +1,10 @@
-# Multi-stage Dockerfile for React Dashboard Analysis App
+# Single-stage Dockerfile for serving pre-built React Dashboard App
+FROM nginx:alpine
 
-# Stage 1: Build stage with Bun
-FROM oven/bun:latest AS build
+# Copy built assets from local build
+COPY dist /usr/share/nginx/html
 
-# Set working directory
-WORKDIR /app
-
-# Copy package files
-COPY package.json bun.lock bunfig.toml* ./
-
-# Install dependencies using bun
-RUN bun install
-
-# Copy source code
-COPY . .
-
-# Build the application with environment variables
-ARG VITE_API_BASE_URL
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-RUN bun run build
-
-# Stage 2: Production server stage
-FROM nginx:alpine AS production
-
-# Copy built assets from build stage
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Copy custom nginx configuration (if exists) or use default
+# Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Expose port
