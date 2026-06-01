@@ -1,1 +1,0 @@
-import{j as r}from"./index-BgU5QCLg.js";import{I as e}from"./InstruksiComponent-CylCbL4S.js";import{u as s,b as o}from"./breadcumb-config-Dc0LHLgD.js";import"./download-BQyyapJy.js";import"./instagram-BAGukfjV.js";const u=()=>(s(o),r.jsx(e,{}));export{u as default};

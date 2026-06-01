@@ -14,8 +14,7 @@ import { refreshAccessToken } from "./refresh";
  * Extend Axios request config with _retry flag
  * =====================================================
  */
-interface AxiosRequestConfigWithRetry
-  extends InternalAxiosRequestConfig {
+interface AxiosRequestConfigWithRetry extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
@@ -67,9 +66,7 @@ axiosClient.interceptors.request.use(
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         window.dispatchEvent(new Event("auth:logout"));
-        return Promise.reject(
-          new Error("Session expired, please login again")
-        );
+        return Promise.reject(new Error("Session expired, please login again"));
       }
 
       accessToken = newToken;
@@ -84,9 +81,8 @@ axiosClient.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
-
 
 /**
  * =====================================================
@@ -99,13 +95,11 @@ axiosClient.interceptors.response.use(
   async (error: AxiosError) => {
     const normalizedError = normalizeApiError(error);
 
-    const errorDetails =
-      normalizedError ?? {
-        statusCode: error.response?.status,
-        error: error.response?.statusText || "Unknown Error",
-        message:
-          error.message || "Terjadi kesalahan yang tidak diketahui",
-      };
+    const errorDetails = normalizedError ?? {
+      statusCode: error.response?.status,
+      error: error.response?.statusText || "Unknown Error",
+      message: error.message || "Terjadi kesalahan yang tidak diketahui",
+    };
 
     console.group("❌ API Error");
     console.log("Status:", errorDetails.statusCode);
@@ -117,8 +111,9 @@ axiosClient.interceptors.response.use(
     /**
      * Guard: error.config can be undefined
      */
-    const originalRequest =
-      error.config as AxiosRequestConfigWithRetry | undefined;
+    const originalRequest = error.config as
+      | AxiosRequestConfigWithRetry
+      | undefined;
 
     if (!originalRequest) {
       return Promise.reject(error);
@@ -127,14 +122,10 @@ axiosClient.interceptors.response.use(
     /**
      * Handle 401 Unauthorized with refresh token
      */
-    if (
-      errorDetails.statusCode === 401 &&
-      !originalRequest._retry
-    ) {
+    if (errorDetails.statusCode === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      const refreshToken =
-        localStorage.getItem("refresh_token");
+      const refreshToken = localStorage.getItem("refresh_token");
 
       console.log(`refreshToken is ${refreshToken}`);
 
@@ -147,18 +138,22 @@ axiosClient.interceptors.response.use(
           // Fungsi refreshAccessToken sudah menangani penghapusan token internalnya.
           // Kita cukup memicu logout di sini.
           logout();
-          return Promise.reject(new Error("Failed to refresh token. Session expired."));
+          return Promise.reject(
+            new Error("Failed to refresh token. Session expired."),
+          );
         }
 
         // Update header untuk request original dengan token baru
         if (!(originalRequest.headers instanceof AxiosHeaders)) {
           originalRequest.headers = new AxiosHeaders(originalRequest.headers);
         }
-        originalRequest.headers.set("Authorization", `Bearer ${newAccessToken}`);
+        originalRequest.headers.set(
+          "Authorization",
+          `Bearer ${newAccessToken}`,
+        );
 
         // Ulangi request original dengan token baru
         return axiosClient(originalRequest);
-
       } catch (refreshError) {
         // Jika refreshAccessToken melempar error (misalnya masalah jaringan)
         console.error("Refresh token failed. Logging out.", refreshError);
@@ -168,7 +163,7 @@ axiosClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 /**
@@ -180,8 +175,7 @@ axiosClient.interceptors.response.use(
 // Set token manually
 export const setAuthToken = (token: string | null) => {
   if (token) {
-    axiosClient.defaults.headers.common.Authorization =
-      `Bearer ${token}`;
+    axiosClient.defaults.headers.common.Authorization = `Bearer ${token}`;
     localStorage.setItem("access_token", token);
   } else {
     delete axiosClient.defaults.headers.common.Authorization;
@@ -200,9 +194,7 @@ export const isAuthenticated = (): boolean => {
 };
 
 // Manual authenticated request
-export const authenticatedRequest = async (
-  config: AxiosRequestConfig
-) => {
+export const authenticatedRequest = async (config: AxiosRequestConfig) => {
   const token = getAuthToken();
 
   if (!token) {
